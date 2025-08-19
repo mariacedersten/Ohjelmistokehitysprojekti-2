@@ -51,6 +51,7 @@ README.md # Projektin kuvaus ja ohjeet
 
 ## Projektinhallinta
 
+– linkki Figmaan https://www.figma.com/design/39ZB8toax36wqw4mdC1FBq/Hobbly?node-id=0-1&p=f
 – linkki Jira/Trello/GitHub Projects -tauluun
 
 ## Palautusohjeiden mukaiset linkit
