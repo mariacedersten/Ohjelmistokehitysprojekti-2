@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Hallintapaneeli</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        font-size: 20px; /* desktop */
+        background-color: #073b3a;
+        color: #ffffff;
+      }
+
+      @media (max-width: 768px) {
+        body {
+          font-size: 18px; /* mobile */
+        }
+      }
+
+      /* Header */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #021919;
+        color: #ffffff;
+        padding: 0.8rem 1.2rem;
+      }
+
+      header .logo {
+        display: flex;
+        align-items: center;
+        font-weight: bold;
+        font-size: 1.4rem;
+        gap: 0.6rem;
+      }
+
+      header .actions {
+        display: flex;
+        align-items: center;
+        gap: 1.5rem;
+      }
+
+      .icon-btn {
+        position: relative;
+        cursor: pointer;
+      }
+
+      .icon-btn .badge {
+        position: absolute;
+        top: -6px;
+        right: -6px;
+        background: #ff6b6b;
+        color: #fff;
+        font-size: 0.7rem;
+        font-weight: bold;
+        border-radius: 50%;
+        padding: 2px 6px;
+      }
+
+      .search-box {
+        display: flex;
+        align-items: center;
+        background: #8f8f8f;
+        border-radius: 6px;
+        padding: 0.2rem 0.6rem;
+      }
+
+      .search-box input {
+        border: none;
+        background: transparent;
+        padding: 0.4rem;
+        outline: none;
+        color: #021919;
+      }
+
+      .user-info {
+        display: flex;
+        align-items: center;
+        gap: 0.4rem;
+      }
+
+      .logout {
+        margin-left: 1rem;
+        color: #ffffff;
+        cursor: pointer;
+      }
+
+      /* Sidebar */
+      .sidebar {
+        width: 240px;
+        background: linear-gradient(to bottom, #073b3a, #021919);
+        padding: 1.2rem 1rem;
+        display: flex;
+        flex-direction: column;
+        gap: 1.2rem;
+        height: calc(100vh - 60px);
+      }
+
+      .menu-item {
+        display: flex;
+        align-items: center;
+        gap: 0.8rem;
+        color: #ffffff;
+        padding: 0.6rem 1rem;
+        border-radius: 8px;
+        cursor: pointer;
+        transition: background 0.3s, color 0.3s;
+      }
+
+      .menu-item.active {
+        background: #021919;
+        color: #f5ff65;
+        font-weight: bold;
+      }
+
+      .menu-item:hover {
+        background: #065e5c;
+      }
+
+      /* Layout */
+      .container {
+        display: flex;
+      }
+
+      .main {
+        flex: 1;
+        padding: 2rem;
+        background: #073b3a;
+        color: #ffffff;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">
+        <img src="logo.png" alt="Logo" width="32" height="32" />
+        Hobbly
+      </div>
+      <div class="actions">
+        <div class="icon-btn">
+          📧
+          <span class="badge">1</span>
+        </div>
+        <div class="icon-btn">
+          🔔
+          <span class="badge">3</span>
+        </div>
+        <div class="search-box">
+          <input type="text" placeholder="Haku..." />
+          🔍
+        </div>
+        <div class="user-info">
+          👤 Jack Sparrow
+          <span class="logout">Kirjaudu ulos</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="container">
+      <aside class="sidebar">
+        <div class="menu-item active">🏠 Dashboard</div>
+        <div class="menu-item">🔔 Posts</div>
+        <div class="menu-item">👥 Users</div>
+        <div class="menu-item">🗂 Organisations</div>
+        <div class="menu-item">📊 Statistics</div>
+        <div class="menu-item">⚙ Settings</div>
+      </aside>
+      <main class="main">
+        <h1>Hallintapaneeli</h1>
+        <p>Tervetuloa admin näkymään!</p>
+      </main>
+    </div>
+  </body>
+</html>

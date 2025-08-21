@@ -3,12 +3,19 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Kartta</title>
+    <title>Hobbly - Map View</title>
     <style>
       body {
         margin: 0;
         font-family: Arial, sans-serif;
-        background: #f2f2f2;
+        background: #8f8f8f; /* серый фон */
+        font-size: 18px; /* mobile */
+      }
+
+      @media (min-width: 768px) {
+        body {
+          font-size: 20px; /* desktop */
+        }
       }
 
       /* Header */
@@ -16,202 +23,193 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: #999;
-        padding: 1rem;
-        color: #fff;
+        background: #073b3a; /* тёмно-зелёный */
+        padding: 0.8rem 1rem;
+        color: #ffffff; /* белый */
       }
 
       header .logo {
+        font-size: 1.4rem;
         font-weight: bold;
-        font-size: 1.2rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
       }
 
-      header .search {
-        background: #666;
-        border-radius: 8px;
-        padding: 0.5rem;
+      header .search svg {
+        width: 24px;
+        height: 24px;
+        stroke: #ffffff; /* белый */
+      }
+
+      /* Map container */
+      .map-container {
+        background: #ffffff;
+        margin: 0;
+        border: 4px solid #f5ff65; /* yellow border */
+        height: calc(100vh - 140px); /* dynamic height between header + nav */
+        position: relative;
+      }
+
+      .map-placeholder {
+        width: 100%;
+        height: 100%;
+        background: #f0f0f0;
+        background-image: url("https://tile.openstreetmap.org/13/4400/2300.png");
+        background-size: cover;
+        background-position: center;
+      }
+
+      /* Organisation card */
+      .org-card {
+        position: absolute;
+        top: 40%;
+        left: 10%;
+        background: #ffffff;
+        padding: 0.8rem;
+        border-radius: 6px;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+        font-size: 0.9rem;
+      }
+
+      .org-card h3 {
+        margin: 0 0 0.3rem 0;
+        font-size: 1rem;
+        font-weight: bold;
+      }
+
+      /* Marker */
+      .marker {
+        position: absolute;
+        width: 40px;
+        height: 40px;
+        background: #65ff81;
+        border-radius: 50% 50% 50% 0;
+        transform: rotate(-45deg);
+        left: 50%;
+        top: 50%;
+        margin: -20px 0 0 -20px;
         display: flex;
         align-items: center;
         justify-content: center;
       }
 
-      header .search i {
-        color: white;
+      .marker::after {
+        content: "🏠";
+        transform: rotate(45deg);
+        font-size: 18px;
       }
 
-      /* Map area */
-      .map-container {
-        width: 100%;
-        height: 70vh;
-        background: url("map-placeholder.png") center/cover no-repeat;
-        position: relative;
-      }
-      .pin {
-        position: absolute;
-        width: 24px;
-        height: 24px;
-        background: red;
-        border-radius: 50% 50% 50% 0;
-        transform: rotate(-45deg);
-      }
-      .pin::after {
-        content: "";
-        width: 12px;
-        height: 12px;
-        background: white;
-        border-radius: 50%;
-        position: absolute;
-        top: 6px;
-        left: 6px;
-      }
-      /* Example pin positions */
-      .pin1 {
-        top: 20%;
-        left: 30%;
-      }
-      .pin2 {
-        top: 40%;
-        left: 60%;
-      }
-      .pin3 {
-        top: 65%;
-        left: 45%;
-      }
-
-      /* Info card */
-      .info-card {
-        position: absolute;
-        bottom: 20%;
-        left: 10%;
-        background: white;
-        padding: 1rem;
-        border-radius: 8px;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-        width: 70%;
-      }
-      .info-card h3 {
-        margin-bottom: 0.5rem;
-      }
-
-      /* Bottom navbar */
+      /* Bottom nav */
       nav {
         position: fixed;
         bottom: 0;
         left: 0;
         width: 100%;
-        background: #999;
+        background: #073b3a; /* тёмно-зелёный */
         display: flex;
         justify-content: space-around;
         align-items: center;
-        padding: 0.5rem 0;
+        padding: 0.6rem 0;
       }
 
-      nav .nav-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        font-size: 0.8rem;
-        color: white;
-      }
-
-      nav .nav-item .icon {
-        width: 30px;
-        height: 30px;
-        background: #ccc;
-        border-radius: 6px;
-        margin-bottom: 0.2rem;
+      nav a {
+        color: #ffffff;
+        text-decoration: none;
         display: flex;
         align-items: center;
         justify-content: center;
-        font-size: 0.7rem;
-        color: black;
+        width: 48px;
+        height: 48px;
       }
 
-      nav .active {
-        font-weight: bold;
-        background: white;
-        color: black;
-        border-radius: 6px;
-        padding: 0.2rem 0.4rem;
+      nav svg {
+        width: 26px;
+        height: 26px;
+        stroke: #ffffff;
+        stroke-width: 2;
+      }
+
+      /* Активная кнопка */
+      nav a.active svg {
+        stroke-width: 3;
+        transform: scale(1.2);
       }
     </style>
   </head>
   <body>
     <!-- Header -->
     <header>
-      <div class="logo">LOGO</div>
-      <div class="search"><i>🔍</i></div>
+      <div class="logo">Hobbly</div>
+      <a href="haku.html" class="search">
+        <!-- Search icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          stroke-width="2"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </a>
     </header>
 
-    <!-- Map area -->
+    <!-- Map container -->
     <div class="map-container">
-      <div class="pin pin1"></div>
-      <div class="pin pin2"></div>
-      <div class="pin pin3"></div>
+      <div class="map-placeholder"></div>
 
-      <div class="info-card">
-        <p>Organization name</p>
-        <h3>Lorem Ipsum</h3>
-        <p>Street 123, 1234 Turku</p>
+      <!-- Example marker + card -->
+      <div class="marker" style="top: 60%; left: 40%"></div>
+      <div class="org-card">
+        <h3>Organisation name</h3>
+        <p>hjhjhjjhkjhjh<br />00100 Helsinki</p>
       </div>
     </div>
 
-    <!-- Bottom navigation -->
-    <nav
-      style="
-        display: flex;
-        justify-content: space-around;
-        background: #999;
-        padding: 0.5rem 0;
-      "
-    >
-      <div class="nav-item">
-        <a
-          href="etusivu.html"
-          style="
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          "
+    <!-- Bottom nav -->
+    <nav>
+      <a href="etusivu.html">
+        <!-- grid icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <div class="icon">🏠</div>
-          <span>Etusivu</span>
-        </a>
-      </div>
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+        </svg>
+      </a>
 
-      <div class="nav-item">
-        <a
-          href="haku.html"
-          style="
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          "
+      <a href="haku.html">
+        <!-- search icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <div class="icon">🔎</div>
-          <span>Haku</span>
-        </a>
-      </div>
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </a>
 
-      <div class="nav-item">
-        <a
-          href="kartta.html"
-          style="
-            text-decoration: none;
-            color: inherit;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-          "
+      <a href="#" class="active">
+        <!-- map-pin icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
         >
-          <div class="icon">🗺️</div>
-          <span class="active">Kartta</span>
-        </a>
-      </div>
+          <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
+      </a>
     </nav>
   </body>
 </html>

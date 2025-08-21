@@ -34,7 +34,7 @@ README.md # Projektin kuvaus ja ohjeet
 ## Tiimi
 
 - Tiimin nimi: _[HobbyLink]_
-- Jäsenet: _[Maria Cedersten, Maria Shatylovich]_
+- Jäsenet: _[Maria Cedersten, Maria Shatylovich, Dieudonne Ngororano]_
 
 ## Teknologia
 

@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ilmoitus</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #f2f2f2;
+      }
+
+      /* Header */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #999;
+        padding: 1rem;
+        color: #fff;
+      }
+
+      header .logo {
+        font-weight: bold;
+        font-size: 1.2rem;
+      }
+
+      header .search {
+        background: #666;
+        border-radius: 8px;
+        padding: 0.5rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+
+      header .search i {
+        color: white;
+      }
+
+      /* Image placeholder */
+      .image-box {
+        width: 100%;
+        height: 200px;
+        background: #e0e0e0;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: relative;
+      }
+
+      .back-btn {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        background: #ddd;
+        border: none;
+        padding: 0.3rem 0.6rem;
+        border-radius: 6px;
+        cursor: pointer;
+      }
+
+      /* Content */
+      .content {
+        padding: 1rem;
+        background: #fff;
+      }
+
+      .content h2 {
+        margin: 0.5rem 0;
+      }
+
+      .content p {
+        color: #666;
+        line-height: 1.4;
+      }
+
+      .contact {
+        margin-top: 1.5rem;
+      }
+
+      .contact h3 {
+        margin-bottom: 0.5rem;
+      }
+
+      .contact p {
+        margin: 0.3rem 0;
+      }
+
+      /* Bottom navbar */
+      nav {
+        display: flex;
+        justify-content: space-around;
+        background: #999;
+        padding: 0.5rem 0;
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+      }
+
+      nav a {
+        text-align: center;
+        font-size: 0.9rem;
+        color: #000;
+        text-decoration: none;
+      }
+
+      nav a .icon {
+        display: block;
+        width: 24px;
+        height: 24px;
+        margin: 0 auto 0.3rem;
+        background: #ccc;
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="logo">LOGO</div>
+      <button class="search-btn">🔍</button>
+    </header>
+
+    <div class="image-box">
+      <button class="back-btn">← Takaisin</button>
+      <span>[Kuva]</span>
+    </div>
+
+    <div class="content">
+      <p><strong>Organization name</strong></p>
+      <h2>Lorem Ipsum</h2>
+      <p>
+        Et et magni ratione placeat autem temporibus rerum. Fugit est id dicta
+        incidunt occaecati sed. Consequatur sed est dolor ab. Deserunt vel
+        corporis totam. Est beatae tenetur nam deleniti. Suscipit ex est aperiam
+        unde nostrum illum iusto excepturi. Sed placeat voluptas magni rerum
+        accusantium non vel.
+      </p>
+
+      <div class="contact">
+        <h3>Yhteystiedot</h3>
+        <p>Dr. Benedict Gerlach DDS</p>
+        <p>qhomenick@example.com</p>
+        <p>+1 408 882 0947</p>
+      </div>
+    </div>
+
+    <!-- Bottom navigation -->
+    <nav
+      style="
+        display: flex;
+        justify-content: space-around;
+        background: #999;
+        padding: 0.5rem 0;
+      "
+    >
+      <div class="nav-item">
+        <a
+          href="etusivu.html"
+          style="
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          "
+        >
+          <div
+            class="icon"
+            style="
+              width: 30px;
+              height: 30px;
+              background: #ccc;
+              border-radius: 6px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            "
+          >
+            🏠
+          </div>
+          <span>Etusivu</span>
+        </a>
+      </div>
+
+      <div class="nav-item">
+        <a
+          href="haku.html"
+          style="
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          "
+        >
+          <div
+            class="icon"
+            style="
+              width: 30px;
+              height: 30px;
+              background: #ccc;
+              border-radius: 6px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            "
+          >
+            🔎
+          </div>
+          <span>Haku</span>
+        </a>
+      </div>
+
+      <div class="nav-item">
+        <a
+          href="kartta.html"
+          style="
+            text-decoration: none;
+            color: inherit;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+          "
+        >
+          <div
+            class="icon"
+            style="
+              width: 30px;
+              height: 30px;
+              background: #ccc;
+              border-radius: 6px;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+            "
+          >
+            🗺️
+          </div>
+          <span>Kartta</span>
+        </a>
+      </div>
+    </nav>
+  </body>
+</html>
