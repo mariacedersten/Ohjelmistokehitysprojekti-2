@@ -3,7 +3,7 @@
 # Hobbly App – Ohjelmistoprojekti
 
 trello: https://ohjelmistokehitysprojekti-2.atlassian.net/jira/software/projects/O2/boards/1/backlog
-gigma: https://www.figma.com/design/L2QPi6B2bLuw8EARHIdh7j/Project-Hobbly?node-id=0-1&p=f&t=YoI0LVn5Lic7x3gM-0
+figma: https://www.figma.com/design/L2QPi6B2bLuw8EARHIdh7j/Project-Hobbly?node-id=0-1&p=f&t=YoI0LVn5Lic7x3gM-0
 
 ## Projektin kuvaus
 
