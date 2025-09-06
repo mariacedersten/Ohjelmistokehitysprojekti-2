@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>2_login</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 0;
+        background-color: #8f8f8f;
+        font-size: 18px;
+        color: #ffffff;
+      }
+
+      /* Header */
+      .header {
+        background-color: #073b3a;
+        display: flex;
+        align-items: center;
+        padding: 14px 16px;
+      }
+      .logo {
+        display: flex;
+        align-items: center;
+      }
+      .logo img {
+        height: 26px;
+      }
+  
+      /* Container */
+      .container {
+        max-width: 375px;
+        margin: 0 auto;
+        text-align: center;
+      }
+
+      h1 {
+        font-size: 25px;
+        font-weight: bold;
+        margin-bottom: 24px;
+        text-align: left;
+      }
+
+      /* Inputs */
+      .input-group {
+        margin-bottom: 16px;
+        position: relative;
+      }
+      input {
+        width: 100%;
+        padding: 15px;
+        border-radius: 8px;
+        border: none;
+        font-size: 18px;
+        color: #021919;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5);
+        box-sizing: border-box; /* вот это фикс */
+      }
+      input::placeholder {
+        color: #8f8f8f;
+      }
+      .input-icon {
+        position: absolute;
+        right: 14px;
+        top: 50%;
+        transform: translateY(-50%);
+        cursor: pointer;
+        color: #8f8f8f;
+        font-size: 22px;
+        user-select: none;
+      }
+
+      .forgot {
+        margin: 12px 0 90px;
+        color: #ffffff;
+      }
+
+      /* Buttons */
+      .btn {
+        width: 50%;
+        padding: 3px;
+        border: none;
+        border-radius: 8px;
+        font-size: 18px;
+        cursor: pointer;
+        transition: background 0.3s, color 0.3s;
+      }
+      .btn-primary {
+        background-color: #073b3a;
+        color: #ffffff;
+        border: 3px solid #073b3a;
+      }
+      .btn-primary:hover {
+        background-color: #7ba05b;
+        color: #021919;
+      }
+      .btn-back {
+        background-color: #073b3a;
+        color: #ffffff;
+        font-weight: bold;
+      }
+
+      /* Social login */
+      .divider {
+        margin: 25px 0;
+        color: #ffffff;
+      }
+
+      .social-buttons {
+        display: flex;
+        justify-content: center;
+        gap: 16px;
+        margin: 20px auto;
+        width: 100%;
+        max-width: 375px;
+      }
+
+      .social-buttons button {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 50px; /* высотa кнопки */
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s ease;
+      }
+
+      /* Google button */
+      .google-btn {
+        background: #ffffff;
+        border: 2px solid #8bd6f4;
+      }
+
+      .google-btn img {
+        width: 40px;
+        height: 40px;
+      }
+
+      /* Apple button */
+      .apple-btn {
+        background: #ffffff;
+        border: 2px solid #8F8F8F;
+      }
+
+      .apple-btn img {
+        width: 40px;
+        height: 40px;
+      }
+
+      /* Footer */
+      .footer {
+        position: fixed;
+        bottom: 0;
+        width: 100%;
+        background-color: #073b3a;
+        text-align: center;
+        padding: 12px;
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <div class="header">
+      <div class="logo">
+        <img src="./assets/wireframes/Logo Hobbly/logo_white@high-res.png" alt="Hobbly logo" />
+      </div>
+    </div>
+
+    <!-- Main -->
+    <div class="container">
+      <h1 style="text-align: left;">LOG IN</h1>
+
+      <div class="input-group">
+        <input type="text" placeholder="Login" />
+      </div>
+
+      <div class="input-group">
+        <input type="password" id="password" placeholder="Password" />
+        <!-- SVG icon -->
+        <span class="input-icon" id="togglePassword">
+          <!-- eye -->
+          <svg
+            id="eyeOpen"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            width="22"
+            height="22"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.477 0 8.268 2.943 9.542 7-1.274 4.057-5.065 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            />
+          </svg>
+          <!-- eye closed -->
+          <svg
+            id="eyeClosed"
+            xmlns="http://www.w3.org/2000/svg"
+            style="display: none"
+            fill="none"
+            viewBox="0 0 24 24"
+            stroke="currentColor"
+            width="22"
+            height="22"
+          >
+            <path
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+              d="M13.875 18.825A10.05 10.05 0 0112 19c-4.477 0-8.268-2.943-9.542-7a9.96 9.96 0 012.31-3.95m3.597-2.398A9.956 9.956 0 0112 5c4.477 0 8.268 2.943 9.542 7a9.96 9.96 0 01-1.74 3.09M15 12a3 3 0 01-3 3m0-6a3 3 0 013 3m-6 0a3 3 0 003 3m0-6v6M3 3l18 18"
+            />
+          </svg>
+        </span>
+      </div>
+
+      <div class="forgot">Forgot login/password?</div>
+
+      <button class="btn btn-primary">Log in</button>
+
+      <div class="divider">Or log in with</div>
+
+      <div class="social-buttons">
+  <button class="google-btn">
+    <img src="https://www.svgrepo.com/show/355037/google.svg" alt="Google logo">
+  </button>
+
+  <button class="apple-btn">
+    <img src="https://www.svgrepo.com/show/349442/apple.svg" alt="Apple logo">
+  </button>
+</div>
+
+      </div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+  <button class="btn btn-back" onclick="window.location.href='1_cover.html'">
+    BACK
+  </button>
+</div>
+
+
+    <!-- JS -->
+    <script>
+      const togglePassword = document.getElementById("togglePassword");
+      const passwordField = document.getElementById("password");
+      const eyeOpen = document.getElementById("eyeOpen");
+      const eyeClosed = document.getElementById("eyeClosed");
+
+      togglePassword.addEventListener("click", () => {
+        const isPassword = passwordField.type === "password";
+        passwordField.type = isPassword ? "text" : "password";
+        eyeOpen.style.display = isPassword ? "none" : "block";
+        eyeClosed.style.display = isPassword ? "block" : "none";
+      });
+    </script>
+  </body>
+</html>

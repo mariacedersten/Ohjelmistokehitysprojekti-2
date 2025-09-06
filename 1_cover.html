@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>1_cover</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: space-between;
+        align-items: center;
+        background: linear-gradient(
+          to bottom,
+          #073b3a 0%,
+          #65ff81 47%,
+          #073b3a 88%
+        );
+        color: white;
+      }
+
+      .container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 100%;
+        padding-top: 300px;
+        padding-bottom: 80px;
+      }
+
+      .logo {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 120px;
+      }
+
+      .logo img {
+        height: 70px;
+        margin-right: 12px;
+      }
+
+      .button {
+        display: inline-block;
+        text-align: center;
+        text-decoration: none;
+        width: 160px;
+        padding: 6px 0;
+        margin: 10px 0;
+        font-size: 18px;
+        background-color: #073b3a;
+        border: 3px solid #65ff81;
+        border-radius: 8px;
+        color: white;
+        cursor: pointer;
+        transition: background 0.3s;
+      }
+
+      .button:hover {
+        background-color: #7ba05b;
+      }
+
+      @media (min-width: 768px) {
+        .button {
+          width: 250px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <div class="logo">
+        <img
+          src="./assets/wireframes/Logo Hobbly/logo_white@high-res.png"
+          alt="Hobbly Logo"
+        />
+      </div>
+
+      <a href="2_login.html" class="button">Log in</a>
+      <a href="3_sign_up.html" class="button">Sign up</a>
+      <a href="5_search.html" class="button">Guest</a>
+    </div>
+  </body>
+</html>
