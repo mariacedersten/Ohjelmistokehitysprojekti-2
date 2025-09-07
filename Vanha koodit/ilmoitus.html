@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="fi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ilmoitus</title>
+    <style>
+      body {
+        margin: 0;
+        font-family: Arial, sans-serif;
+        background: #8f8f8f; /* серый фон */
+        font-size: 18px; /* mobile */
+      }
+
+      @media (min-width: 768px) {
+        body {
+          font-size: 20px; /* desktop */
+        }
+      }
+
+      /* Header */
+      header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: #073b3a; /* тёмно-зелёный */
+        padding: 0.8rem 1rem;
+        color: #ffffff; /* белый */
+      }
+
+      header .logo {
+        font-size: 1.4rem;
+        font-weight: bold;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+      }
+
+      header .search svg {
+        width: 24px;
+        height: 24px;
+        stroke: #ffffff; /* белый */
+      }
+
+      /* Hero block */
+      .hero {
+        background: #8f8f8f;
+        height: 200px;
+        width: 100%;
+      }
+
+      /* Content */
+      .content {
+        background: #8f8f8f;
+        padding: 1.5rem;
+      }
+
+      .content h2 {
+        margin-top: 0;
+        font-weight: bold;
+        color: #ffffff;
+      }
+
+      .content p {
+        color: #ffffff;
+        line-height: 1.5;
+      }
+
+      .contacts {
+        margin-top: 2rem;
+      }
+
+      .contacts h3 {
+        color: #ffffff;
+        font-weight: bold;
+      }
+
+      .contacts-info {
+        margin-top: 0.5rem;
+        color: #ffffff;
+      }
+
+      .contacts-footer {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+      }
+
+      .contacts-footer .more {
+        color: #ffffff;
+        font-size: 1.5rem;
+      }
+
+      .contacts-footer .location-icon {
+        width: 26px;
+        height: 26px;
+        stroke: #65ff81;
+      }
+
+      /* Bottom nav */
+      nav {
+        position: fixed;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        background: #073b3a; /* тёмно-зелёный */
+        display: flex;
+        justify-content: space-around;
+        align-items: center;
+        padding: 0.6rem 0;
+      }
+
+      nav a {
+        color: #ffffff;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 48px;
+        height: 48px;
+      }
+
+      nav svg {
+        width: 26px;
+        height: 26px;
+        stroke: #ffffff;
+        stroke-width: 2;
+      }
+
+      /* Активная кнопка */
+      nav a.active svg {
+        stroke-width: 3;
+        transform: scale(1.2);
+      }
+    </style>
+  </head>
+  <body>
+    <!-- Header -->
+    <header>
+      <div class="logo">Hobbly</div>
+      <a href="haku.html" class="search">
+        <!-- Search icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          stroke-width="2"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </a>
+    </header>
+
+    <!-- Hero block -->
+    <div class="hero"></div>
+
+    <!-- Content -->
+    <div class="content">
+      <h2>Organisation name:</h2>
+      <p>
+        Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod
+        tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim
+        veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea
+        commodo consequat.
+      </p>
+
+      <div class="contacts">
+        <h3>Contacts:</h3>
+        <div class="contacts-info">
+          Mr. Jack Sparrow <br />
+          00876 New York, USA <br />
+          +142532464647 <br />
+          sparrow@example.com
+        </div>
+
+        <div class="contacts-footer">
+          <span class="more">...</span>
+          <svg
+            class="location-icon"
+            xmlns="http://www.w3.org/2000/svg"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
+            <circle cx="12" cy="10" r="3" />
+          </svg>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom nav -->
+    <nav>
+      <a href="etusivu.html">
+        <!-- grid icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <rect x="3" y="3" width="7" height="7" />
+          <rect x="14" y="3" width="7" height="7" />
+          <rect x="14" y="14" width="7" height="7" />
+          <rect x="3" y="14" width="7" height="7" />
+        </svg>
+      </a>
+
+      <a href="haku.html">
+        <!-- search icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <circle cx="11" cy="11" r="8" />
+          <line x1="21" y1="21" x2="16.65" y2="16.65" />
+        </svg>
+      </a>
+
+      <a href="kartta.html">
+        <!-- map-pin icon -->
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path d="M21 10c0 7-9 13-9 13S3 17 3 10a9 9 0 0 1 18 0z" />
+          <circle cx="12" cy="10" r="3" />
+        </svg>
+      </a>
+    </nav>
+  </body>
+</html>

@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Hobbly – Haku</title>
+    <title>5_homepage</title>
     <style>
       :root {
         --green-dark: #073b3a;
@@ -76,46 +76,7 @@
 
       /* Content */
       .content {
-        padding: 1rem 1rem 5.25rem;
-      }
-
-      .search-wrap {
-        position: relative;
-        margin: 0.25rem 0 0.5rem;
-      }
-
-      .search {
-        width: 100%;
-        box-sizing: border-box;
-        border-radius: 14px;
-        border: 3px solid transparent;
-        outline: none;
-        padding: 0.9rem 3.1rem 0.9rem 1.1rem;
-        font-size: 1rem;
-        color: #333;
-        background: var(--white);
-        box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
-      }
-
-      .search:focus {
-        border-color: #5fb7ff;
-      }
-
-      .search-icon {
-        position: absolute;
-        right: 0.9rem;
-        top: 50%;
-        transform: translateY(-50%);
-        width: 28px;
-        height: 28px;
-        pointer-events: none;
-        opacity: 0.9;
-      }
-
-      .results-note {
-        color: var(--white);
-        margin: 0.4rem 0.25rem 1rem;
-        font-size: 1rem;
+        padding: 0 1rem 4rem;
       }
 
       /* Cards */
@@ -257,29 +218,6 @@
 
       <!-- Content -->
       <main class="content">
-        <!-- search -->
-        <label class="search-wrap" aria-label="Haku">
-          <input class="search" type="search" placeholder="Lorem ipsum" />
-          <svg class="search-icon" viewBox="0 0 24 24">
-            <circle
-              cx="11"
-              cy="11"
-              r="7"
-              stroke="currentColor"
-              fill="none"
-              stroke-width="2"
-            />
-            <path
-              d="M20 20l-4-4"
-              stroke="currentColor"
-              stroke-width="2"
-              fill="none"
-            />
-          </svg>
-        </label>
-
-        <div class="results-note">Result: 5 results “Lorem ipsum”</div>
-
         <!-- Card 1 -->
         <article class="card border-dark">
           <div class="media-wrap">
@@ -382,7 +320,9 @@
             <div class="meta">
               <span class="item">
                 <svg class="icon" viewBox="0 0 24 24">
-                  <path d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z" />
+                  <path
+                    d="M12 21s-7-5.5-7-11a7 7 0 0 1 14 0c0 5.5-7 11-7 11z"
+                  />
                   <circle cx="12" cy="10" r="3" />
                 </svg>
                 Location
@@ -403,10 +343,10 @@
             </div>
           </div>
         </article>
-
+      </main>
       <!-- Bottom nav -->
       <nav class="bottom-nav" aria-label="Ala-navigaatio">
-        <a href="http://127.0.0.1:5500/etusivu.html">
+        <a href="./5_homepage.html" class="active">
           <!-- grid icon -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -422,7 +362,7 @@
           </svg>
         </a>
 
-        <a href="http://127.0.0.1:5500/5_search.html#" class="active">
+        <a href="./6_search.html">
           <!-- search icon -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -436,7 +376,7 @@
           </svg>
         </a>
 
-        <a href="http://127.0.0.1:5500/kartta.html">
+        <a href="./8_map.html">
           <!-- map-pin icon -->
           <svg
             xmlns="http://www.w3.org/2000/svg"
