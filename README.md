@@ -30,14 +30,16 @@ Hallintapaneelin kautta palveluntarjoajat voivat hallita tapahtumiaan ja ilmoitu
 
 assets/
 └── wireframes/ # Suunnitteluehdotus & rautalankamallit
-src/ # Sovelluksen lähdekoodi
+documents
+hobbly-app/
+└── src/ # Sovelluksen lähdekoodi
 README.md # Projektin kuvaus ja ohjeet
 
 ## Aikataulu
 
 - **Projektin aloitus:** 18.8.
 - **Viikkopalaverit:** joka perjantai
-- **Lopullinen palautus:** 10.10. (julkaistu versio + GitHub-linkki)
+- **Lopullinen palautus:** 8.10. (julkaistu versio + GitHub-linkki)
 
 ## Tiimi
 
@@ -46,10 +48,10 @@ README.md # Projektin kuvaus ja ohjeet
 
 ## Teknologia
 
-- Frontend: _[esim. React, Vue, tai mitä tiimi käyttää]_
-- Backend: _[esim. Node.js, Python, tms.]_
+- Frontend: _[React, html, css, TypeScr, Axios]_
+- Backend: _[Supabase, PostgreSQL, Auth, Storage, REST API]_
 - Versionhallinta: Git + GitHub
-- Projektinhallinta: _[esim. Jira, Trello, GitHub Projects]_
+- Projektinhallinta: _[Jira, Trello]_
 
 ## Käyttöohje
 
