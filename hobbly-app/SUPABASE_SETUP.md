@@ -310,10 +310,6 @@ In this instruction, the **backend is actually created and configured at stages 
 
 
 
-<img width="499" height="640" alt="image" src="https://github.com/user-attachments/assets/3bc00954-fdaa-4c2c-8939-8b6c3f92d604" />
-
-
-
 # 🚀 Инструкция по настройке Supabase для Hobbly
 
 ## 📋 Содержание
