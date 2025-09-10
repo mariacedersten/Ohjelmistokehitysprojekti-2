@@ -63,8 +63,13 @@ Kloonaa repositorio miten asentaa tai ajaa sovelluksen?
 
 ## Projektinhallinta
 
-– linkki Figmaan https://www.figma.com/design/39ZB8toax36wqw4mdC1FBq/Hobbly?node-id=0-1&p=f
-– linkki Jira/Trello/GitHub Projects -tauluun
+trello: https://ohjelmistokehitysprojekti-2.atlassian.net/jira/software/projects/O2/boards/1/backlog?selectedIssue=O2-15
+
+figma mobile first: https://www.figma.com/design/L2QPi6B2bLuw8EARHIdh7j/Project-Hobbly?node-id=0-1&p=f&t=YoI0LVn5Lic7x3gM-0
+
+figma desktop: https://www.figma.com/design/CCiNQr1dYbliBi4irSXxO0/AdminHobbly?node-id=0-1&p=f&t=ftcBUY0RnGM2jfBO-0
+
+figma: https://www.figma.com/design/39ZB8toax36wqw4mdC1FBq/Hobbly?t=LZ6GUfZ2rkYm49vv-0
 
 ## Palautusohjeiden mukaiset linkit
 
