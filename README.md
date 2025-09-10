@@ -30,9 +30,12 @@ Hallintapaneelin kautta palveluntarjoajat voivat hallita tapahtumiaan ja ilmoitu
 
 assets/
 └── wireframes/ # Suunnitteluehdotus & rautalankamallit
+
 documents
+
 hobbly-app/
 └── src/ # Sovelluksen lähdekoodi
+
 README.md # Projektin kuvaus ja ohjeet
 
 ## Aikataulu
@@ -55,8 +58,7 @@ README.md # Projektin kuvaus ja ohjeet
 
 ## Käyttöohje
 
-1. Kloonaa repositorio
-   miten asentaa tai ajaa sovelluksen?
+Kloonaa repositorio miten asentaa tai ajaa sovelluksen?
    linkki julkaistuun versioon https://github.com/mariacedersten/Ohjelmistokehitysprojekti-2
 
 ## Projektinhallinta
@@ -67,7 +69,6 @@ README.md # Projektin kuvaus ja ohjeet
 ## Palautusohjeiden mukaiset linkit
 
 – linkki GitHub-repositorioon https://github.com/mariacedersten/Ohjelmistokehitysprojekti-2
-– linkki julkaistuun versioon (esim. Netlify, Vercel, GitHub Pages)
 
 ## Lisenssi
 
