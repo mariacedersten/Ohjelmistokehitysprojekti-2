@@ -357,8 +357,33 @@ class AuthAPI {
       return false;
     }
   }
+
+  /**
+   * Изменение пароля
+   * @param {string} oldPassword - Текущий пароль
+   * @param {string} newPassword - Новый пароль
+   * @returns {Promise<void>}
+   * 
+   * @example
+   * await authAPI.changePassword('oldpass123', 'newpass456');
+   */
+  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    try {
+      await authClient.post('/user', {
+        password: newPassword,
+        data: {
+          old_password: oldPassword
+        }
+      });
+    } catch (error) {
+      console.error('Ошибка смены пароля:', error);
+      throw error;
+    }
+  }
 }
 
 // Создаем и экспортируем единственный экземпляр
 const authAPI = new AuthAPI();
+
 export default authAPI;
+export { authAPI };
