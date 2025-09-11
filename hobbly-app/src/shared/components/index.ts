@@ -18,3 +18,7 @@ export type { CardProps } from './Card';
 // Loader
 export { Loader } from './Loader';
 export type { LoaderProps } from './Loader';
+
+// Icon
+export { default as Icon } from './Icon';
+export type { IconProps } from './Icon';

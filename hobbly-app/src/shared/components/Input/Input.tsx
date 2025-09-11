@@ -6,7 +6,7 @@
 import React, { forwardRef } from 'react';
 import styles from './Input.module.css';
 
-export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size'> {
+export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElement>, 'size' | 'onChange'> {
   /**
    * Метка поля
    */
@@ -49,6 +49,11 @@ export interface InputProps extends Omit<React.InputHTMLAttributes<HTMLInputElem
    * @default false
    */
   required?: boolean;
+  
+  /**
+   * Функция обработки изменения значения
+   */
+  onChange?: (value: string) => void;
 }
 
 /**
@@ -66,6 +71,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
   required = false,
   className = '',
   id,
+  onChange,
   ...props
 }, ref) => {
   const inputId = id || `input-${Math.random().toString(36).substr(2, 9)}`;
@@ -113,6 +119,7 @@ const Input = forwardRef<HTMLInputElement, InputProps>(({
             undefined
           }
           required={required}
+          onChange={onChange ? (e) => onChange(e.target.value) : undefined}
           {...props}
         />
         

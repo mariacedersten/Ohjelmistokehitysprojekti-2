@@ -28,6 +28,8 @@ import { AxiosResponse } from 'axios';
  * @description Предоставляет методы для создания, чтения, обновления и удаления активностей
  */
 class ActivitiesAPI {
+  private readonly endpoint = '/activities';
+
   /**
    * Получение списка активностей с фильтрацией и пагинацией
    * @param {ActivityFilters} filters - Фильтры для поиска
@@ -480,6 +482,7 @@ class ActivitiesAPI {
       contactPhone: activity.contact_phone,
       externalLink: activity.external_link,
       isDeleted: activity.is_deleted,
+      isApproved: activity.isApproved || false,
       createdAt: new Date(activity.created_at),
       updatedAt: new Date(activity.updated_at)
     };
@@ -578,6 +581,92 @@ class ActivitiesAPI {
       }
     } catch (error) {
       console.error('Ошибка обновления тегов:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Одобрение/отклонение активности
+   * @param {string} id - ID активности
+   * @param {boolean} isApproved - Статус одобрения
+   * @returns {Promise<Activity>} Обновленные данные активности
+   */
+  async approveActivity(id: string, isApproved: boolean): Promise<Activity> {
+    try {
+      const response = await apiClient.patch(
+        `${this.endpoint}?id=eq.${id}`,
+        { isApproved }
+      );
+
+      if (!response.data || response.data.length === 0) {
+        throw new Error('Failed to update activity approval status');
+      }
+
+      return this.transformActivity(response.data[0]);
+    } catch (error) {
+      console.error('Ошибка обновления статуса одобрения активности:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Получение статистики активностей
+   * @returns {Promise<{total: number, approved: number, pending: number, deleted: number}>}
+   */
+  async getActivitiesStats(): Promise<{
+    total: number;
+    approved: number;
+    pending: number;
+    deleted: number;
+  }> {
+    try {
+      const [totalResponse, approvedResponse, pendingResponse, deletedResponse] = await Promise.all([
+        apiClient.get(`${this.endpoint}?select=count`),
+        apiClient.get(`${this.endpoint}?isApproved=eq.true&is_deleted=eq.false&select=count`),
+        apiClient.get(`${this.endpoint}?isApproved=eq.false&is_deleted=eq.false&select=count`),
+        apiClient.get(`${this.endpoint}?is_deleted=eq.true&select=count`)
+      ]);
+
+      return {
+        total: totalResponse.data[0]?.count || 0,
+        approved: approvedResponse.data[0]?.count || 0,
+        pending: pendingResponse.data[0]?.count || 0,
+        deleted: deletedResponse.data[0]?.count || 0
+      };
+    } catch (error) {
+      console.error('Ошибка получения статистики активностей:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Получение активностей, ожидающих одобрения
+   * @param {Object} params - Параметры запроса  
+   * @param {number} params.page - Номер страницы
+   * @param {number} params.limit - Количество элементов на странице
+   * @returns {Promise<ApiListResponse<Activity>>} Список активностей
+   */
+  async getPendingActivities(params: {
+    page?: number;
+    limit?: number;
+  } = {}): Promise<ApiListResponse<Activity>> {
+    try {
+      const { page = 1, limit = 20 } = params;
+      
+      const url = `${this.endpoint}?isApproved=eq.false&is_deleted=eq.false&order=created_at.desc&select=*,category:categories(*),organizer:user_profiles(*),tags:activity_tags(tag:tags(*))`;
+
+      const response = await apiClient.get(url, buildPaginationConfig(page, limit));
+      
+      const activities = response.data.map(this.transformActivity.bind(this));
+      const total = parseInt(response.headers['content-range']?.split('/')[1] || '0');
+
+      return {
+        data: activities,
+        pagination: { page, limit, total },
+        total
+      };
+    } catch (error) {
+      console.error('Ошибка получения активностей на модерации:', error);
       throw error;
     }
   }

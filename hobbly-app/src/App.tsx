@@ -6,6 +6,7 @@
 
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './shared/contexts/AuthContext';
 import MobileApp from './mobile/MobileApp';
 import AdminApp from './admin/AdminApp';
 import './App.css';
@@ -18,19 +19,21 @@ import './App.css';
 function App() {
   return (
     <BrowserRouter>
-      <Routes>
-        {/* Мобильное приложение (mobile-first) */}
-        <Route path="/mobile/*" element={<MobileApp />} />
-        
-        {/* Админ-панель (desktop-first) */}
-        <Route path="/admin/*" element={<AdminApp />} />
-        
-        {/* Редирект с корневого пути на мобильную версию */}
-        <Route path="/" element={<Navigate to="/mobile" replace />} />
-        
-        {/* Редирект для всех остальных путей */}
-        <Route path="*" element={<Navigate to="/mobile" replace />} />
-      </Routes>
+      <AuthProvider>
+        <Routes>
+          {/* Мобильное приложение (mobile-first) */}
+          <Route path="/mobile/*" element={<MobileApp />} />
+          
+          {/* Админ-панель (desktop-first) */}
+          <Route path="/admin/*" element={<AdminApp />} />
+          
+          {/* Редирект с корневого пути на мобильную версию */}
+          <Route path="/" element={<Navigate to="/mobile" replace />} />
+          
+          {/* Редирект для всех остальных путей */}
+          <Route path="*" element={<Navigate to="/mobile" replace />} />
+        </Routes>
+      </AuthProvider>
     </BrowserRouter>
   );
 }

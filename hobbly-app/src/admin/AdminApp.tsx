@@ -5,12 +5,17 @@
  */
 
 import React from 'react';
-import { Routes, Route, Navigate } from 'react-router-dom';
+import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
+import { useAuth } from '../shared/contexts/AuthContext';
+import { ProtectedRoute } from '../shared/components/ProtectedRoute';
+import Sidebar from './components/Sidebar';
+import Login from './pages/Login';
+import Dashboard from './pages/Dashboard';
+import { UserRole } from '../types';
 import styles from './AdminApp.module.css';
 
-// TODO: Import pages when created
+// TODO: Import remaining pages when created
 // import Welcome from './pages/Welcome';
-// import Login from './pages/Login';
 // import SignUp from './pages/SignUp';
 // import Dashboard from './pages/Dashboard';
 // import Activities from './pages/Activities';
@@ -24,28 +29,96 @@ import styles from './AdminApp.module.css';
  * @returns {JSX.Element} Админ-панель с маршрутизацией
  */
 const AdminApp: React.FC = () => {
+  const { user } = useAuth();
+  const location = useLocation();
+
+  // Public routes that don't need sidebar
+  const isPublicRoute = ['/admin/', '/admin/login', '/admin/signup'].includes(location.pathname);
+
+  if (isPublicRoute) {
+    return (
+      <div className={styles.adminApp}>
+        <div className={styles.fullContent}>
+          <Routes>
+            {/* Публичные маршруты */}
+            <Route path="/" element={<div>Admin Welcome/Landing Page (TODO)</div>} />
+            <Route path="/login" element={<Login />} />
+            <Route path="/signup" element={<div>Admin SignUp Page (TODO)</div>} />
+            
+            {/* Редирект для неизвестных маршрутов */}
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className={styles.adminApp}>
-      {/* TODO: Add Sidebar component here */}
+      <Sidebar />
       
       <div className={styles.mainContent}>
         <Routes>
-          {/* Публичные маршруты */}
-          <Route path="/" element={<div>Admin Welcome/Landing Page (TODO)</div>} />
-          <Route path="/login" element={<div>Admin Login Page (TODO)</div>} />
-          <Route path="/signup" element={<div>Admin SignUp Page (TODO)</div>} />
-          
           {/* Защищенные маршруты */}
-          <Route path="/dashboard" element={<div>Dashboard Page (TODO)</div>} />
-          <Route path="/activities" element={<div>Activities Management Page (TODO)</div>} />
-          <Route path="/activities/new" element={<div>New Activity Form (TODO)</div>} />
-          <Route path="/activities/edit/:id" element={<div>Edit Activity Form (TODO)</div>} />
-          <Route path="/activities/trash" element={<div>Trash Bin Page (TODO)</div>} />
-          <Route path="/users" element={<div>Users Management Page (TODO)</div>} />
-          <Route path="/profile" element={<div>Personal Info Page (TODO)</div>} />
+          <Route 
+            path="/dashboard" 
+            element={
+              <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
+                <Dashboard />
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/activities" 
+            element={
+              <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
+                <div>Activities Management Page (TODO)</div>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/activities/new" 
+            element={
+              <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
+                <div>New Activity Form (TODO)</div>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/activities/edit/:id" 
+            element={
+              <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
+                <div>Edit Activity Form (TODO)</div>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/activities/trash" 
+            element={
+              <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
+                <div>Trash Bin Page (TODO)</div>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/users" 
+            element={
+              <ProtectedRoute allowedRoles={[UserRole.ADMIN]} redirectTo="/admin/login">
+                <div>Users Management Page (TODO)</div>
+              </ProtectedRoute>
+            } 
+          />
+          <Route 
+            path="/personal-info" 
+            element={
+              <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
+                <div>Personal Info Page (TODO)</div>
+              </ProtectedRoute>
+            } 
+          />
           
           {/* Редирект для неизвестных маршрутов */}
-          <Route path="*" element={<Navigate to="/" replace />} />
+          <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
         </Routes>
       </div>
     </div>
