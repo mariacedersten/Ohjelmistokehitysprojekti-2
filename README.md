@@ -10,6 +10,8 @@ figma desktop: https://www.figma.com/design/CCiNQr1dYbliBi4irSXxO0/AdminHobbly?n
 
 figma: https://www.figma.com/design/39ZB8toax36wqw4mdC1FBq/Hobbly?t=LZ6GUfZ2rkYm49vv-0
 
+supabase: https://supabase.com/dashboard/project/jourvbtxuyavamxvddwc/sql/66baaae4-1dd0-45d6-8f04-f59fa367e221
+
 ## Projektin kuvaus
 
 Tämä projekti toteutetaan osana ohjelmistoprojektikurssia.  
@@ -30,9 +32,12 @@ Hallintapaneelin kautta palveluntarjoajat voivat hallita tapahtumiaan ja ilmoitu
 
 assets/
 └── wireframes/ # Suunnitteluehdotus & rautalankamallit
+
 documents
+
 hobbly-app/
 └── src/ # Sovelluksen lähdekoodi
+
 README.md # Projektin kuvaus ja ohjeet
 
 ## Aikataulu
@@ -55,19 +60,24 @@ README.md # Projektin kuvaus ja ohjeet
 
 ## Käyttöohje
 
-1. Kloonaa repositorio
-   miten asentaa tai ajaa sovelluksen?
-   linkki julkaistuun versioon https://github.com/mariacedersten/Ohjelmistokehitysprojekti-2
+Kloonaa repositorio miten asentaa tai ajaa sovelluksen?
+linkki julkaistuun versioon https://github.com/mariacedersten/Ohjelmistokehitysprojekti-2
 
 ## Projektinhallinta
 
-– linkki Figmaan https://www.figma.com/design/39ZB8toax36wqw4mdC1FBq/Hobbly?node-id=0-1&p=f
-– linkki Jira/Trello/GitHub Projects -tauluun
+trello: https://ohjelmistokehitysprojekti-2.atlassian.net/jira/software/projects/O2/boards/1/backlog?selectedIssue=O2-15
+
+figma mobile first: https://www.figma.com/design/L2QPi6B2bLuw8EARHIdh7j/Project-Hobbly?node-id=0-1&p=f&t=YoI0LVn5Lic7x3gM-0
+
+figma desktop: https://www.figma.com/design/CCiNQr1dYbliBi4irSXxO0/AdminHobbly?node-id=0-1&p=f&t=ftcBUY0RnGM2jfBO-0
+
+figma: https://www.figma.com/design/39ZB8toax36wqw4mdC1FBq/Hobbly?t=LZ6GUfZ2rkYm49vv-0
+
+supabase: https://supabase.com/dashboard/project/jourvbtxuyavamxvddwc/sql/66baaae4-1dd0-45d6-8f04-f59fa367e221
 
 ## Palautusohjeiden mukaiset linkit
 
 – linkki GitHub-repositorioon https://github.com/mariacedersten/Ohjelmistokehitysprojekti-2
-– linkki julkaistuun versioon (esim. Netlify, Vercel, GitHub Pages)
 
 ## Lisenssi
 
