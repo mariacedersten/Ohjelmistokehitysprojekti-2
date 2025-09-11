@@ -21,6 +21,14 @@ interface AuthResponse {
 }
 
 /**
+ * Интерфейс ответа для методов аутентификации
+ */
+interface AuthResult {
+  user: User;
+  token: string;
+}
+
+/**
  * Интерфейс пользователя Supabase
  */
 interface SupabaseUser {
@@ -63,11 +71,11 @@ class AuthAPI {
   /**
    * Регистрация нового пользователя
    * @param {SignUpFormData} data - Данные для регистрации
-   * @returns {Promise<User>} Зарегистрированный пользователь
+   * @returns {Promise<AuthResult>} Результат регистрации с пользователем и токеном
    * @throws {ApiError} Ошибка регистрации
    * 
    * @example
-   * const user = await authAPI.signUp({
+   * const result = await authAPI.signUp({
    *   email: 'user@example.com',
    *   password: 'securePassword123',
    *   fullName: 'John Doe',
@@ -75,7 +83,7 @@ class AuthAPI {
    *   agreeToTerms: true
    * });
    */
-  async signUp(data: SignUpFormData): Promise<User> {
+  async signUp(data: SignUpFormData): Promise<AuthResult> {
     try {
       // Определяем роль: если есть организация - организатор, иначе - пользователь
       const role = data.organizationName ? UserRole.ORGANIZER : UserRole.USER;
@@ -100,8 +108,11 @@ class AuthAPI {
         setAuthToken(response.data.access_token);
       }
 
-      // Возвращаем преобразованного пользователя
-      return transformUser(response.data.user);
+      // Возвращаем результат с пользователем и токеном
+      return {
+        user: transformUser(response.data.user),
+        token: response.data.access_token
+      };
     } catch (error) {
       console.error('Ошибка регистрации:', error);
       throw error;
@@ -111,17 +122,17 @@ class AuthAPI {
   /**
    * Вход пользователя в систему
    * @param {SignInFormData} data - Данные для входа
-   * @returns {Promise<User>} Авторизованный пользователь
+   * @returns {Promise<AuthResult>} Результат входа с пользователем и токеном
    * @throws {ApiError} Ошибка входа
    * 
    * @example
-   * const user = await authAPI.signIn({
+   * const result = await authAPI.signIn({
    *   email: 'user@example.com',
    *   password: 'securePassword123',
    *   rememberMe: true
    * });
    */
-  async signIn(data: SignInFormData): Promise<User> {
+  async signIn(data: SignInFormData): Promise<AuthResult> {
     try {
       // Отправляем запрос на вход
       const response: AxiosResponse<AuthResponse> = await authClient.post('/token?grant_type=password', {
@@ -139,8 +150,11 @@ class AuthAPI {
         }
       }
 
-      // Возвращаем преобразованного пользователя
-      return transformUser(response.data.user);
+      // Возвращаем результат с пользователем и токеном
+      return {
+        user: transformUser(response.data.user),
+        token: response.data.access_token
+      };
     } catch (error) {
       console.error('Ошибка входа:', error);
       throw error;
@@ -231,22 +245,22 @@ class AuthAPI {
   }
 
   /**
-   * Смена пароля пользователя
+   * Сброс пароля (для восстановления через email)
    * @param {string} newPassword - Новый пароль
    * @returns {Promise<void>}
-   * @throws {ApiError} Ошибка смены пароля
+   * @throws {ApiError} Ошибка сброса пароля
    * 
    * @example
-   * await authAPI.changePassword('newSecurePassword123');
+   * await authAPI.resetPassword('newSecurePassword123');
    */
-  async changePassword(newPassword: string): Promise<void> {
+  async resetPassword(newPassword: string): Promise<void> {
     try {
-      // Отправляем запрос на смену пароля
+      // Отправляем запрос на сброс пароля
       await authClient.put('/user', {
         password: newPassword
       });
     } catch (error) {
-      console.error('Ошибка смены пароля:', error);
+      console.error('Ошибка сброса пароля:', error);
       throw error;
     }
   }
@@ -387,3 +401,4 @@ const authAPI = new AuthAPI();
 
 export default authAPI;
 export { authAPI };
+export type { AuthResult };
