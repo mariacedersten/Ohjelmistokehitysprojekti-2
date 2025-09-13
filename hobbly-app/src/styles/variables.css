@@ -1,0 +1,116 @@
+/**
+ * @fileoverview Глобальные CSS переменные для приложения Hobbly
+ * @description Содержит цветовую схему, типографику и другие переменные дизайна
+ */
+
+:root {
+  /* ===== Основные цвета Hobbly ===== */
+  --color-primary-dark: #073B3A; /* Основной темный */
+  --color-accent-yellow: #F5FF65; /* Акцентный желтый */
+  --color-accent-green: #65FF81; /* Акцентный зеленый */
+  --color-dark: #021919; /* Темный */
+  --color-gray: #8F8F8F; /* Серый */
+  --color-white: #FFFFFF; /* Белый */
+  --color-black: #000000; /* Черный */
+  
+  /* ===== Дополнительные цвета из старой схемы ===== */
+  --color-purple-primary: #667eea; /* Фиолетовый градиент начало */
+  --color-purple-secondary: #764ba2; /* Фиолетовый градиент конец */
+  
+  /* ===== Градиенты ===== */
+  --gradient-primary: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --gradient-hobbly: linear-gradient(135deg, #073B3A 0%, #065654 100%);
+  
+  /* ===== Фоновые цвета ===== */
+  --color-background: #FFFFFF;
+  --color-background-secondary: #F5F5F5;
+  --color-background-dark: #073B3A;
+  
+  /* ===== Цвета текста ===== */
+  --color-text-primary: #021919;
+  --color-text-secondary: #8F8F8F;
+  --color-text-light: #FFFFFF;
+  --color-text-accent: #073B3A;
+  
+  /* ===== Цвета границ ===== */
+  --color-border: #E0E0E0;
+  --color-border-light: #F0F0F0;
+  --color-border-dark: #073B3A;
+  
+  /* ===== Цвета состояний ===== */
+  --color-success: #65FF81;
+  --color-warning: #F5FF65;
+  --color-error: #FF6565;
+  --color-info: #73B3FF;
+  
+  /* ===== Тени ===== */
+  --shadow-small: 0 2px 4px rgba(0, 0, 0, 0.1);
+  --shadow-medium: 0 4px 8px rgba(0, 0, 0, 0.1);
+  --shadow-large: 0 8px 16px rgba(0, 0, 0, 0.1);
+  --shadow-xl: 0 12px 24px rgba(0, 0, 0, 0.15);
+  
+  /* ===== Радиусы скругления ===== */
+  --radius-small: 4px;
+  --radius-medium: 8px;
+  --radius-large: 12px;
+  --radius-xl: 16px;
+  --radius-round: 50%;
+  
+  /* ===== Типографика ===== */
+  --font-primary: 'Montserrat', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --font-heading: 'Kanit', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  
+  /* ===== Размеры шрифта ===== */
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-base: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 30px;
+  --font-size-4xl: 36px;
+  --font-size-5xl: 48px;
+  
+  /* ===== Вес шрифта ===== */
+  --font-weight-light: 300;
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+  
+  /* ===== Высота строки ===== */
+  --line-height-tight: 1.2;
+  --line-height-normal: 1.5;
+  --line-height-relaxed: 1.75;
+  
+  /* ===== Отступы ===== */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 48px;
+  --spacing-3xl: 64px;
+  
+  /* ===== Размеры для мобильной версии ===== */
+  --mobile-width: 375px;
+  --mobile-nav-height: 60px;
+  
+  /* ===== Размеры для десктопной версии ===== */
+  --desktop-width: 1440px;
+  --sidebar-width: 260px;
+  --sidebar-width-collapsed: 80px;
+  
+  /* ===== Z-index слои ===== */
+  --z-index-dropdown: 100;
+  --z-index-modal: 200;
+  --z-index-modal-backdrop: 190;
+  --z-index-navigation: 150;
+  --z-index-sidebar: 140;
+  --z-index-toast: 300;
+  
+  /* ===== Анимации ===== */
+  --transition-fast: 150ms ease-in-out;
+  --transition-normal: 300ms ease-in-out;
+  --transition-slow: 500ms ease-in-out;
+}

@@ -5,7 +5,7 @@
  * через Supabase REST API
  */
 
-import { authClient, setAuthToken, removeAuthToken } from './config';
+import { authClient, apiClient, setAuthToken, removeAuthToken } from './config';
 import { User, SignInFormData, SignUpFormData, UserRole } from '../types';
 import { AxiosResponse } from 'axios';
 
@@ -18,6 +18,14 @@ interface AuthResponse {
   expires_in: number;
   refresh_token: string;
   user: SupabaseUser;
+}
+
+/**
+ * Интерфейс ответа для методов аутентификации
+ */
+interface AuthResult {
+  user: User;
+  token: string;
 }
 
 /**
@@ -34,25 +42,32 @@ interface SupabaseUser {
     fullName?: string;
     organizationName?: string;
     role?: UserRole;
+    isApproved?: boolean;
   };
 }
 
 /**
- * Преобразование пользователя Supabase в локальный формат
- * @param {SupabaseUser} supabaseUser - Пользователь из Supabase
+ * Преобразование профиля пользователя из таблицы user_profiles в локальный формат
+ * @param {any} profile - Профиль из таблицы user_profiles
  * @returns {User} Преобразованный пользователь
  */
-const transformUser = (supabaseUser: SupabaseUser): User => {
-  return {
-    id: supabaseUser.id,
-    email: supabaseUser.email,
-    role: supabaseUser.user_metadata?.role || UserRole.USER,
-    organizationName: supabaseUser.user_metadata?.organizationName,
-    fullName: supabaseUser.user_metadata?.fullName,
-    phone: supabaseUser.phone,
-    createdAt: new Date(supabaseUser.created_at),
-    updatedAt: new Date(supabaseUser.updated_at)
+const transformUserProfile = (profile: any): User => {
+  console.log('transformUserProfile input:', profile);
+  
+  const user: User = {
+    id: profile.id,
+    email: profile.email,
+    role: profile.role as UserRole, // РОЛЬ ИЗ ТАБЛИЦЫ user_profiles!
+    organizationName: profile.organization_name,
+    fullName: profile.full_name,
+    phone: profile.phone,
+    isApproved: profile.isApproved || false,
+    createdAt: new Date(profile.created_at),
+    updatedAt: new Date(profile.updated_at)
   };
+  
+  console.log('transformUserProfile output:', user);
+  return user;
 };
 
 /**
@@ -63,11 +78,11 @@ class AuthAPI {
   /**
    * Регистрация нового пользователя
    * @param {SignUpFormData} data - Данные для регистрации
-   * @returns {Promise<User>} Зарегистрированный пользователь
+   * @returns {Promise<AuthResult>} Результат регистрации с пользователем и токеном
    * @throws {ApiError} Ошибка регистрации
    * 
    * @example
-   * const user = await authAPI.signUp({
+   * const result = await authAPI.signUp({
    *   email: 'user@example.com',
    *   password: 'securePassword123',
    *   fullName: 'John Doe',
@@ -75,7 +90,7 @@ class AuthAPI {
    *   agreeToTerms: true
    * });
    */
-  async signUp(data: SignUpFormData): Promise<User> {
+  async signUp(data: SignUpFormData): Promise<AuthResult> {
     try {
       // Определяем роль: если есть организация - организатор, иначе - пользователь
       const role = data.organizationName ? UserRole.ORGANIZER : UserRole.USER;
@@ -100,8 +115,19 @@ class AuthAPI {
         setAuthToken(response.data.access_token);
       }
 
-      // Возвращаем преобразованного пользователя
-      return transformUser(response.data.user);
+      // Получаем профиль пользователя из user_profiles
+      const userId = response.data.user.id;
+      const profileResponse = await apiClient.get(`/user_profiles?id=eq.${userId}&select=*`);
+      
+      if (!profileResponse.data || profileResponse.data.length === 0) {
+        throw new Error('Профиль пользователя не создан');
+      }
+
+      // Возвращаем результат с пользователем из user_profiles
+      return {
+        user: transformUserProfile(profileResponse.data[0]),
+        token: response.data.access_token
+      };
     } catch (error) {
       console.error('Ошибка регистрации:', error);
       throw error;
@@ -111,17 +137,17 @@ class AuthAPI {
   /**
    * Вход пользователя в систему
    * @param {SignInFormData} data - Данные для входа
-   * @returns {Promise<User>} Авторизованный пользователь
+   * @returns {Promise<AuthResult>} Результат входа с пользователем и токеном
    * @throws {ApiError} Ошибка входа
    * 
    * @example
-   * const user = await authAPI.signIn({
+   * const result = await authAPI.signIn({
    *   email: 'user@example.com',
    *   password: 'securePassword123',
    *   rememberMe: true
    * });
    */
-  async signIn(data: SignInFormData): Promise<User> {
+  async signIn(data: SignInFormData): Promise<AuthResult> {
     try {
       // Отправляем запрос на вход
       const response: AxiosResponse<AuthResponse> = await authClient.post('/token?grant_type=password', {
@@ -139,8 +165,19 @@ class AuthAPI {
         }
       }
 
-      // Возвращаем преобразованного пользователя
-      return transformUser(response.data.user);
+      // Получаем профиль пользователя из user_profiles
+      const userId = response.data.user.id;
+      const profileResponse = await apiClient.get(`/user_profiles?id=eq.${userId}&select=*`);
+      
+      if (!profileResponse.data || profileResponse.data.length === 0) {
+        throw new Error('Профиль пользователя не найден');
+      }
+
+      // Возвращаем результат с пользователем из user_profiles
+      return {
+        user: transformUserProfile(profileResponse.data[0]),
+        token: response.data.access_token
+      };
     } catch (error) {
       console.error('Ошибка входа:', error);
       throw error;
@@ -182,12 +219,36 @@ class AuthAPI {
    */
   async getCurrentUser(): Promise<User> {
     try {
-      // Получаем данные текущего пользователя
-      const response: AxiosResponse<{ user: SupabaseUser }> = await authClient.get('/user');
+      // Получаем базовые данные пользователя из auth
+      const authResponse: AxiosResponse<{ user: SupabaseUser }> = await authClient.get('/user');
       
-      return transformUser(response.data.user);
+      console.log('Auth response:', authResponse.data);
+      
+      if (!authResponse.data || !authResponse.data.user) {
+        throw new Error('Пользователь не найден в ответе сервера');
+      }
+
+      const userId = authResponse.data.user.id;
+      console.log('Fetching profile for user ID:', userId);
+      
+      // ГЛАВНЫЙ ИСТОЧНИК ДАННЫХ - таблица user_profiles
+      const profileResponse = await apiClient.get(`/user_profiles?id=eq.${userId}&select=*`);
+      
+      console.log('Profile response:', profileResponse.data);
+      
+      if (!profileResponse.data || profileResponse.data.length === 0) {
+        throw new Error(`Профиль пользователя не найден в user_profiles для ID: ${userId}`);
+      }
+      
+      const profile = profileResponse.data[0];
+      
+      // Используем новую функцию преобразования из user_profiles
+      return transformUserProfile(profile);
+      
     } catch (error) {
       console.error('Ошибка получения текущего пользователя:', error);
+      removeAuthToken();
+      localStorage.removeItem('auth_token');
       throw error;
     }
   }
@@ -223,7 +284,15 @@ class AuthAPI {
       // Отправляем запрос на обновление
       const response: AxiosResponse<{ user: SupabaseUser }> = await authClient.put('/user', updateData);
       
-      return transformUser(response.data.user);
+      // Получаем обновленный профиль из user_profiles
+      const userId = response.data.user.id;
+      const profileResponse = await apiClient.get(`/user_profiles?id=eq.${userId}&select=*`);
+      
+      if (!profileResponse.data || profileResponse.data.length === 0) {
+        throw new Error('Обновленный профиль не найден');
+      }
+      
+      return transformUserProfile(profileResponse.data[0]);
     } catch (error) {
       console.error('Ошибка обновления профиля:', error);
       throw error;
@@ -231,22 +300,22 @@ class AuthAPI {
   }
 
   /**
-   * Смена пароля пользователя
+   * Сброс пароля (для восстановления через email)
    * @param {string} newPassword - Новый пароль
    * @returns {Promise<void>}
-   * @throws {ApiError} Ошибка смены пароля
+   * @throws {ApiError} Ошибка сброса пароля
    * 
    * @example
-   * await authAPI.changePassword('newSecurePassword123');
+   * await authAPI.resetPassword('newSecurePassword123');
    */
-  async changePassword(newPassword: string): Promise<void> {
+  async resetPassword(newPassword: string): Promise<void> {
     try {
-      // Отправляем запрос на смену пароля
+      // Отправляем запрос на сброс пароля
       await authClient.put('/user', {
         password: newPassword
       });
     } catch (error) {
-      console.error('Ошибка смены пароля:', error);
+      console.error('Ошибка сброса пароля:', error);
       throw error;
     }
   }
@@ -294,7 +363,15 @@ class AuthAPI {
         setAuthToken(response.data.access_token);
       }
 
-      return transformUser(response.data.user);
+      // Получаем профиль пользователя из user_profiles
+      const userId = response.data.user.id;
+      const profileResponse = await apiClient.get(`/user_profiles?id=eq.${userId}&select=*`);
+      
+      if (!profileResponse.data || profileResponse.data.length === 0) {
+        throw new Error('Профиль пользователя не найден после подтверждения email');
+      }
+
+      return transformUserProfile(profileResponse.data[0]);
     } catch (error) {
       console.error('Ошибка подтверждения email:', error);
       throw error;
@@ -357,8 +434,34 @@ class AuthAPI {
       return false;
     }
   }
+
+  /**
+   * Изменение пароля
+   * @param {string} oldPassword - Текущий пароль
+   * @param {string} newPassword - Новый пароль
+   * @returns {Promise<void>}
+   * 
+   * @example
+   * await authAPI.changePassword('oldpass123', 'newpass456');
+   */
+  async changePassword(oldPassword: string, newPassword: string): Promise<void> {
+    try {
+      await authClient.post('/user', {
+        password: newPassword,
+        data: {
+          old_password: oldPassword
+        }
+      });
+    } catch (error) {
+      console.error('Ошибка смены пароля:', error);
+      throw error;
+    }
+  }
 }
 
 // Создаем и экспортируем единственный экземпляр
 const authAPI = new AuthAPI();
+
 export default authAPI;
+export { authAPI };
+export type { AuthResult };

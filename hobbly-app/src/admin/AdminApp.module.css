@@ -1,0 +1,57 @@
+/**
+ * Стили для админ-панели
+ * Desktop-first подход (базовая ширина 1440px)
+ */
+
+.adminApp {
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  background-color: var(--color-background, #f5f5f5);
+}
+
+.fullContent {
+  flex: 1;
+  min-height: 100vh;
+}
+
+.mainContent {
+  flex: 1;
+  padding: 0;
+  overflow-y: auto;
+  min-height: 100vh;
+  margin-left: 280px;
+  padding: 32px;
+}
+
+/* Desktop (основной вид) */
+@media (min-width: 1024px) {
+  .adminApp {
+    max-width: 100%;
+  }
+  
+  .mainContent {
+    margin-left: 280px; /* Место для sidebar */
+    padding: 32px;
+  }
+}
+
+/* Tablet */
+@media (max-width: 1023px) and (min-width: 768px) {
+  .mainContent {
+    margin-left: 240px; /* Уменьшенный sidebar */
+    padding: 24px;
+  }
+}
+
+/* Mobile */
+@media (max-width: 767px) {
+  .adminApp {
+    flex-direction: column;
+  }
+  
+  .mainContent {
+    margin-left: 0;
+    padding: 20px;
+  }
+}

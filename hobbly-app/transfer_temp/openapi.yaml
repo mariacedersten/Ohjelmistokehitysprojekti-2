@@ -1,0 +1,1240 @@
+openapi: 3.0.3
+info:
+  title: Hobbly API
+  description: |
+    REST API для платформы Hobbly - приложения для поиска хобби и активностей.
+    
+    ## Описание
+    Hobbly Technologies Oy — современная технологическая компания, миссия которой — облегчить повседневную жизнь людей, предоставляя легкий доступ к хобби и возможностям для досуга.
+    
+    ## Аутентификация
+    API использует JWT Bearer токены для аутентификации. Получите токен через endpoints аутентификации и включите его в заголовок Authorization.
+    
+    ## Роли пользователей
+    - **USER**: Обычный пользователь (только чтение активностей)
+    - **ORGANIZER**: Организатор (может создавать и управлять своими активностями)  
+    - **ADMIN**: Администратор (полный доступ ко всем функциям)
+    
+  version: 1.0.0
+  contact:
+    name: Hobbly Technologies Oy
+    url: https://hobbly.fi
+    email: support@hobbly.fi
+  license:
+    name: MIT
+    url: https://opensource.org/licenses/MIT
+
+servers:
+  - url: https://your-supabase-project.supabase.co
+    description: Production Supabase server
+  - url: http://localhost:3000
+    description: Development server
+
+security:
+  - BearerAuth: []
+
+paths:
+  # Authentication Endpoints
+  /auth/v1/signup:
+    post:
+      tags:
+        - Authentication
+      summary: Регистрация нового пользователя
+      description: Создает нового пользователя в системе с email подтверждением
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SignUpRequest'
+            examples:
+              organizer:
+                summary: Регистрация организатора
+                value:
+                  email: "organizer@example.com"
+                  password: "securePassword123"
+                  data:
+                    full_name: "Иван Петров"
+                    organization_name: "Спортивный клуб Энергия"
+                    phone: "+358401234567"
+                    role: "organizer"
+      responses:
+        '201':
+          description: Пользователь создан успешно
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '409':
+          description: Email уже используется
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /auth/v1/token:
+    post:
+      tags:
+        - Authentication
+      summary: Аутентификация пользователя
+      description: Выполняет вход пользователя и возвращает JWT токен
+      security: []
+      requestBody:
+        required: true
+        content:
+          application/x-www-form-urlencoded:
+            schema:
+              type: object
+              required:
+                - grant_type
+                - email
+                - password
+              properties:
+                grant_type:
+                  type: string
+                  enum: [password]
+                email:
+                  type: string
+                  format: email
+                password:
+                  type: string
+                  minLength: 8
+            example:
+              grant_type: password
+              email: "organizer@example.com" 
+              password: "securePassword123"
+      responses:
+        '200':
+          description: Аутентификация успешна
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TokenResponse'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          description: Неверные учетные данные
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiError'
+
+  /auth/v1/logout:
+    post:
+      tags:
+        - Authentication
+      summary: Выход из системы
+      description: Завершает сессию пользователя
+      responses:
+        '204':
+          description: Выход выполнен успешно
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  /auth/v1/user:
+    get:
+      tags:
+        - Authentication
+      summary: Получить данные текущего пользователя
+      description: Возвращает профиль аутентифицированного пользователя
+      responses:
+        '200':
+          description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+    
+    put:
+      tags:
+        - Authentication
+      summary: Обновить профиль пользователя
+      description: Обновляет данные профиля текущего пользователя
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: Профиль обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+  # Activities Endpoints
+  /rest/v1/activities:
+    get:
+      tags:
+        - Activities
+      summary: Получить список активностей
+      description: |
+        Возвращает список активностей с возможностью фильтрации, поиска и пагинации.
+        Поддерживает infinite scroll для мобильного приложения.
+      security: []
+      parameters:
+        - name: select
+          in: query
+          description: Поля для выборки (PostgREST syntax)
+          schema:
+            type: string
+            default: "*,category:categories(*),organizer:users(full_name,organization_name),tags:activity_tags(tag:tags(*))"
+        - name: search
+          in: query
+          description: Поиск по заголовку, описанию и названию организации
+          schema:
+            type: string
+        - name: category_id
+          in: query
+          description: Фильтр по ID категории
+          schema:
+            type: string
+            format: uuid
+        - name: type
+          in: query
+          description: Фильтр по типу активности
+          schema:
+            $ref: '#/components/schemas/ActivityType'
+        - name: location
+          in: query
+          description: Фильтр по местоположению
+          schema:
+            type: string
+        - name: min_price
+          in: query
+          description: Минимальная цена
+          schema:
+            type: number
+            format: decimal
+        - name: max_price
+          in: query
+          description: Максимальная цена
+          schema:
+            type: number
+            format: decimal
+        - name: free_only
+          in: query
+          description: Только бесплатные активности
+          schema:
+            type: boolean
+        - name: is_deleted
+          in: query
+          description: Включить удаленные активности (только для админов)
+          schema:
+            type: boolean
+            default: false
+        - name: order
+          in: query
+          description: Сортировка результатов
+          schema:
+            type: string
+            default: "created_at.desc"
+            enum:
+              - "created_at.asc"
+              - "created_at.desc"
+              - "title.asc" 
+              - "title.desc"
+              - "start_date.asc"
+              - "start_date.desc"
+        - name: limit
+          in: query
+          description: Количество результатов на странице
+          schema:
+            type: integer
+            minimum: 1
+            maximum: 100
+            default: 20
+        - name: offset
+          in: query
+          description: Смещение для пагинации
+          schema:
+            type: integer
+            minimum: 0
+            default: 0
+      responses:
+        '200':
+          description: Список активностей
+          headers:
+            Content-Range:
+              description: Информация о пагинации
+              schema:
+                type: string
+                example: "0-19/156"
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Activity'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+
+    post:
+      tags:
+        - Activities
+      summary: Создать новую активность
+      description: Создает новую активность (только для организаторов и админов)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreateActivityRequest'
+      responses:
+        '201':
+          description: Активность создана
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /rest/v1/activities/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID активности
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      tags:
+        - Activities
+      summary: Получить активность по ID
+      description: Возвращает подробную информацию об активности
+      security: []
+      parameters:
+        - name: select
+          in: query
+          description: Поля для выборки
+          schema:
+            type: string
+            default: "*,category:categories(*),organizer:users(full_name,organization_name,email,phone),tags:activity_tags(tag:tags(*))"
+      responses:
+        '200':
+          description: Данные активности
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    patch:
+      tags:
+        - Activities
+      summary: Обновить активность
+      description: Обновляет активность (только автор или админ)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateActivityRequest'
+      responses:
+        '200':
+          description: Активность обновлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    delete:
+      tags:
+        - Activities
+      summary: Удалить активность
+      description: |
+        Мягкое удаление активности (перемещение в корзину).
+        Только автор или администратор может удалить активность.
+      responses:
+        '200':
+          description: Активность перемещена в корзину
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rest/v1/activities/{id}/restore:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID активности
+        schema:
+          type: string
+          format: uuid
+    
+    post:
+      tags:
+        - Activities
+      summary: Восстановить активность из корзины
+      description: Восстанавливает удаленную активность (только автор или админ)
+      responses:
+        '200':
+          description: Активность восстановлена
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Activity'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /rest/v1/activities/{id}/permanently-delete:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID активности
+        schema:
+          type: string
+          format: uuid
+    
+    delete:
+      tags:
+        - Activities
+      summary: Окончательно удалить активность
+      description: Окончательно удаляет активность (только админы)
+      responses:
+        '204':
+          description: Активность окончательно удалена
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # Categories Endpoints
+  /rest/v1/categories:
+    get:
+      tags:
+        - Categories
+      summary: Получить список категорий
+      description: Возвращает все доступные категории активностей
+      security: []
+      responses:
+        '200':
+          description: Список категорий
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Category'
+
+  # Tags Endpoints
+  /rest/v1/tags:
+    get:
+      tags:
+        - Tags
+      summary: Получить список тегов
+      description: Возвращает все доступные теги
+      security: []
+      responses:
+        '200':
+          description: Список тегов
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Tag'
+
+  # Users Management (Admin only)
+  /rest/v1/users:
+    get:
+      tags:
+        - Users
+      summary: Получить список пользователей
+      description: Возвращает список всех пользователей (только для админов)
+      parameters:
+        - name: role
+          in: query
+          description: Фильтр по роли пользователя
+          schema:
+            $ref: '#/components/schemas/UserRole'
+        - name: search
+          in: query
+          description: Поиск по имени, email или организации
+          schema:
+            type: string
+        - name: limit
+          in: query
+          schema:
+            type: integer
+            default: 50
+        - name: offset
+          in: query
+          schema:
+            type: integer
+            default: 0
+      responses:
+        '200':
+          description: Список пользователей
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+
+  /rest/v1/users/{id}:
+    parameters:
+      - name: id
+        in: path
+        required: true
+        description: ID пользователя
+        schema:
+          type: string
+          format: uuid
+    
+    get:
+      tags:
+        - Users
+      summary: Получить пользователя по ID
+      description: Возвращает данные пользователя (только админы или сам пользователь)
+      responses:
+        '200':
+          description: Данные пользователя
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+    
+    patch:
+      tags:
+        - Users
+      summary: Обновить пользователя
+      description: Обновляет данные пользователя (только админы или сам пользователь)
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdateUserRequest'
+      responses:
+        '200':
+          description: Пользователь обновлен
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+        '403':
+          $ref: '#/components/responses/Forbidden'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  # File Upload
+  /storage/v1/object/activities/{filename}:
+    post:
+      tags:
+        - Storage
+      summary: Загрузить изображение активности
+      description: Загружает изображение для активности
+      parameters:
+        - name: filename
+          in: path
+          required: true
+          description: Имя файла
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                file:
+                  type: string
+                  format: binary
+                  description: Файл изображения (PNG/JPG)
+      responses:
+        '200':
+          description: Файл загружен успешно
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  Key:
+                    type: string
+                    description: Путь к загруженному файлу
+                  url:
+                    type: string
+                    description: Публичный URL изображения
+        '400':
+          $ref: '#/components/responses/BadRequest'
+        '401':
+          $ref: '#/components/responses/Unauthorized'
+
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+
+  responses:
+    BadRequest:
+      description: Неверный запрос
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    
+    Unauthorized:
+      description: Необходима аутентификация
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    
+    Forbidden:
+      description: Доступ запрещен
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    
+    NotFound:
+      description: Ресурс не найден
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+  schemas:
+    # Enums
+    UserRole:
+      type: string
+      enum:
+        - user
+        - organizer
+        - admin
+      description: |
+        Роли пользователей:
+        * `user` - Обычный пользователь (только просмотр)
+        * `organizer` - Организатор (управление своими активностями)
+        * `admin` - Администратор (полный доступ)
+
+    ActivityType:
+      type: string
+      enum:
+        - activity
+        - event
+        - hobby_opportunity
+        - club
+        - competition
+      description: |
+        Типы активностей:
+        * `activity` - Регулярная активность
+        * `event` - Разовое мероприятие
+        * `hobby_opportunity` - Возможность для хобби
+        * `club` - Клуб или секция
+        * `competition` - Соревнование
+
+    # Core Data Models
+    User:
+      type: object
+      required:
+        - id
+        - email
+        - role
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Уникальный идентификатор пользователя
+        email:
+          type: string
+          format: email
+          description: Email пользователя
+        role:
+          $ref: '#/components/schemas/UserRole'
+        full_name:
+          type: string
+          maxLength: 255
+          description: Полное имя пользователя
+        organization_name:
+          type: string
+          maxLength: 255
+          description: Название организации (для организаторов)
+        phone:
+          type: string
+          maxLength: 20
+          pattern: '^\+?[1-9]\d{1,14}$'
+          description: Номер телефона
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания аккаунта
+        updated_at:
+          type: string
+          format: date-time
+          description: Дата последнего обновления
+      example:
+        id: "550e8400-e29b-41d4-a716-446655440000"
+        email: "organizer@example.com"
+        role: "organizer"
+        full_name: "Иван Петров"
+        organization_name: "Спортивный клуб Энергия"
+        phone: "+358401234567"
+        created_at: "2024-01-15T10:30:00Z"
+        updated_at: "2024-01-15T10:30:00Z"
+
+    Category:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID категории
+        name:
+          type: string
+          maxLength: 255
+          description: Название категории
+        icon:
+          type: string
+          maxLength: 10
+          description: Иконка (emoji)
+        description:
+          type: string
+          description: Описание категории
+      example:
+        id: "550e8400-e29b-41d4-a716-446655440001"
+        name: "Спорт и физическая активность"
+        icon: "⚽"
+        description: "Спортивные мероприятия и физические активности"
+
+    Tag:
+      type: object
+      required:
+        - id
+        - name
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID тега
+        name:
+          type: string
+          maxLength: 100
+          description: Название тега
+        color:
+          type: string
+          pattern: '^#[0-9A-Fa-f]{6}$'
+          description: Цвет тега в формате HEX
+      example:
+        id: "550e8400-e29b-41d4-a716-446655440002"
+        name: "Бесплатно"
+        color: "#65FF81"
+
+    Activity:
+      type: object
+      required:
+        - id
+        - title
+        - description
+        - type
+        - category_id
+        - location
+        - user_id
+        - is_deleted
+        - created_at
+        - updated_at
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: ID активности
+        title:
+          type: string
+          maxLength: 255
+          description: Заголовок активности
+        description:
+          type: string
+          description: Полное описание активности
+        short_description:
+          type: string
+          maxLength: 100
+          description: Краткое описание (до 100 символов)
+        type:
+          $ref: '#/components/schemas/ActivityType'
+        category_id:
+          type: string
+          format: uuid
+          description: ID категории
+        category:
+          $ref: '#/components/schemas/Category'
+        location:
+          type: string
+          maxLength: 255
+          description: Местоположение проведения
+        address:
+          type: string
+          maxLength: 500
+          description: Подробный адрес
+        coordinates:
+          type: object
+          properties:
+            lat:
+              type: number
+              format: double
+              minimum: -90
+              maximum: 90
+            lng:
+              type: number
+              format: double
+              minimum: -180
+              maximum: 180
+          description: GPS координаты
+        price:
+          type: number
+          format: decimal
+          minimum: 0
+          description: Цена участия
+        currency:
+          type: string
+          maxLength: 3
+          default: "EUR"
+          description: Валюта цены (ISO 4217)
+        image_url:
+          type: string
+          format: uri
+          description: URL изображения
+        user_id:
+          type: string
+          format: uuid
+          description: ID организатора
+        organizer:
+          type: object
+          properties:
+            full_name:
+              type: string
+            organization_name:
+              type: string
+            email:
+              type: string
+              format: email
+            phone:
+              type: string
+          description: Данные организатора
+        tags:
+          type: array
+          items:
+            $ref: '#/components/schemas/Tag'
+          description: Теги активности
+        start_date:
+          type: string
+          format: date-time
+          description: Дата и время начала
+        end_date:
+          type: string
+          format: date-time
+          description: Дата и время окончания
+        max_participants:
+          type: integer
+          minimum: 1
+          description: Максимальное количество участников
+        min_age:
+          type: integer
+          minimum: 0
+          maximum: 120
+          description: Минимальный возраст участников
+        max_age:
+          type: integer
+          minimum: 0
+          maximum: 120
+          description: Максимальный возраст участников
+        contact_email:
+          type: string
+          format: email
+          description: Контактный email
+        contact_phone:
+          type: string
+          maxLength: 20
+          description: Контактный телефон
+        external_link:
+          type: string
+          format: uri
+          description: Ссылка на внешний сайт или регистрацию
+        is_deleted:
+          type: boolean
+          default: false
+          description: Флаг мягкого удаления
+        created_at:
+          type: string
+          format: date-time
+          description: Дата создания
+        updated_at:
+          type: string
+          format: date-time
+          description: Дата последнего обновления
+      example:
+        id: "550e8400-e29b-41d4-a716-446655440003"
+        title: "Йога для начинающих"
+        description: "Занятия йогой для людей без опыта. Включает базовые позы и дыхательные упражнения."
+        short_description: "Йога для новичков с базовыми позами"
+        type: "activity"
+        category_id: "550e8400-e29b-41d4-a716-446655440001"
+        location: "Хельсинки"
+        address: "Центральный парк, павильон A"
+        price: 15.00
+        currency: "EUR"
+        image_url: "https://example.com/storage/yoga.jpg"
+        user_id: "550e8400-e29b-41d4-a716-446655440000"
+        start_date: "2024-02-01T18:00:00Z"
+        end_date: "2024-02-01T19:30:00Z"
+        max_participants: 20
+        min_age: 16
+        max_age: 65
+        contact_email: "contact@energyclub.fi"
+        contact_phone: "+358401234567"
+        external_link: "https://energyclub.fi/yoga"
+        is_deleted: false
+        created_at: "2024-01-15T10:30:00Z"
+        updated_at: "2024-01-15T10:30:00Z"
+
+    # Request/Response Models
+    SignUpRequest:
+      type: object
+      required:
+        - email
+        - password
+        - data
+      properties:
+        email:
+          type: string
+          format: email
+          description: Email для регистрации
+        password:
+          type: string
+          minLength: 8
+          pattern: '^(?=.*[0-9])(?=.*[a-zA-Z]).*$'
+          description: Пароль (минимум 8 символов, содержит цифру)
+        data:
+          type: object
+          required:
+            - full_name
+          properties:
+            full_name:
+              type: string
+              maxLength: 255
+              description: Полное имя
+            organization_name:
+              type: string
+              maxLength: 255
+              description: Название организации
+            phone:
+              type: string
+              maxLength: 20
+              description: Телефон
+            role:
+              $ref: '#/components/schemas/UserRole'
+
+    AuthResponse:
+      type: object
+      properties:
+        user:
+          $ref: '#/components/schemas/User'
+        session:
+          type: object
+          properties:
+            access_token:
+              type: string
+              description: JWT токен доступа
+            token_type:
+              type: string
+              example: "bearer"
+            expires_in:
+              type: integer
+              description: Время жизни токена в секундах
+            expires_at:
+              type: integer
+              description: Timestamp истечения токена
+            refresh_token:
+              type: string
+              description: Токен обновления
+
+    TokenResponse:
+      type: object
+      required:
+        - access_token
+        - token_type
+      properties:
+        access_token:
+          type: string
+          description: JWT токен доступа
+        token_type:
+          type: string
+          example: "bearer"
+        expires_in:
+          type: integer
+          description: Время жизни токена в секундах
+        expires_at:
+          type: integer
+          description: Timestamp истечения токена
+        refresh_token:
+          type: string
+          description: Токен обновления
+
+    CreateActivityRequest:
+      type: object
+      required:
+        - title
+        - description
+        - type
+        - category_id
+        - location
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        short_description:
+          type: string
+          maxLength: 100
+        type:
+          $ref: '#/components/schemas/ActivityType'
+        category_id:
+          type: string
+          format: uuid
+        location:
+          type: string
+          maxLength: 255
+        address:
+          type: string
+          maxLength: 500
+        coordinates:
+          type: object
+          properties:
+            lat:
+              type: number
+              format: double
+            lng:
+              type: number
+              format: double
+        price:
+          type: number
+          format: decimal
+          minimum: 0
+        currency:
+          type: string
+          maxLength: 3
+          default: "EUR"
+        image_url:
+          type: string
+          format: uri
+        tags:
+          type: array
+          items:
+            type: string
+            format: uuid
+          description: Массив ID тегов
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        max_participants:
+          type: integer
+          minimum: 1
+        min_age:
+          type: integer
+          minimum: 0
+        max_age:
+          type: integer
+          minimum: 0
+        contact_email:
+          type: string
+          format: email
+        contact_phone:
+          type: string
+          maxLength: 20
+        external_link:
+          type: string
+          format: uri
+
+    UpdateActivityRequest:
+      type: object
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        description:
+          type: string
+        short_description:
+          type: string
+          maxLength: 100
+        type:
+          $ref: '#/components/schemas/ActivityType'
+        category_id:
+          type: string
+          format: uuid
+        location:
+          type: string
+          maxLength: 255
+        address:
+          type: string
+          maxLength: 500
+        coordinates:
+          type: object
+          properties:
+            lat:
+              type: number
+              format: double
+            lng:
+              type: number
+              format: double
+        price:
+          type: number
+          format: decimal
+          minimum: 0
+        currency:
+          type: string
+          maxLength: 3
+        image_url:
+          type: string
+          format: uri
+        tags:
+          type: array
+          items:
+            type: string
+            format: uuid
+        start_date:
+          type: string
+          format: date-time
+        end_date:
+          type: string
+          format: date-time
+        max_participants:
+          type: integer
+          minimum: 1
+        min_age:
+          type: integer
+          minimum: 0
+        max_age:
+          type: integer
+          minimum: 0
+        contact_email:
+          type: string
+          format: email
+        contact_phone:
+          type: string
+          maxLength: 20
+        external_link:
+          type: string
+          format: uri
+
+    UpdateUserRequest:
+      type: object
+      properties:
+        full_name:
+          type: string
+          maxLength: 255
+        organization_name:
+          type: string
+          maxLength: 255
+        phone:
+          type: string
+          maxLength: 20
+        role:
+          $ref: '#/components/schemas/UserRole'
+
+    ApiError:
+      type: object
+      required:
+        - code
+        - message
+      properties:
+        code:
+          type: string
+          description: Код ошибки
+        message:
+          type: string
+          description: Сообщение об ошибке
+        details:
+          type: object
+          description: Дополнительные детали ошибки
+        status:
+          type: integer
+          description: HTTP статус код
+      example:
+        code: "VALIDATION_ERROR"
+        message: "Неверные данные"
+        status: 400
+        details:
+          field: "email"
+          reason: "Неверный формат email"
+
+tags:
+  - name: Authentication
+    description: Регистрация, аутентификация и управление профилем
+  - name: Activities
+    description: Управление активностями и мероприятиями
+  - name: Categories
+    description: Категории активностей
+  - name: Tags
+    description: Теги для классификации активностей
+  - name: Users
+    description: Управление пользователями (только для админов)
+  - name: Storage
+    description: Загрузка и управление файлами

@@ -1,84 +1,40 @@
-import React, { useEffect, useState } from 'react';
+/**
+ * @fileoverview Главный компонент приложения
+ * @module App
+ * @description Управляет маршрутизацией между мобильным приложением и админ-панелью
+ */
+
+import React from 'react';
+import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
+import { AuthProvider } from './shared/contexts/AuthContext';
+import MobileApp from './mobile/MobileApp';
+import AdminApp from './admin/AdminApp';
 import './App.css';
-import activitiesAPI from './api/activities.api';
-import { Category } from './types';
 
+/**
+ * Главный компонент приложения
+ * @component
+ * @returns {JSX.Element} Приложение с маршрутизацией
+ */
 function App() {
-  const [categories, setCategories] = useState<Category[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    // Тестируем подключение к Supabase
-    const testConnection = async () => {
-      try {
-        console.log('Тестируем подключение к Supabase...');
-        const data = await activitiesAPI.getCategories();
-        setCategories(data);
-        console.log('Успешно загружено категорий:', data.length);
-      } catch (err: any) {
-        console.error('Ошибка подключения:', err);
-        setError(err.message || 'Ошибка подключения к базе данных');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    testConnection();
-  }, []);
-
   return (
-    <div className="App">
-      <header className="App-header" style={{ padding: '20px' }}>
-        <h1 style={{ color: '#65FF81' }}>🎯 Hobbly</h1>
-        <p style={{ color: '#F5FF65' }}>Платформа для поиска хобби и активностей</p>
-        
-        <div style={{ marginTop: '40px', minWidth: '300px' }}>
-          <h3>Статус подключения к Supabase:</h3>
+    <BrowserRouter>
+      <AuthProvider>
+        <Routes>
+          {/* Мобильное приложение (mobile-first) */}
+          <Route path="/mobile/*" element={<MobileApp />} />
           
-          {loading && <p>⏳ Загрузка...</p>}
+          {/* Админ-панель (desktop-first) */}
+          <Route path="/admin/*" element={<AdminApp />} />
           
-          {error && (
-            <div style={{ color: '#ff6565', border: '1px solid #ff6565', padding: '10px', borderRadius: '5px' }}>
-              ❌ {error}
-              <br />
-              <small>Проверьте настройки в файле .env</small>
-            </div>
-          )}
+          {/* Редирект с корневого пути на мобильную версию */}
+          <Route path="/" element={<Navigate to="/mobile" replace />} />
           
-          {!loading && !error && (
-            <div style={{ color: '#65FF81', border: '1px solid #65FF81', padding: '10px', borderRadius: '5px' }}>
-              ✅ Подключение успешно!
-              <br />
-              Загружено категорий: {categories.length}
-            </div>
-          )}
-          
-          {categories.length > 0 && (
-            <div style={{ marginTop: '20px', textAlign: 'left' }}>
-              <h4>Категории в базе данных:</h4>
-              <ul>
-                {categories.map((cat) => (
-                  <li key={cat.id}>
-                    {cat.icon} {cat.name}
-                  </li>
-                ))}
-              </ul>
-            </div>
-          )}
-        </div>
-        
-        <div style={{ marginTop: '40px', fontSize: '14px', color: '#8F8F8F' }}>
-          <p>📝 Следующие шаги:</p>
-          <ol style={{ textAlign: 'left' }}>
-            <li>Настройте переменные окружения в .env</li>
-            <li>Выполните SQL скрипт в Supabase</li>
-            <li>Создайте тестовые данные</li>
-            <li>Начните разработку компонентов</li>
-          </ol>
-        </div>
-      </header>
-    </div>
+          {/* Редирект для всех остальных путей */}
+          <Route path="*" element={<Navigate to="/mobile" replace />} />
+        </Routes>
+      </AuthProvider>
+    </BrowserRouter>
   );
 }
 

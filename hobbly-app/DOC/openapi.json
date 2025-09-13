@@ -1,0 +1,2257 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "",
+    "title": "standard public schema",
+    "version": "13.0.4"
+  },
+  "host": "jourvbtxuyavamxvddwc.supabase.co:443",
+  "basePath": "/",
+  "schemes": [
+    "https"
+  ],
+  "consumes": [
+    "application/json",
+    "application/vnd.pgrst.object+json;nulls=stripped",
+    "application/vnd.pgrst.object+json",
+    "text/csv"
+  ],
+  "produces": [
+    "application/json",
+    "application/vnd.pgrst.object+json;nulls=stripped",
+    "application/vnd.pgrst.object+json",
+    "text/csv"
+  ],
+  "paths": {
+    "/": {
+      "get": {
+        "produces": [
+          "application/openapi+json",
+          "application/json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "summary": "OpenAPI description (this document)",
+        "tags": [
+          "Introspection"
+        ]
+      }
+    },
+    "/activities_full": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.short_description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.category_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.location"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.coordinates"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.price"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.currency"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.image_url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.user_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.start_date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.end_date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.max_participants"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.min_age"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.max_age"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.contact_email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.contact_phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.external_link"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.is_deleted"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.category_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.category_icon"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.organizer_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.organizer_organization"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.organizer_email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities_full.tags"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/activities_full"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "tags": [
+          "activities_full"
+        ]
+      }
+    },
+    "/user_profiles": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.full_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.organization_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.role"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.avatar_url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.bio"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.updated_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/user_profiles"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "summary": "Расширенные профили пользователей",
+        "tags": [
+          "user_profiles"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.user_profiles"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "summary": "Расширенные профили пользователей",
+        "tags": [
+          "user_profiles"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.full_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.organization_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.role"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.avatar_url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.bio"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.updated_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Расширенные профили пользователей",
+        "tags": [
+          "user_profiles"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.full_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.organization_name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.role"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.avatar_url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.bio"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.updated_at"
+          },
+          {
+            "$ref": "#/parameters/body.user_profiles"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Расширенные профили пользователей",
+        "tags": [
+          "user_profiles"
+        ]
+      }
+    },
+    "/activity_tags": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.activity_tags.activity_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activity_tags.tag_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activity_tags.created_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/activity_tags"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "summary": "Связующая таблица между активностями и тегами",
+        "tags": [
+          "activity_tags"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.activity_tags"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "summary": "Связующая таблица между активностями и тегами",
+        "tags": [
+          "activity_tags"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.activity_tags.activity_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activity_tags.tag_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activity_tags.created_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Связующая таблица между активностями и тегами",
+        "tags": [
+          "activity_tags"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.activity_tags.activity_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activity_tags.tag_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activity_tags.created_at"
+          },
+          {
+            "$ref": "#/parameters/body.activity_tags"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Связующая таблица между активностями и тегами",
+        "tags": [
+          "activity_tags"
+        ]
+      }
+    },
+    "/tags": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.tags.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tags.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tags.color"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tags.created_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/tags"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "summary": "Теги для маркировки активностей",
+        "tags": [
+          "tags"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.tags"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "summary": "Теги для маркировки активностей",
+        "tags": [
+          "tags"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.tags.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tags.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tags.color"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tags.created_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Теги для маркировки активностей",
+        "tags": [
+          "tags"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.tags.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tags.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tags.color"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.tags.created_at"
+          },
+          {
+            "$ref": "#/parameters/body.tags"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Теги для маркировки активностей",
+        "tags": [
+          "tags"
+        ]
+      }
+    },
+    "/activities": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.activities.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.short_description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.category_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.location"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.coordinates"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.price"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.currency"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.image_url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.user_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.start_date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.end_date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.max_participants"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.min_age"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.max_age"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.contact_email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.contact_phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.external_link"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.is_deleted"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.updated_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/activities"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "summary": "Основная таблица активностей и мероприятий",
+        "tags": [
+          "activities"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.activities"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "summary": "Основная таблица активностей и мероприятий",
+        "tags": [
+          "activities"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.activities.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.short_description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.category_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.location"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.coordinates"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.price"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.currency"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.image_url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.user_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.start_date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.end_date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.max_participants"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.min_age"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.max_age"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.contact_email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.contact_phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.external_link"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.is_deleted"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.updated_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Основная таблица активностей и мероприятий",
+        "tags": [
+          "activities"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.activities.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.title"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.short_description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.type"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.category_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.location"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.coordinates"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.price"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.currency"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.image_url"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.user_id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.start_date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.end_date"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.max_participants"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.min_age"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.max_age"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.contact_email"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.contact_phone"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.external_link"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.is_deleted"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.updated_at"
+          },
+          {
+            "$ref": "#/parameters/body.activities"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Основная таблица активностей и мероприятий",
+        "tags": [
+          "activities"
+        ]
+      }
+    },
+    "/categories": {
+      "get": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.categories.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.icon"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.updated_at"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/order"
+          },
+          {
+            "$ref": "#/parameters/range"
+          },
+          {
+            "$ref": "#/parameters/rangeUnit"
+          },
+          {
+            "$ref": "#/parameters/offset"
+          },
+          {
+            "$ref": "#/parameters/limit"
+          },
+          {
+            "$ref": "#/parameters/preferCount"
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "schema": {
+              "items": {
+                "$ref": "#/definitions/categories"
+              },
+              "type": "array"
+            }
+          },
+          "206": {
+            "description": "Partial Content"
+          }
+        },
+        "summary": "Категории активностей и мероприятий",
+        "tags": [
+          "categories"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/body.categories"
+          },
+          {
+            "$ref": "#/parameters/select"
+          },
+          {
+            "$ref": "#/parameters/preferPost"
+          }
+        ],
+        "responses": {
+          "201": {
+            "description": "Created"
+          }
+        },
+        "summary": "Категории активностей и мероприятий",
+        "tags": [
+          "categories"
+        ]
+      },
+      "delete": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.categories.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.icon"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.updated_at"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Категории активностей и мероприятий",
+        "tags": [
+          "categories"
+        ]
+      },
+      "patch": {
+        "parameters": [
+          {
+            "$ref": "#/parameters/rowFilter.categories.id"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.name"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.icon"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.description"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.created_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.categories.updated_at"
+          },
+          {
+            "$ref": "#/parameters/body.categories"
+          },
+          {
+            "$ref": "#/parameters/preferReturn"
+          }
+        ],
+        "responses": {
+          "204": {
+            "description": "No Content"
+          }
+        },
+        "summary": "Категории активностей и мероприятий",
+        "tags": [
+          "categories"
+        ]
+      }
+    },
+    "/rpc/search_activities": {
+      "get": {
+        "parameters": [
+          {
+            "format": "text",
+            "in": "query",
+            "name": "search_query",
+            "required": true,
+            "type": "string"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) search_activities"
+        ]
+      },
+      "post": {
+        "parameters": [
+          {
+            "in": "body",
+            "name": "args",
+            "required": true,
+            "schema": {
+              "properties": {
+                "search_query": {
+                  "format": "text",
+                  "type": "string"
+                }
+              },
+              "required": [
+                "search_query"
+              ],
+              "type": "object"
+            }
+          },
+          {
+            "$ref": "#/parameters/preferParams"
+          }
+        ],
+        "produces": [
+          "application/json",
+          "application/vnd.pgrst.object+json;nulls=stripped",
+          "application/vnd.pgrst.object+json"
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        },
+        "tags": [
+          "(rpc) search_activities"
+        ]
+      }
+    }
+  },
+  "definitions": {
+    "activities_full": {
+      "properties": {
+        "id": {
+          "description": "Note:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "title": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "description": {
+          "format": "text",
+          "type": "string"
+        },
+        "short_description": {
+          "format": "character varying",
+          "maxLength": 100,
+          "type": "string"
+        },
+        "type": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "category_id": {
+          "description": "Note:\nThis is a Foreign Key to `categories.id`.<fk table='categories' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "location": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "address": {
+          "format": "text",
+          "type": "string"
+        },
+        "coordinates": {
+          "format": "jsonb"
+        },
+        "price": {
+          "format": "numeric",
+          "type": "number"
+        },
+        "currency": {
+          "format": "character varying",
+          "maxLength": 3,
+          "type": "string"
+        },
+        "image_url": {
+          "format": "text",
+          "type": "string"
+        },
+        "user_id": {
+          "format": "uuid",
+          "type": "string"
+        },
+        "start_date": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "end_date": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "max_participants": {
+          "format": "integer",
+          "type": "integer"
+        },
+        "min_age": {
+          "format": "integer",
+          "type": "integer"
+        },
+        "max_age": {
+          "format": "integer",
+          "type": "integer"
+        },
+        "contact_email": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "contact_phone": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "external_link": {
+          "format": "text",
+          "type": "string"
+        },
+        "is_deleted": {
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "created_at": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "category_name": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "category_icon": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "organizer_name": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "organizer_organization": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "organizer_email": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "tags": {
+          "format": "json"
+        }
+      },
+      "type": "object"
+    },
+    "user_profiles": {
+      "description": "Расширенные профили пользователей",
+      "required": [
+        "id",
+        "email"
+      ],
+      "properties": {
+        "id": {
+          "description": "ID пользователя из auth.users\n\nNote:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "email": {
+          "description": "Email пользователя",
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "full_name": {
+          "description": "Полное имя пользователя",
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "organization_name": {
+          "description": "Название организации (для организаторов)",
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "phone": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "role": {
+          "default": "user",
+          "description": "Роль пользователя в системе",
+          "format": "character varying",
+          "maxLength": 20,
+          "type": "string"
+        },
+        "avatar_url": {
+          "format": "text",
+          "type": "string"
+        },
+        "bio": {
+          "format": "text",
+          "type": "string"
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "activity_tags": {
+      "description": "Связующая таблица между активностями и тегами",
+      "required": [
+        "activity_id",
+        "tag_id"
+      ],
+      "properties": {
+        "activity_id": {
+          "description": "ID активности\n\nNote:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `activities.id`.<fk table='activities' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "tag_id": {
+          "description": "ID тега\n\nNote:\nThis is a Primary Key.<pk/>\nThis is a Foreign Key to `tags.id`.<fk table='tags' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "tags": {
+      "description": "Теги для маркировки активностей",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Уникальный идентификатор тега\n\nNote:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "name": {
+          "description": "Название тега",
+          "format": "character varying",
+          "maxLength": 100,
+          "type": "string"
+        },
+        "color": {
+          "default": "#808080",
+          "description": "Цвет тега в HEX формате",
+          "format": "character varying",
+          "maxLength": 7,
+          "type": "string"
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "activities": {
+      "description": "Основная таблица активностей и мероприятий",
+      "required": [
+        "id",
+        "title",
+        "description",
+        "type",
+        "location"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Уникальный идентификатор активности\n\nNote:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "title": {
+          "description": "Заголовок активности",
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "description": {
+          "description": "Полное описание активности",
+          "format": "text",
+          "type": "string"
+        },
+        "short_description": {
+          "description": "Краткое описание (до 100 символов)",
+          "format": "character varying",
+          "maxLength": 100,
+          "type": "string"
+        },
+        "type": {
+          "description": "Тип активности",
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "category_id": {
+          "description": "Ссылка на категорию\n\nNote:\nThis is a Foreign Key to `categories.id`.<fk table='categories' column='id'/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "location": {
+          "description": "Местоположение проведения",
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "address": {
+          "description": "Полный адрес",
+          "format": "text",
+          "type": "string"
+        },
+        "coordinates": {
+          "description": "GPS координаты в формате JSON {lat, lng}",
+          "format": "jsonb"
+        },
+        "price": {
+          "default": 0,
+          "description": "Цена участия",
+          "format": "numeric",
+          "type": "number"
+        },
+        "currency": {
+          "default": "EUR",
+          "description": "Валюта цены (ISO 4217)",
+          "format": "character varying",
+          "maxLength": 3,
+          "type": "string"
+        },
+        "image_url": {
+          "description": "URL изображения активности",
+          "format": "text",
+          "type": "string"
+        },
+        "user_id": {
+          "description": "ID организатора (пользователя)",
+          "format": "uuid",
+          "type": "string"
+        },
+        "start_date": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "end_date": {
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "max_participants": {
+          "format": "integer",
+          "type": "integer"
+        },
+        "min_age": {
+          "format": "integer",
+          "type": "integer"
+        },
+        "max_age": {
+          "format": "integer",
+          "type": "integer"
+        },
+        "contact_email": {
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "contact_phone": {
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "external_link": {
+          "format": "text",
+          "type": "string"
+        },
+        "is_deleted": {
+          "default": false,
+          "description": "Флаг мягкого удаления (для корзины)",
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    },
+    "categories": {
+      "description": "Категории активностей и мероприятий",
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "default": "extensions.uuid_generate_v4()",
+          "description": "Уникальный идентификатор категории\n\nNote:\nThis is a Primary Key.<pk/>",
+          "format": "uuid",
+          "type": "string"
+        },
+        "name": {
+          "description": "Название категории",
+          "format": "character varying",
+          "maxLength": 255,
+          "type": "string"
+        },
+        "icon": {
+          "description": "Иконка категории (emoji или URL)",
+          "format": "character varying",
+          "maxLength": 50,
+          "type": "string"
+        },
+        "description": {
+          "description": "Описание категории",
+          "format": "text",
+          "type": "string"
+        },
+        "created_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "format": "timestamp with time zone",
+          "type": "string"
+        },
+        "updated_at": {
+          "default": "CURRENT_TIMESTAMP",
+          "format": "timestamp with time zone",
+          "type": "string"
+        }
+      },
+      "type": "object"
+    }
+  },
+  "parameters": {
+    "preferParams": {
+      "name": "Prefer",
+      "description": "Preference",
+      "required": false,
+      "enum": [],
+      "in": "header",
+      "type": "string"
+    },
+    "preferReturn": {
+      "name": "Prefer",
+      "description": "Preference",
+      "required": false,
+      "enum": [
+        "return=representation",
+        "return=minimal",
+        "return=none"
+      ],
+      "in": "header",
+      "type": "string"
+    },
+    "preferCount": {
+      "name": "Prefer",
+      "description": "Preference",
+      "required": false,
+      "enum": [
+        "count=none"
+      ],
+      "in": "header",
+      "type": "string"
+    },
+    "preferPost": {
+      "name": "Prefer",
+      "description": "Preference",
+      "required": false,
+      "enum": [
+        "return=representation",
+        "return=minimal",
+        "return=none",
+        "resolution=ignore-duplicates",
+        "resolution=merge-duplicates"
+      ],
+      "in": "header",
+      "type": "string"
+    },
+    "select": {
+      "name": "select",
+      "description": "Filtering Columns",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "on_conflict": {
+      "name": "on_conflict",
+      "description": "On Conflict",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "order": {
+      "name": "order",
+      "description": "Ordering",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "range": {
+      "name": "Range",
+      "description": "Limiting and Pagination",
+      "required": false,
+      "in": "header",
+      "type": "string"
+    },
+    "rangeUnit": {
+      "name": "Range-Unit",
+      "description": "Limiting and Pagination",
+      "required": false,
+      "default": "items",
+      "in": "header",
+      "type": "string"
+    },
+    "offset": {
+      "name": "offset",
+      "description": "Limiting and Pagination",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "limit": {
+      "name": "limit",
+      "description": "Limiting and Pagination",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.activities_full": {
+      "name": "activities_full",
+      "description": "activities_full",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/activities_full"
+      }
+    },
+    "rowFilter.activities_full.id": {
+      "name": "id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.title": {
+      "name": "title",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.description": {
+      "name": "description",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.short_description": {
+      "name": "short_description",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.type": {
+      "name": "type",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.category_id": {
+      "name": "category_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.location": {
+      "name": "location",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.address": {
+      "name": "address",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.coordinates": {
+      "name": "coordinates",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.price": {
+      "name": "price",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.currency": {
+      "name": "currency",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.image_url": {
+      "name": "image_url",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.user_id": {
+      "name": "user_id",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.start_date": {
+      "name": "start_date",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.end_date": {
+      "name": "end_date",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.max_participants": {
+      "name": "max_participants",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.min_age": {
+      "name": "min_age",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.max_age": {
+      "name": "max_age",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.contact_email": {
+      "name": "contact_email",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.contact_phone": {
+      "name": "contact_phone",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.external_link": {
+      "name": "external_link",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.is_deleted": {
+      "name": "is_deleted",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.category_name": {
+      "name": "category_name",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.category_icon": {
+      "name": "category_icon",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.organizer_name": {
+      "name": "organizer_name",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.organizer_organization": {
+      "name": "organizer_organization",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.organizer_email": {
+      "name": "organizer_email",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities_full.tags": {
+      "name": "tags",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.user_profiles": {
+      "name": "user_profiles",
+      "description": "user_profiles",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/user_profiles"
+      }
+    },
+    "rowFilter.user_profiles.id": {
+      "name": "id",
+      "description": "ID пользователя из auth.users",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.email": {
+      "name": "email",
+      "description": "Email пользователя",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.full_name": {
+      "name": "full_name",
+      "description": "Полное имя пользователя",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.organization_name": {
+      "name": "organization_name",
+      "description": "Название организации (для организаторов)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.phone": {
+      "name": "phone",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.role": {
+      "name": "role",
+      "description": "Роль пользователя в системе",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.avatar_url": {
+      "name": "avatar_url",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.bio": {
+      "name": "bio",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.activity_tags": {
+      "name": "activity_tags",
+      "description": "activity_tags",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/activity_tags"
+      }
+    },
+    "rowFilter.activity_tags.activity_id": {
+      "name": "activity_id",
+      "description": "ID активности",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activity_tags.tag_id": {
+      "name": "tag_id",
+      "description": "ID тега",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activity_tags.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.tags": {
+      "name": "tags",
+      "description": "tags",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/tags"
+      }
+    },
+    "rowFilter.tags.id": {
+      "name": "id",
+      "description": "Уникальный идентификатор тега",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tags.name": {
+      "name": "name",
+      "description": "Название тега",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tags.color": {
+      "name": "color",
+      "description": "Цвет тега в HEX формате",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.tags.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.activities": {
+      "name": "activities",
+      "description": "activities",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/activities"
+      }
+    },
+    "rowFilter.activities.id": {
+      "name": "id",
+      "description": "Уникальный идентификатор активности",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.title": {
+      "name": "title",
+      "description": "Заголовок активности",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.description": {
+      "name": "description",
+      "description": "Полное описание активности",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.short_description": {
+      "name": "short_description",
+      "description": "Краткое описание (до 100 символов)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.type": {
+      "name": "type",
+      "description": "Тип активности",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.category_id": {
+      "name": "category_id",
+      "description": "Ссылка на категорию",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.location": {
+      "name": "location",
+      "description": "Местоположение проведения",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.address": {
+      "name": "address",
+      "description": "Полный адрес",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.coordinates": {
+      "name": "coordinates",
+      "description": "GPS координаты в формате JSON {lat, lng}",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.price": {
+      "name": "price",
+      "description": "Цена участия",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.currency": {
+      "name": "currency",
+      "description": "Валюта цены (ISO 4217)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.image_url": {
+      "name": "image_url",
+      "description": "URL изображения активности",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.user_id": {
+      "name": "user_id",
+      "description": "ID организатора (пользователя)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.start_date": {
+      "name": "start_date",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.end_date": {
+      "name": "end_date",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.max_participants": {
+      "name": "max_participants",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.min_age": {
+      "name": "min_age",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.max_age": {
+      "name": "max_age",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.contact_email": {
+      "name": "contact_email",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.contact_phone": {
+      "name": "contact_phone",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.external_link": {
+      "name": "external_link",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.is_deleted": {
+      "name": "is_deleted",
+      "description": "Флаг мягкого удаления (для корзины)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.activities.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "body.categories": {
+      "name": "categories",
+      "description": "categories",
+      "required": false,
+      "in": "body",
+      "schema": {
+        "$ref": "#/definitions/categories"
+      }
+    },
+    "rowFilter.categories.id": {
+      "name": "id",
+      "description": "Уникальный идентификатор категории",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.categories.name": {
+      "name": "name",
+      "description": "Название категории",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.categories.icon": {
+      "name": "icon",
+      "description": "Иконка категории (emoji или URL)",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.categories.description": {
+      "name": "description",
+      "description": "Описание категории",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.categories.created_at": {
+      "name": "created_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.categories.updated_at": {
+      "name": "updated_at",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    }
+  },
+  "externalDocs": {
+    "description": "PostgREST Documentation",
+    "url": "https://postgrest.org/en/v\"13\"/references/api.html"
+  }
+}

@@ -1,0 +1,166 @@
+/**
+ * Стили для компонента Loader
+ * Анимация в стиле Hobbly
+ */
+
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-md);
+}
+
+/* Размеры */
+.small .spinner {
+  width: 24px;
+  height: 24px;
+}
+
+.small .spinner > div {
+  width: 6px;
+  height: 6px;
+}
+
+.medium .spinner {
+  width: 40px;
+  height: 40px;
+}
+
+.medium .spinner > div {
+  width: 10px;
+  height: 10px;
+}
+
+.large .spinner {
+  width: 60px;
+  height: 60px;
+}
+
+.large .spinner > div {
+  width: 14px;
+  height: 14px;
+}
+
+/* Спиннер */
+.spinner {
+  position: relative;
+  display: inline-block;
+}
+
+.spinner > div {
+  position: absolute;
+  border-radius: 50%;
+  animation: bounce 1.4s ease-in-out infinite both;
+}
+
+.dot1 {
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  animation-delay: -0.32s;
+}
+
+.dot2 {
+  bottom: 0;
+  left: 0;
+  animation-delay: -0.16s;
+}
+
+.dot3 {
+  bottom: 0;
+  right: 0;
+  animation-delay: 0s;
+}
+
+/* Цвета */
+.primary .spinner > div {
+  background-color: var(--color-primary-dark);
+}
+
+.accent .spinner > div {
+  background-color: var(--color-accent-green);
+}
+
+.white .spinner > div {
+  background-color: var(--color-white);
+}
+
+/* Текст */
+.text {
+  margin: 0;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+  font-weight: var(--font-weight-medium);
+  color: var(--color-text-primary);
+  text-align: center;
+}
+
+.primary .text {
+  color: var(--color-primary-dark);
+}
+
+.accent .text {
+  color: var(--color-primary-dark);
+}
+
+.white .text {
+  color: var(--color-white);
+}
+
+/* Полноэкранный режим */
+.fullScreenOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(4px);
+  z-index: var(--z-index-modal);
+}
+
+/* Анимация */
+@keyframes bounce {
+  0%, 80%, 100% {
+    transform: scale(0) translate(-50%, 0);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1) translate(-50%, 0);
+    opacity: 1;
+  }
+}
+
+.dot2 {
+  animation-name: bounce2;
+}
+
+@keyframes bounce2 {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.dot3 {
+  animation-name: bounce3;
+}
+
+@keyframes bounce3 {
+  0%, 80%, 100% {
+    transform: scale(0);
+    opacity: 0;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
