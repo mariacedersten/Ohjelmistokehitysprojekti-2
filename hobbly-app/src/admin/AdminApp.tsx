@@ -6,10 +6,10 @@
 
 import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
-import { useAuth } from '../shared/contexts/AuthContext';
 import { ProtectedRoute } from '../shared/components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
+import Welcome from './pages/Welcome';
 import Dashboard from './pages/Dashboard';
 import { UserRole } from '../types';
 import styles from './AdminApp.module.css';
@@ -29,11 +29,15 @@ import styles from './AdminApp.module.css';
  * @returns {JSX.Element} Админ-панель с маршрутизацией
  */
 const AdminApp: React.FC = () => {
-  const { user } = useAuth();
   const location = useLocation();
 
   // Public routes that don't need sidebar
-  const isPublicRoute = ['/admin/', '/admin/login', '/admin/signup'].includes(location.pathname);
+  const isPublicRoute = (
+    location.pathname === '/admin' ||
+    location.pathname === '/admin/' ||
+    location.pathname === '/admin/login' ||
+    location.pathname === '/admin/signup'
+  );
 
   if (isPublicRoute) {
     return (
@@ -41,7 +45,7 @@ const AdminApp: React.FC = () => {
         <div className={styles.fullContent}>
           <Routes>
             {/* Публичные маршруты */}
-            <Route path="/" element={<div>Admin Welcome/Landing Page (TODO)</div>} />
+            <Route path="/" element={<Welcome />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<div>Admin SignUp Page (TODO)</div>} />
             
