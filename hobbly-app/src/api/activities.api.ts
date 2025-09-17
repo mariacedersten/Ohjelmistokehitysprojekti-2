@@ -144,7 +144,25 @@ class ActivitiesAPI {
         throw new Error('Activity not found');
       }
 
-      return this.transformActivity(response.data[0]);
+      const activityData = response.data[0];
+      
+      // Получаем дополнительную информацию об организаторе, включая фото
+      if (activityData.user_id) {
+        try {
+          const organizerResponse: AxiosResponse<any[]> = await apiClient.get(
+            `/user_profiles?id=eq.${activityData.user_id}&select=avatar_url`
+          );
+          console.log('!!!organizerResponse',  organizerResponse.data[0]);
+          if (organizerResponse.data && organizerResponse.data.length > 0) {
+            activityData.organizer_photo_url = organizerResponse.data[0].avatar_url;
+          }
+        } catch (organizerError) {
+          console.warn('Failed to fetch organizer photo:', organizerError);
+          // Продолжаем без фото организатора
+        }
+      }
+
+      return this.transformActivity(activityData);
     } catch (error) {
       console.error('Error fetching activity by ID:', error);
       throw error;
@@ -482,6 +500,7 @@ class ActivitiesAPI {
         fullName: activity.organizer_name,
         organizationName: activity.organizer_organization,
         email: activity.organizer_email,
+        photoUrl: activity.organizer_photo_url,
         role: UserRole.ORGANIZER, // Assuming role from context, as it's not in the view
         isApproved: true, // Assuming approved, not available in view
       } as User,
