@@ -143,7 +143,7 @@ const ActivityDetail: React.FC = () => {
                 <span className={styles.tags}>
                   {activity.tags.map((tag, index) => (
                     <span key={tag.id || index}>
-                      {tag.name || tag}
+                      {typeof tag === 'string' ? tag : tag.name}
                       {index < activity.tags!.length - 1 && ', '}
                     </span>
                   ))}
@@ -196,7 +196,7 @@ const ActivityDetail: React.FC = () => {
                 <h2 className={styles.sectionTitle}>Contact Person:</h2>
                 <div className={styles.contactCard}>
                   <img 
-                    src={activity.organizer?.profilePhotoUrl || '/assets/wireframes/Photos/Organizations/1 Jack Sparrow.jpg'}
+                    src={activity.organizer?.photoUrl || '/assets/wireframes/Photos/Organizations/1 Jack Sparrow.jpg'}
                     alt={activity.organizer?.fullName || 'Contact'}
                     className={styles.contactPhoto}
                     onError={(e) => {
