@@ -8,7 +8,11 @@
       "Bash(PORT=3005 npm start)",
       "Bash(PORT=3008 npm start)",
       "Bash(PORT=3009 npm start)",
-      "Bash(npx tsc:*)"
+      "Bash(npx tsc:*)",
+      "Bash(find:*)",
+      "Bash(set PORT=3001)",
+      "Bash(cross-env:*)",
+      "WebFetch(domain:dtdyegbgbpmbfnlwudql.supabase.co)"
     ],
     "deny": [],
     "ask": []

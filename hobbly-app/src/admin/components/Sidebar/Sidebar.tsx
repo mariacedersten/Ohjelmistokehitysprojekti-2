@@ -47,9 +47,21 @@ const Sidebar: React.FC = () => {
       roles: [UserRole.ORGANIZER, UserRole.ADMIN]
     },
     {
+      path: '/admin/activities/requests',
+      label: 'Activities requests',
+      icon: '🔔',
+      roles: [UserRole.ADMIN]
+    },
+    {
       path: '/admin/users',
       label: 'Users',
       icon: '👥',
+      roles: [UserRole.ADMIN]
+    },
+    {
+      path: '/admin/users/requests',
+      label: 'Users\'s requests',
+      icon: '🔔',
       roles: [UserRole.ADMIN]
     },
     {

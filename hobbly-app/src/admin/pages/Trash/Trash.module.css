@@ -1,0 +1,521 @@
+/**
+ * Trash Bin page styles - according to wireframe design
+ * Implements card-style table rows with proper spacing and actions
+ */
+
+.container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 40px;
+}
+
+.loading, .error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  font-size: 18px;
+  color: var(--color-primary-dark);
+}
+
+.error {
+  flex-direction: column;
+  gap: 16px;
+}
+
+.retryButton {
+  background: var(--color-primary-dark);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retryButton:hover {
+  background: #1a4f4d;
+}
+
+/* Header */
+.header {
+  margin-bottom: 32px;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 36px;
+  color: #2D2D2D;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+/* Table Container */
+.tableContainer {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  margin-bottom: 32px;
+}
+
+/* Table Header */
+.tableHeader {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 1fr;
+  gap: 16px;
+  padding: 20px 24px;
+  background: #f8f9fa;
+  border-bottom: 1px solid #e9ecef;
+  font-weight: 600;
+  color: #2D2D2D;
+}
+
+.headerCell {
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Table Body */
+.tableBody {
+  display: flex;
+  flex-direction: column;
+}
+
+.tableRow {
+  display: grid;
+  grid-template-columns: 2fr 1.5fr 1fr 1fr;
+  gap: 16px;
+  padding: 20px 24px;
+  border-bottom: 1px solid #f0f0f0;
+  transition: all 0.2s ease;
+  background: white;
+  margin: 8px;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.08);
+}
+
+.tableRow:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  background: #fafafa;
+}
+
+.tableRow:last-child {
+  border-bottom: none;
+}
+
+/* Table Cells */
+.nameCell {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.cell {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  color: #495057;
+}
+
+/* Activity Info */
+.activityImage {
+  width: 50px;
+  height: 50px;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #f8f9fa;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  opacity: 0.8; /* Slightly dimmed for deleted items */
+}
+
+.activityImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.activityDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.activityName {
+  font-weight: 600;
+  font-size: 16px;
+  color: #6c757d; /* Grayed out for deleted items */
+  line-height: 1.2;
+  text-decoration: line-through;
+}
+
+.activityCategory {
+  font-size: 12px;
+  color: #999;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Actions */
+.actionsCell {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.actionButton {
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  padding: 0;
+}
+
+.actionButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+
+.restoreButton {
+  background: #d1edff;
+}
+
+.restoreButton:hover:not(:disabled) {
+  background: #b3e0ff;
+}
+
+.deleteButton {
+  background: #ffe6e6;
+}
+
+.deleteButton:hover:not(:disabled) {
+  background: #ffcccc;
+}
+
+.actionButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+/* Empty State */
+.emptyState {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  color: #6c757d;
+  font-size: 18px;
+  font-style: italic;
+}
+
+.emptyContent {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  max-width: 400px;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.emptyIcon {
+  font-size: 48px;
+  opacity: 0.5;
+}
+
+.emptyContent h3 {
+  font-size: 24px;
+  color: #2D2D2D;
+  margin: 0;
+}
+
+.emptyContent p {
+  font-size: 16px;
+  color: #6c757d;
+  margin: 0;
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+  margin-top: 32px;
+}
+
+.paginationButton {
+  padding: 8px 16px;
+  border: 1px solid #dee2e6;
+  background: white;
+  color: #495057;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  font-size: 14px;
+  font-weight: 500;
+  min-width: 44px;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background: #e9ecef;
+  border-color: #adb5bd;
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.activePage {
+  background: var(--color-primary-dark);
+  color: white;
+  border-color: var(--color-primary-dark);
+}
+
+.activePage:hover {
+  background: #1a4f4d;
+  border-color: #1a4f4d;
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 500px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+  font-size: 20px;
+  color: #2D2D2D;
+  margin: 0 0 16px 0;
+}
+
+.modal p {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.cancelButton, .confirmRestoreButton, .confirmDeleteButton {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelButton {
+  background: #f8f9fa;
+  color: #2D2D2D;
+}
+
+.cancelButton:hover {
+  background: #e9ecef;
+}
+
+.confirmRestoreButton {
+  background: #6BCF7C;
+  color: white;
+}
+
+.confirmRestoreButton:hover {
+  background: #5cbf6e;
+}
+
+.confirmDeleteButton {
+  background: #ff6b6b;
+  color: white;
+}
+
+.confirmDeleteButton:hover {
+  background: #ff5252;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .container {
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .tableHeader,
+  .tableRow {
+    grid-template-columns: 2fr 1.2fr 1fr 1fr;
+    gap: 12px;
+    padding: 16px 20px;
+  }
+}
+
+@media (max-width: 968px) {
+  .container {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 28px;
+  }
+
+  .tableHeader,
+  .tableRow {
+    grid-template-columns: 1fr;
+    gap: 8px;
+    padding: 16px;
+  }
+
+  .tableHeader {
+    display: none; /* Hide header on mobile */
+  }
+
+  .tableRow {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    padding: 20px;
+  }
+
+  .nameCell {
+    order: 1;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 12px;
+  }
+
+  .cell {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  .cell::before {
+    content: attr(data-label);
+    font-weight: 600;
+    color: #6c757d;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .actionsCell {
+    order: 5;
+    justify-content: center;
+    border-top: 1px solid #f0f0f0;
+    padding-top: 12px;
+    margin-top: 8px;
+  }
+
+  .activityImage {
+    width: 60px;
+    height: 60px;
+  }
+
+  .activityName {
+    font-size: 18px;
+  }
+
+  .pagination {
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .paginationButton {
+    padding: 6px 12px;
+    font-size: 12px;
+    min-width: 36px;
+  }
+}
+
+@media (max-width: 568px) {
+  .container {
+    padding: 12px;
+  }
+
+  .title {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+
+  .tableRow {
+    padding: 16px;
+  }
+
+  .actionButton {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .actionsCell {
+    gap: 6px;
+  }
+}
+
+/* Focus states for accessibility */
+.actionButton:focus,
+.paginationButton:focus,
+.cancelButton:focus,
+.confirmRestoreButton:focus,
+.confirmDeleteButton:focus {
+  outline: 2px solid var(--color-primary-dark);
+  outline-offset: 2px;
+}
+
+/* Animation */
+.tableContainer {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

@@ -40,6 +40,8 @@ class ActivitiesAPI {
    * @param {number} limit - Количество элементов на странице
    * @param {string} orderBy - Поле для сортировки
    * @param {boolean} ascending - Направление сортировки
+   * @param {string} currentUserId - ID текущего пользователя (для ORGANIZER - показывать только свои)
+   * @param {UserRole} currentUserRole - Роль текущего пользователя
    * @returns {Promise<ApiListResponse<Activity>>} Список активностей с метаданными
    *
    * @example
@@ -48,7 +50,9 @@ class ActivitiesAPI {
    *   1,
    *   20,
    *   'created_at',
-   *   false
+   *   false,
+   *   'user-123',
+   *   UserRole.ORGANIZER
    * );
    */
   async getActivities(
@@ -56,13 +60,20 @@ class ActivitiesAPI {
     page: number = 1,
     limit: number = API_CONSTANTS.DEFAULT_PAGE_SIZE,
     orderBy: string = 'created_at',
-    ascending: boolean = false
+    ascending: boolean = false,
+    currentUserId?: string,
+    currentUserRole?: UserRole
   ): Promise<ApiListResponse<Activity>> {
     try {
       // Подготавливаем параметры запроса
       const queryParams: Record<string, any> = {
         is_deleted: 'is.false', // Используем 'is.false' для точного соответствия
       };
+
+      // Ограничиваем доступ для ORGANIZER - только свои активности
+      if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
+        queryParams.user_id = `eq.${currentUserId}`;
+      }
 
       // Добавляем фильтры
       if (filters.search) {
@@ -172,6 +183,7 @@ class ActivitiesAPI {
   /**
    * Создание новой активности
    * @param {ActivityFormData} data - Данные для создания активности
+   * @param {string} currentUserId - ID текущего пользователя
    * @returns {Promise<Activity>} Созданная активность
    * @throws {ApiError} Ошибка создания
    *
@@ -183,54 +195,137 @@ class ActivitiesAPI {
    *   categoryId: '123',
    *   location: 'Хельсинки',
    *   tags: ['tag1', 'tag2']
-   * });
+   * }, 'user-123');
    */
-  async createActivity(data: ActivityFormData): Promise<Activity> {
+  async createActivity(data: ActivityFormData, currentUserId: string): Promise<Activity> {
     try {
-      // Загружаем изображение, если есть
-      let imageUrl = null;
-      if (data.image) {
-        imageUrl = await this.uploadImage(data.image);
+      console.log('🚀 Creating new activity...');
+      console.log('📋 Input activity data:', {
+        title: data.title,
+        type: data.type,
+        categoryId: data.categoryId,
+        location: data.location,
+        price: data.price,
+        startDate: data.startDate,
+        endDate: data.endDate,
+        tagsCount: data.tags?.length || 0,
+        hasDescription: !!data.description,
+        hasImage: !!data.image || !!data.imageUrl
+      });
+
+      // Validate required fields
+      const requiredFields = ['title', 'description', 'type', 'categoryId', 'location'];
+      const missingFields = requiredFields.filter(field => !data[field as keyof ActivityFormData]);
+      if (missingFields.length > 0) {
+        throw new Error(`Missing required fields: ${missingFields.join(', ')}`);
       }
 
-      // Подготавливаем данные для создания
+      // Загружаем изображение, если есть файл
+      let imageUrl = data.imageUrl || null;
+      if (data.image) {
+        console.log('📸 Uploading image...');
+        imageUrl = await this.uploadImage(data.image);
+        console.log('✅ Image uploaded:', imageUrl);
+      }
+
+      // Подготавливаем данные для создания с proper null handling
       const activityData = {
-        title: data.title,
-        description: data.description,
-        short_description: data.description.substring(0, 97) + '...',
+        title: data.title.trim(),
+        description: data.description.trim(),
+        short_description: data.shortDescription?.trim() || (data.description.length > 100 ? data.description.substring(0, 97) + '...' : data.description.trim()),
         type: data.type,
         category_id: data.categoryId,
-        location: data.location,
-        address: data.address,
-        price: data.price || 0,
+        location: data.location.trim(),
+        address: data.address?.trim() || null,
+        price: data.price || null,
+        currency: data.currency || 'EUR',
         image_url: imageUrl,
-        start_date: data.startDate,
-        end_date: data.endDate,
-        max_participants: data.maxParticipants,
-        min_age: data.minAge,
-        max_age: data.maxAge,
-        contact_email: data.contactEmail,
-        contact_phone: data.contactPhone,
-        external_link: data.externalLink
+        start_date: data.startDate ? new Date(data.startDate).toISOString() : null,
+        end_date: data.endDate ? new Date(data.endDate).toISOString() : null,
+        max_participants: data.maxParticipants || null,
+        min_age: data.minAge || null,
+        max_age: data.maxAge || null,
+        contact_email: data.contactEmail?.trim() || null,
+        contact_phone: data.contactPhone?.trim() || null,
+        external_link: data.externalLink?.trim() || null,
+        user_id: currentUserId,
+        is_deleted: false
       };
 
+      console.log('💾 Activity data prepared for database:', {
+        ...activityData,
+        description: `${activityData.description.substring(0, 50)}...`,
+        start_date: activityData.start_date,
+        end_date: activityData.end_date,
+        category_id: activityData.category_id,
+        type: activityData.type
+      });
+
       // Создаем активность
+      console.log('⬆️ Sending POST request to /activities...');
       const response: AxiosResponse<Activity[]> = await apiClient.post(
         '/activities',
         activityData
       );
 
+      console.log('✅ Create response received:', {
+        status: response.status,
+        statusText: response.statusText,
+        hasData: !!response.data,
+        dataLength: Array.isArray(response.data) ? response.data.length : 0
+      });
+
+      if (!response.data || !Array.isArray(response.data) || response.data.length === 0) {
+        console.error('❌ Invalid response structure:', response.data);
+        throw new Error('No data returned from activity creation');
+      }
+
       const activity = response.data[0];
+      console.log('📊 Created activity ID:', activity.id);
 
       // Добавляем теги
       if (data.tags && data.tags.length > 0) {
-        await this.addTagsToActivity(activity.id, data.tags);
+        console.log('🏷️ Adding tags:', data.tags);
+        try {
+          await this.addTagsToActivity(activity.id, data.tags);
+          console.log('✅ Tags added successfully');
+        } catch (tagError: any) {
+          console.error('⚠️ Failed to add tags, but activity was created:', tagError);
+          // Don't fail the entire operation if tags fail
+        }
       }
 
       // Возвращаем активность с полной информацией
+      console.log('🔍 Fetching complete activity data...');
       return this.getActivityById(activity.id);
-    } catch (error) {
-      console.error('Ошибка создания активности:', error);
+
+    } catch (error: any) {
+      console.error('❌ Failed to create activity');
+      console.error('🔍 Error details:', {
+        message: error.message,
+        status: error.response?.status,
+        statusText: error.response?.statusText,
+        data: error.response?.data,
+        url: error.config?.url,
+        method: error.config?.method,
+        requestData: error.config?.data
+      });
+
+      // Provide user-friendly error messages based on status codes
+      if (error.response?.status === 400) {
+        const errorMsg = error.response?.data?.message || error.message;
+        throw new Error(`Invalid activity data: ${errorMsg}`);
+      } else if (error.response?.status === 401) {
+        throw new Error('Authentication required. Please sign in again.');
+      } else if (error.response?.status === 403) {
+        throw new Error('Access denied. You do not have permission to create activities.');
+      } else if (error.response?.status === 422) {
+        const errorMsg = error.response?.data?.message || error.message;
+        throw new Error(`Validation error: ${errorMsg}`);
+      } else if (error.response?.status >= 500) {
+        throw new Error('Server error. Please try again later.');
+      }
+
       throw error;
     }
   }
@@ -239,6 +334,8 @@ class ActivitiesAPI {
    * Обновление активности
    * @param {string} id - ID активности
    * @param {Partial<ActivityFormData>} data - Данные для обновления
+   * @param {string} currentUserId - ID текущего пользователя (для проверки прав)
+   * @param {UserRole} currentUserRole - Роль текущего пользователя
    * @returns {Promise<Activity>} Обновленная активность
    * @throws {ApiError} Ошибка обновления
    *
@@ -246,10 +343,23 @@ class ActivitiesAPI {
    * const updated = await activitiesAPI.updateActivity('123', {
    *   title: 'Новое название',
    *   price: 30
-   * });
+   * }, 'user-123', UserRole.ORGANIZER);
    */
-  async updateActivity(id: string, data: Partial<ActivityFormData>): Promise<Activity> {
+  async updateActivity(
+    id: string,
+    data: Partial<ActivityFormData>,
+    currentUserId?: string,
+    currentUserRole?: UserRole
+  ): Promise<Activity> {
     try {
+      // Проверяем права доступа для ORGANIZER
+      if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
+        const activity = await this.getActivityById(id);
+        if (activity.userId !== currentUserId) {
+          throw new Error('Access denied: You can only edit your own activities');
+        }
+      }
+
       // Загружаем новое изображение, если есть
       let imageUrl = undefined;
       if (data.image) {
@@ -301,14 +411,28 @@ class ActivitiesAPI {
   /**
    * Мягкое удаление активности (перемещение в корзину)
    * @param {string} id - ID активности
+   * @param {string} currentUserId - ID текущего пользователя (для проверки прав)
+   * @param {UserRole} currentUserRole - Роль текущего пользователя
    * @returns {Promise<void>}
    * @throws {ApiError} Ошибка удаления
    *
    * @example
-   * await activitiesAPI.softDeleteActivity('123');
+   * await activitiesAPI.softDeleteActivity('123', 'user-123', UserRole.ORGANIZER);
    */
-  async softDeleteActivity(id: string): Promise<void> {
+  async softDeleteActivity(
+    id: string,
+    currentUserId?: string,
+    currentUserRole?: UserRole
+  ): Promise<void> {
     try {
+      // Проверяем права доступа для ORGANIZER
+      if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
+        const activity = await this.getActivityById(id);
+        if (activity.userId !== currentUserId) {
+          throw new Error('Access denied: You can only delete your own activities');
+        }
+      }
+
       await apiClient.patch(
         `/activities?id=eq.${id}`,
         { is_deleted: true }
@@ -322,14 +446,28 @@ class ActivitiesAPI {
   /**
    * Восстановление активности из корзины
    * @param {string} id - ID активности
+   * @param {string} currentUserId - ID текущего пользователя (для проверки прав)
+   * @param {UserRole} currentUserRole - Роль текущего пользователя
    * @returns {Promise<void>}
    * @throws {ApiError} Ошибка восстановления
    *
    * @example
-   * await activitiesAPI.restoreActivity('123');
+   * await activitiesAPI.restoreActivity('123', 'user-123', UserRole.ORGANIZER);
    */
-  async restoreActivity(id: string): Promise<void> {
+  async restoreActivity(
+    id: string,
+    currentUserId?: string,
+    currentUserRole?: UserRole
+  ): Promise<void> {
     try {
+      // Проверяем права доступа для ORGANIZER
+      if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
+        const activity = await this.getActivityById(id);
+        if (activity.userId !== currentUserId) {
+          throw new Error('Access denied: You can only restore your own activities');
+        }
+      }
+
       await apiClient.patch(
         `/activities?id=eq.${id}`,
         { is_deleted: false }
@@ -341,18 +479,109 @@ class ActivitiesAPI {
   }
 
   /**
+   * Обычное удаление активности (алиас для softDeleteActivity)
+   * @param {string} id - ID активности
+   * @param {string} currentUserId - ID текущего пользователя (для проверки прав)
+   * @param {UserRole} currentUserRole - Роль текущего пользователя
+   * @returns {Promise<void>}
+   * @throws {ApiError} Ошибка удаления
+   */
+  async deleteActivity(
+    id: string,
+    currentUserId?: string,
+    currentUserRole?: UserRole
+  ): Promise<void> {
+    return this.softDeleteActivity(id, currentUserId, currentUserRole);
+  }
+
+  /**
+   * Получение одной активности по ID (алиас для getActivityById)
+   * @param {string} id - ID активности
+   * @returns {Promise<Activity>} Активность с полной информацией
+   */
+  async getActivity(id: string): Promise<Activity> {
+    return this.getActivityById(id);
+  }
+
+  /**
+   * Получение удаленных активностей для корзины
+   * @param {number} page - Номер страницы
+   * @param {number} limit - Количество элементов на странице
+   * @param {string} currentUserId - ID текущего пользователя (для ORGANIZER - показывать только свои)
+   * @param {UserRole} currentUserRole - Роль текущего пользователя
+   * @returns {Promise<ApiListResponse<Activity>>} Список удаленных активностей
+   */
+  async getDeletedActivities(
+    page: number = 1,
+    limit: number = API_CONSTANTS.DEFAULT_PAGE_SIZE,
+    currentUserId?: string,
+    currentUserRole?: UserRole
+  ): Promise<ApiListResponse<Activity>> {
+    try {
+      const queryParams: Record<string, any> = {
+        is_deleted: 'eq.true'
+      };
+
+      // Ограничиваем доступ для ORGANIZER - только свои активности
+      if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
+        queryParams.user_id = `eq.${currentUserId}`;
+      }
+
+      const filterQuery = buildFilterQuery(queryParams);
+      const orderQuery = buildOrderQuery('updated_at', false);
+      const paginationConfig = buildPaginationConfig(page, limit);
+
+      const response: AxiosResponse<any[]> = await apiClient.get(
+        `${this.fullViewEndpoint}?${filterQuery}&order=${orderQuery}&select=*`,
+        paginationConfig
+      );
+
+      const contentRange = response.headers['content-range'];
+      const total = contentRange ? parseInt(contentRange.split('/')[1]) : 0;
+
+      const activities = response.data.map(this.transformActivity);
+
+      return {
+        data: activities,
+        pagination: {
+          page,
+          limit,
+          total
+        },
+        total
+      };
+    } catch (error) {
+      console.error('Ошибка получения удаленных активностей:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Полное удаление активности
    * @param {string} id - ID активности
+   * @param {string} currentUserId - ID текущего пользователя (для проверки прав)
+   * @param {UserRole} currentUserRole - Роль текущего пользователя
    * @returns {Promise<void>}
    * @throws {ApiError} Ошибка удаления
    *
    * @example
-   * await activitiesAPI.deleteActivityPermanently('123');
+   * await activitiesAPI.permanentDeleteActivity('123', 'user-123', UserRole.ORGANIZER);
    */
-  async deleteActivityPermanently(id: string): Promise<void> {
+  async permanentDeleteActivity(
+    id: string,
+    currentUserId?: string,
+    currentUserRole?: UserRole
+  ): Promise<void> {
     try {
       // Получаем активность для удаления изображения
       const activity = await this.getActivityById(id);
+
+      // Проверяем права доступа для ORGANIZER
+      if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
+        if (activity.userId !== currentUserId) {
+          throw new Error('Access denied: You can only permanently delete your own activities');
+        }
+      }
 
       // Удаляем изображение из хранилища
       if (activity.imageUrl) {
@@ -371,13 +600,25 @@ class ActivitiesAPI {
    * Получение активностей пользователя
    * @param {string} userId - ID пользователя
    * @param {boolean} includeDeleted - Включать удаленные активности
+   * @param {string} currentUserId - ID текущего пользователя (для проверки прав)
+   * @param {UserRole} currentUserRole - Роль текущего пользователя
    * @returns {Promise<Activity[]>} Список активностей пользователя
    *
    * @example
-   * const userActivities = await activitiesAPI.getUserActivities('user-123');
+   * const userActivities = await activitiesAPI.getUserActivities('user-123', false, 'current-user', UserRole.ORGANIZER);
    */
-  async getUserActivities(userId: string, includeDeleted: boolean = false): Promise<Activity[]> {
+  async getUserActivities(
+    userId: string,
+    includeDeleted: boolean = false,
+    currentUserId?: string,
+    currentUserRole?: UserRole
+  ): Promise<Activity[]> {
     try {
+      // ORGANIZER может видеть только свои активности
+      if (currentUserRole === UserRole.ORGANIZER && currentUserId && userId !== currentUserId) {
+        return []; // Возвращаем пустой массив если пытается получить чужие активности
+      }
+
       let query = `/activities?user_id=eq.${userId}`;
 
       if (!includeDeleted) {

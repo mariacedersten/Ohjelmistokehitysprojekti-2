@@ -37,14 +37,13 @@
 
 .form {
   display: grid;
-  grid-template-columns: 2fr 1fr;
-  gap: 60px;
+  grid-template-columns: 1fr 1fr 0.8fr;
+  gap: 40px;
+  align-items: start;
 }
 
 .formColumns {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 20px;
+  display: contents;
 }
 
 .column {
@@ -92,8 +91,8 @@
 
 .avatarContainer {
   position: relative;
-  width: 150px;
-  height: 150px;
+  width: 200px;
+  height: 200px;
   margin: 0 auto;
 }
 
@@ -121,7 +120,7 @@
 }
 
 .actions {
-  margin-top: 20px;
+  margin-top: 40px;
 }
 
 .signUpButton {
@@ -187,4 +186,74 @@
   padding: 20px;
   background-color: var(--color-primary-dark, #073B3A);
   color: #fff;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .mainContent {
+    padding: 20px 40px;
+  }
+
+  .form {
+    gap: 30px;
+  }
+
+  .avatarContainer {
+    width: 180px;
+    height: 180px;
+  }
+}
+
+@media (max-width: 968px) {
+  .form {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+
+  .mainContent {
+    padding: 20px 30px;
+  }
+
+  .title {
+    font-size: 2.5rem;
+  }
+
+  .avatarContainer {
+    width: 150px;
+    height: 150px;
+  }
+
+  .actions {
+    margin-top: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .mainContent {
+    padding: 20px;
+  }
+
+  .title {
+    font-size: 2rem;
+    margin-bottom: 20px;
+  }
+
+  .header {
+    padding: 15px 20px;
+  }
+
+  .input {
+    padding: 12px;
+    font-size: 0.9rem;
+  }
+
+  .avatarContainer {
+    width: 120px;
+    height: 120px;
+  }
+
+  .signUpButton {
+    padding: 12px;
+    font-size: 1rem;
+  }
 }

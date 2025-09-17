@@ -250,103 +250,91 @@ const SignUp: React.FC = () => {
       <main className={styles.mainContent}>
         <h1 className={styles.title}>SIGN UP</h1>
         <form onSubmit={handleSubmit} className={styles.form}>
-          <div className={styles.formColumns}>
-            <div className={styles.column}>
-              <input 
-                type="text" 
-                name="fullName" 
-                placeholder="Full name" 
-                value={formData.fullName} 
-                onChange={handleInputChange} 
-                className={`${styles.input} ${fieldErrors.fullName ? styles.inputError : ''}`} 
-                required 
-              />
-              <input 
-                type="email" 
-                name="email" 
-                placeholder="E-mail address" 
-                value={formData.email} 
-                onChange={handleInputChange} 
-                className={`${styles.input} ${fieldErrors.email ? styles.inputError : ''}`} 
-                required 
-              />
-              <input 
-                type="text" 
-                name="address" 
-                placeholder="Address" 
-                value={formData.address} 
-                onChange={handleInputChange} 
-                className={`${styles.input} ${fieldErrors.address ? styles.inputError : ''}`} 
-              />
-              <input 
-                type="tel" 
-                name="phone" 
-                placeholder="Phone number" 
-                value={formData.phone} 
-                onChange={handleInputChange} 
-                className={`${styles.input} ${fieldErrors.phone ? styles.inputError : ''}`} 
-              />
-              <input 
-                type="password" 
-                name="password" 
-                placeholder="Create password" 
-                value={formData.password} 
-                onChange={handleInputChange} 
-                className={`${styles.input} ${fieldErrors.password ? styles.inputError : ''}`} 
-                required 
-              />
-              <input 
-                type="password" 
-                name="confirmPassword" 
-                placeholder="Repeat password" 
-                value={formData.confirmPassword} 
-                onChange={handleInputChange} 
-                className={`${styles.input} ${fieldErrors.confirmPassword ? styles.inputError : ''}`} 
-                required 
-              />
-            </div>
-            <div className={styles.column}>
-              <input 
-                type="text" 
-                name="organizationName" 
-                placeholder="Organisation name *" 
-                value={formData.organizationName} 
-                onChange={handleInputChange} 
-                className={`${styles.input} ${fieldErrors.organizationName ? styles.inputError : ''}`} 
-                required 
-              />
-              <input 
-                type="text" 
-                name="organizationAddress" 
-                placeholder="Organisation address *" 
-                value={formData.organizationAddress} 
-                onChange={handleInputChange} 
-                className={`${styles.input} ${fieldErrors.organizationAddress ? styles.inputError : ''}`} 
-                required 
-              />
-              <input 
-                type="text" 
-                name="organizationNumber" 
-                placeholder="Organisation number *" 
-                value={formData.organizationNumber} 
-                onChange={handleInputChange} 
-                className={`${styles.input} ${fieldErrors.organizationNumber ? styles.inputError : ''}`} 
-                required 
-              />
-            </div>
+          {/* Left Column - Personal Info */}
+          <div className={styles.column}>
+            <input
+              type="text"
+              name="fullName"
+              placeholder="Full name"
+              value={formData.fullName}
+              onChange={handleInputChange}
+              className={`${styles.input} ${fieldErrors.fullName ? styles.inputError : ''}`}
+              required
+            />
+            <input
+              type="email"
+              name="email"
+              placeholder="E-mail address"
+              value={formData.email}
+              onChange={handleInputChange}
+              className={`${styles.input} ${fieldErrors.email ? styles.inputError : ''}`}
+              required
+            />
+            <input
+              type="text"
+              name="address"
+              placeholder="Address"
+              value={formData.address}
+              onChange={handleInputChange}
+              className={`${styles.input} ${fieldErrors.address ? styles.inputError : ''}`}
+            />
+            <input
+              type="tel"
+              name="phone"
+              placeholder="Phone number"
+              value={formData.phone}
+              onChange={handleInputChange}
+              className={`${styles.input} ${fieldErrors.phone ? styles.inputError : ''}`}
+            />
+            <input
+              type="password"
+              name="password"
+              placeholder="Create password"
+              value={formData.password}
+              onChange={handleInputChange}
+              className={`${styles.input} ${fieldErrors.password ? styles.inputError : ''}`}
+              required
+            />
+            <input
+              type="password"
+              name="confirmPassword"
+              placeholder="Repeat password"
+              value={formData.confirmPassword}
+              onChange={handleInputChange}
+              className={`${styles.input} ${fieldErrors.confirmPassword ? styles.inputError : ''}`}
+              required
+            />
           </div>
 
-          <div className={styles.rightSection}>
-            <div className={styles.photoUpload}>
-              <p>Add photo</p>
-              <div className={styles.avatarContainer}>
-                <img src={photoPreview} alt="Avatar preview" className={styles.avatarPreview} />
-                <label htmlFor="photo-upload" className={styles.photoUploadButton}>
-                  <img src={photoIcon} alt="Upload" />
-                </label>
-                <input id="photo-upload" type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
-              </div>
-            </div>
+          {/* Middle Column - Organization Info */}
+          <div className={styles.column}>
+            <input
+              type="text"
+              name="organizationName"
+              placeholder="Organisation name"
+              value={formData.organizationName}
+              onChange={handleInputChange}
+              className={`${styles.input} ${fieldErrors.organizationName ? styles.inputError : ''}`}
+              required
+            />
+            <input
+              type="text"
+              name="organizationAddress"
+              placeholder="Organisation address"
+              value={formData.organizationAddress}
+              onChange={handleInputChange}
+              className={`${styles.input} ${fieldErrors.organizationAddress ? styles.inputError : ''}`}
+              required
+            />
+            <input
+              type="text"
+              name="organizationNumber"
+              placeholder="Organisation number"
+              value={formData.organizationNumber}
+              onChange={handleInputChange}
+              className={`${styles.input} ${fieldErrors.organizationNumber ? styles.inputError : ''}`}
+              required
+            />
 
             <div className={styles.actions}>
               <button type="submit" className={styles.signUpButton} disabled={loading}>
@@ -361,6 +349,20 @@ const SignUp: React.FC = () => {
               <div className={styles.socialButtons}>
                 <button type="button" className={styles.socialButton}><img src={googleIcon} alt="Google" /></button>
                 <button type="button" className={styles.socialButton}><img src={appleIcon} alt="Apple" /></button>
+              </div>
+            </div>
+          </div>
+
+          {/* Right Column - Photo Upload */}
+          <div className={styles.rightSection}>
+            <div className={styles.photoUpload}>
+              <p>Add photo</p>
+              <div className={styles.avatarContainer}>
+                <img src={photoPreview} alt="Avatar preview" className={styles.avatarPreview} />
+                <label htmlFor="photo-upload" className={styles.photoUploadButton}>
+                  <img src={photoIcon} alt="Upload" />
+                </label>
+                <input id="photo-upload" type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
               </div>
             </div>
           </div>

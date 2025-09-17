@@ -1,0 +1,439 @@
+/**
+ * Activities Management page styles - according to wireframe design
+ * Implements table layout with activity cards and action buttons
+ */
+
+.container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 40px;
+}
+
+.loading, .error {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  font-size: 18px;
+  color: var(--color-primary-dark);
+}
+
+.error {
+  flex-direction: column;
+  gap: 16px;
+}
+
+.retryButton {
+  background: var(--color-primary-dark);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.retryButton:hover {
+  background: #1a4f4d;
+}
+
+/* Header */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 32px;
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 36px;
+  color: #2D2D2D;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+.addButton {
+  background: #FFD93D;
+  color: #2D2D2D;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.addButton:hover {
+  background: #ffd226;
+  color: #2D2D2D;
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 217, 61, 0.3);
+}
+
+/* Table Container */
+.tableContainer {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  margin-bottom: 32px;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+/* Table Header */
+.tableHeader {
+  background: #f8f9fa;
+  border-bottom: 2px solid #e9ecef;
+}
+
+.tableHeaderCell {
+  text-align: left;
+  padding: 20px 24px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 14px;
+  color: #2D2D2D;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Table Rows */
+.tableRow {
+  border-bottom: 1px solid #f1f3f4;
+  transition: background-color 0.2s ease;
+}
+
+.tableRow:hover {
+  background: #f8f9fa;
+}
+
+.tableCell {
+  padding: 20px 24px;
+  font-size: 14px;
+  color: #2D2D2D;
+  vertical-align: middle;
+}
+
+/* Activity Info Cell */
+.activityInfo {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.activityImage {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f1f3f4;
+}
+
+.activityImage img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.activityDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.activityName {
+  font-weight: 600;
+  color: #2D2D2D;
+  font-size: 14px;
+}
+
+.activityCategory {
+  font-size: 12px;
+  color: #666;
+  text-transform: capitalize;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.editButton, .deleteButton {
+  width: 36px;
+  height: 36px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+}
+
+.editButton {
+  background: #6BCF7C;
+  color: white;
+}
+
+.editButton:hover {
+  background: #5cbf6e;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(107, 207, 124, 0.3);
+}
+
+.deleteButton {
+  background: #ff6b6b;
+  color: white;
+}
+
+.deleteButton:hover {
+  background: #ff5252;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
+}
+
+/* Empty State */
+.emptyState {
+  text-align: center;
+  padding: 60px 20px;
+}
+
+.emptyContent {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+}
+
+.emptyContent p {
+  font-size: 18px;
+  color: #666;
+  margin: 0;
+}
+
+.createButton {
+  background: var(--color-primary-dark);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.createButton:hover {
+  background: #1a4f4d;
+  color: white;
+  text-decoration: none;
+  transform: translateY(-2px);
+}
+
+/* Pagination */
+.pagination {
+  display: flex;
+  justify-content: center;
+  gap: 8px;
+  align-items: center;
+}
+
+.paginationButton {
+  background: white;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  padding: 12px 16px;
+  font-size: 14px;
+  color: #2D2D2D;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  min-width: 44px;
+}
+
+.paginationButton:hover:not(:disabled) {
+  background: #f8f9fa;
+  border-color: #adb5bd;
+}
+
+.paginationButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.activePage {
+  background: #FFD93D;
+  border-color: #FFD93D;
+  color: #2D2D2D;
+  font-weight: 600;
+}
+
+.activePage:hover {
+  background: #ffd226;
+  border-color: #ffd226;
+}
+
+/* Modal Styles */
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.modal {
+  background: white;
+  border-radius: 12px;
+  padding: 32px;
+  max-width: 400px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.modal h3 {
+  font-size: 20px;
+  color: #2D2D2D;
+  margin: 0 0 16px 0;
+}
+
+.modal p {
+  font-size: 16px;
+  color: #666;
+  margin: 0 0 24px 0;
+  line-height: 1.5;
+}
+
+.modalActions {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.cancelButton, .confirmDeleteButton {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.cancelButton {
+  background: #f8f9fa;
+  color: #2D2D2D;
+}
+
+.cancelButton:hover {
+  background: #e9ecef;
+}
+
+.confirmDeleteButton {
+  background: #ff6b6b;
+  color: white;
+}
+
+.confirmDeleteButton:hover {
+  background: #ff5252;
+}
+
+/* Responsive Design */
+@media (max-width: 1200px) {
+  .container {
+    padding: 24px;
+  }
+
+  .title {
+    font-size: 32px;
+  }
+
+  .tableHeaderCell,
+  .tableCell {
+    padding: 16px 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+
+  .title {
+    font-size: 28px;
+    text-align: center;
+  }
+
+  .addButton {
+    text-align: center;
+  }
+
+  /* Make table scrollable on mobile */
+  .tableContainer {
+    overflow-x: auto;
+  }
+
+  .table {
+    min-width: 700px;
+  }
+
+  .tableHeaderCell,
+  .tableCell {
+    padding: 12px 16px;
+    font-size: 13px;
+  }
+
+  .activityImage {
+    width: 40px;
+    height: 40px;
+  }
+
+  .activityInfo {
+    gap: 12px;
+  }
+
+  .actionButtons {
+    gap: 6px;
+  }
+
+  .editButton, .deleteButton {
+    width: 32px;
+    height: 32px;
+    font-size: 14px;
+  }
+
+  .modal {
+    padding: 24px;
+    margin: 16px;
+  }
+
+  .modalActions {
+    flex-direction: column;
+  }
+}

@@ -94,27 +94,424 @@ hobbly-app/
 └── package.json
 ```
 
-## 📡 API Документация
+## 📡 Supabase Backend Architecture
 
-### Базовая конфигурация
-```typescript
-BASE_URL = process.env.REACT_APP_SUPABASE_URL
-API_KEY = process.env.REACT_APP_SUPABASE_ANON_KEY
+### 🏗️ Supabase Services Integration
+
+Hobbly использует **Supabase** как Backend-as-a-Service, который предоставляет:
+
+#### **1. PostgreSQL Database**
+- **Автоматически генерируемый REST API** через PostgREST
+- **Row Level Security (RLS)** для защиты данных
+- **Real-time subscriptions** для live обновлений
+- **Автоматические индексы** и оптимизация запросов
+
+#### **2. Authentication (GoTrue)**
+- **JWT токены** для безопасной аутентификации
+- **Email/Password** аутентификация
+- **Автоматическое управление сессиями**
+- **Встроенная защита от атак**
+
+#### **3. Storage**
+- **Файловое хранилище** для изображений
+- **Публичные и приватные bucket'ы**
+- **Автоматическая оптимизация изображений**
+- **CDN интеграция**
+
+### 🔧 API Configuration
+
+#### **Environment Variables**
+```bash
+# Supabase Configuration
+REACT_APP_SUPABASE_URL=https://your-project-id.supabase.co
+REACT_APP_SUPABASE_ANON_KEY=eyJhbGc...your_anon_key
 ```
 
-### Эндпоинты
+#### **API Clients Architecture**
+```typescript
+// REST API Client (PostgREST)
+apiClient: AxiosInstance = axios.create({
+  baseURL: `${SUPABASE_URL}/rest/v1`,
+  headers: {
+    'apikey': SUPABASE_ANON_KEY,
+    'Content-Type': 'application/json',
+    'Prefer': 'return=representation'
+  }
+});
 
-#### Аутентификация
-- `POST /auth/v1/signup` - Регистрация
-- `POST /auth/v1/token?grant_type=password` - Вход
-- `POST /auth/v1/logout` - Выход
-- `POST /auth/v1/user` - Обновление профиля
+// Auth API Client (GoTrue)
+authClient: AxiosInstance = axios.create({
+  baseURL: `${SUPABASE_URL}/auth/v1`,
+  headers: {
+    'apikey': SUPABASE_ANON_KEY,
+    'Content-Type': 'application/json'
+  }
+});
 
-#### Активности
-- `GET /rest/v1/activities` - Список активностей
-- `POST /rest/v1/activities` - Создание активности
-- `PATCH /rest/v1/activities?id=eq.{id}` - Обновление
-- `DELETE /rest/v1/activities?id=eq.{id}` - Удаление
+// Storage API Client
+storageClient: AxiosInstance = axios.create({
+  baseURL: `${SUPABASE_URL}/storage/v1`,
+  headers: {
+    'apikey': SUPABASE_ANON_KEY
+  }
+});
+```
+
+### 📊 Database Schema
+
+#### **Core Tables**
+```sql
+-- User Profiles (расширенные профили)
+user_profiles (
+  id UUID PRIMARY KEY REFERENCES auth.users(id),
+  email VARCHAR(255) UNIQUE NOT NULL,
+  full_name VARCHAR(255),
+  organization_name VARCHAR(255),
+  phone VARCHAR(50),
+  role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'organizer', 'admin')),
+  avatar_url TEXT,
+  bio TEXT,
+  isApproved BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Activities (основная таблица активностей)
+activities (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  title VARCHAR(255) NOT NULL,
+  description TEXT NOT NULL,
+  short_description VARCHAR(100),
+  type VARCHAR(50) NOT NULL,
+  category_id UUID REFERENCES categories(id),
+  location VARCHAR(255) NOT NULL,
+  address TEXT,
+  coordinates JSONB,
+  price DECIMAL DEFAULT 0,
+  currency VARCHAR(3) DEFAULT 'EUR',
+  image_url TEXT,
+  user_id UUID REFERENCES auth.users(id),
+  start_date TIMESTAMP WITH TIME ZONE,
+  end_date TIMESTAMP WITH TIME ZONE,
+  max_participants INTEGER,
+  min_age INTEGER,
+  max_age INTEGER,
+  contact_email VARCHAR(255),
+  contact_phone VARCHAR(50),
+  external_link TEXT,
+  is_deleted BOOLEAN DEFAULT false,
+  isApproved BOOLEAN DEFAULT false,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Categories (категории активностей)
+categories (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(255) NOT NULL,
+  icon VARCHAR(50),
+  description TEXT,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Tags (теги для маркировки)
+tags (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  name VARCHAR(100) NOT NULL,
+  color VARCHAR(7) DEFAULT '#808080',
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+-- Activity Tags (связь many-to-many)
+activity_tags (
+  activity_id UUID REFERENCES activities(id) ON DELETE CASCADE,
+  tag_id UUID REFERENCES tags(id) ON DELETE CASCADE,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (activity_id, tag_id)
+);
+```
+
+### 🔐 Authentication & Authorization
+
+#### **User Roles System**
+```typescript
+enum UserRole {
+  USER = 'user',           // Обычный пользователь (только просмотр)
+  ORGANIZER = 'organizer', // Организатор (управление своими активностями)
+  ADMIN = 'admin'          // Администратор (полный доступ)
+}
+```
+
+#### **Authentication Flow**
+1. **Registration**: `POST /auth/v1/signup` → создание в `auth.users` + `user_profiles`
+2. **Login**: `POST /auth/v1/token?grant_type=password` → получение JWT токена
+3. **Session Management**: автоматическое обновление токенов
+4. **Role-based Access**: проверка ролей через RLS политики
+
+#### **Row Level Security (RLS) Policies**
+```sql
+-- Пользователи могут читать все профили
+CREATE POLICY "Profiles are viewable by everyone" ON user_profiles
+    FOR SELECT USING (true);
+
+-- Пользователи могут обновлять свой профиль
+CREATE POLICY "Users can update own profile" ON user_profiles
+    FOR UPDATE USING (
+        auth.uid() = id OR
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE user_profiles.id = auth.uid()
+            AND user_profiles.role = 'admin'
+        )
+    );
+
+-- Активности видны всем, но редактировать может только владелец
+CREATE POLICY "Activities are viewable by everyone" ON activities
+    FOR SELECT USING (is_deleted = false);
+
+CREATE POLICY "Users can manage own activities" ON activities
+    FOR ALL USING (
+        auth.uid() = user_id OR
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE user_profiles.id = auth.uid()
+            AND user_profiles.role = 'admin'
+        )
+    );
+```
+
+### 📁 Storage Configuration
+
+#### **Storage Buckets**
+```typescript
+// Bucket для аватаров пользователей
+const AVATARS_BUCKET = 'avatars';
+// Bucket для изображений активностей  
+const ACTIVITIES_BUCKET = 'activities';
+```
+
+#### **Storage Policies**
+```sql
+-- Публичный доступ к чтению файлов
+CREATE POLICY "Public Access" ON storage.objects 
+FOR SELECT USING (bucket_id = 'avatars');
+
+-- Только аутентифицированные пользователи могут загружать
+CREATE POLICY "Allow authenticated uploads" ON storage.objects 
+FOR INSERT WITH CHECK (
+  bucket_id = 'avatars' 
+  AND auth.role() = 'authenticated'
+);
+
+-- Только владелец может обновлять/удалять файлы
+CREATE POLICY "Allow authenticated updates" ON storage.objects 
+FOR UPDATE USING (
+  bucket_id = 'avatars' 
+  AND auth.uid()::text = (storage.foldername(name))[1]
+);
+```
+
+### 🔄 API Endpoints
+
+#### **Authentication Endpoints**
+- `POST /auth/v1/signup` - Регистрация пользователя
+- `POST /auth/v1/token?grant_type=password` - Вход в систему
+- `POST /auth/v1/logout` - Выход из системы
+- `GET /auth/v1/user` - Получение текущего пользователя
+- `PUT /auth/v1/user` - Обновление профиля
+- `POST /auth/v1/recover` - Сброс пароля
+- `POST /auth/v1/verify` - Подтверждение email
+
+#### **REST API Endpoints (PostgREST)**
+```typescript
+// Activities
+GET    /rest/v1/activities              // Список активностей
+POST   /rest/v1/activities              // Создание активности
+PATCH  /rest/v1/activities?id=eq.{id}   // Обновление активности
+DELETE /rest/v1/activities?id=eq.{id}   // Удаление активности
+
+// User Profiles
+GET    /rest/v1/user_profiles           // Список профилей
+POST   /rest/v1/user_profiles           // Создание профиля
+PATCH  /rest/v1/user_profiles?id=eq.{id} // Обновление профиля
+DELETE /rest/v1/user_profiles?id=eq.{id} // Удаление профиля
+
+// Categories
+GET    /rest/v1/categories              // Список категорий
+POST   /rest/v1/categories              // Создание категории
+
+// Tags
+GET    /rest/v1/tags                    // Список тегов
+POST   /rest/v1/tags                    // Создание тега
+
+// Activity Tags (связи)
+GET    /rest/v1/activity_tags           // Связи активностей и тегов
+POST   /rest/v1/activity_tags           // Создание связи
+DELETE /rest/v1/activity_tags?activity_id=eq.{id}&tag_id=eq.{id} // Удаление связи
+```
+
+#### **Storage Endpoints**
+```typescript
+// File Upload
+POST   /storage/v1/object/{bucket}/{path}     // Загрузка файла
+GET    /storage/v1/object/{bucket}/{path}     // Скачивание файла
+DELETE /storage/v1/object/{bucket}/{path}     // Удаление файла
+
+// Public URLs
+GET    /storage/v1/object/public/{bucket}/{path} // Публичный URL
+```
+
+#### **Search & Filtering**
+```typescript
+// Full-text search
+GET /rest/v1/rpc/search_activities?search_query={query}
+
+// Advanced filtering with PostgREST operators
+GET /rest/v1/activities?title=ilike.*football*&price=gte.10&category_id=eq.{id}
+
+// Pagination
+GET /rest/v1/activities?limit=20&offset=0
+
+// Sorting
+GET /rest/v1/activities?order=created_at.desc
+
+// Select specific fields
+GET /rest/v1/activities?select=id,title,description,price
+```
+
+### 🛠️ Advanced Features
+
+#### **PostgREST Query Operators**
+```typescript
+// Equality
+?category_id=eq.{categoryId}
+
+// Greater than or equal
+?price=gte.10
+
+// Less than or equal  
+?price=lte.100
+
+// Case-insensitive like
+?title=ilike.*search*
+
+// Contains (for arrays)
+?tags=cs.{tag1,tag2}
+
+// Is null/not null
+?description=is.null
+?description=not.is.null
+
+// In array
+?category_id=in.(cat1,cat2,cat3)
+```
+
+#### **Real-time Subscriptions**
+```typescript
+// Subscribe to activity changes
+const subscription = supabase
+  .channel('activities')
+  .on('postgres_changes', 
+    { event: '*', schema: 'public', table: 'activities' },
+    (payload) => {
+      console.log('Activity changed:', payload);
+    }
+  )
+  .subscribe();
+```
+
+#### **Database Functions & Views**
+```sql
+-- View для полной информации об активностях
+CREATE VIEW activities_full AS
+SELECT 
+  a.*,
+  c.name as category_name,
+  c.icon as category_icon,
+  up.full_name as organizer_name,
+  up.organization_name as organizer_organization,
+  up.email as organizer_email,
+  COALESCE(
+    json_agg(
+      json_build_object('id', t.id, 'name', t.name, 'color', t.color)
+    ) FILTER (WHERE t.id IS NOT NULL),
+    '[]'::json
+  ) as tags
+FROM activities a
+LEFT JOIN categories c ON a.category_id = c.id
+LEFT JOIN user_profiles up ON a.user_id = up.id
+LEFT JOIN activity_tags at ON a.id = at.activity_id
+LEFT JOIN tags t ON at.tag_id = t.id
+WHERE a.is_deleted = false
+GROUP BY a.id, c.id, up.id;
+
+-- Search function
+CREATE OR REPLACE FUNCTION search_activities(search_query text)
+RETURNS TABLE (
+  id uuid,
+  title text,
+  description text,
+  rank real
+) AS $$
+BEGIN
+  RETURN QUERY
+  SELECT 
+    a.id,
+    a.title,
+    a.description,
+    ts_rank(
+      to_tsvector('english', a.title || ' ' || a.description),
+      plainto_tsquery('english', search_query)
+    ) as rank
+  FROM activities a
+  WHERE to_tsvector('english', a.title || ' ' || a.description) 
+        @@ plainto_tsquery('english', search_query)
+    AND a.is_deleted = false
+  ORDER BY rank DESC;
+END;
+$$ LANGUAGE plpgsql;
+```
+
+### 🔒 Security Best Practices
+
+#### **Environment Security**
+- ✅ Используется только `anon` ключ на клиенте
+- ✅ `service_role` ключ НЕ используется в браузере
+- ✅ Все переменные окружения в `.env` файле
+- ✅ `.env` добавлен в `.gitignore`
+
+#### **Data Protection**
+- ✅ Row Level Security (RLS) включен для всех таблиц
+- ✅ JWT токены с автоматическим истечением
+- ✅ Валидация данных на уровне базы данных
+- ✅ Защита от SQL инъекций через PostgREST
+
+#### **File Upload Security**
+- ✅ Валидация типов файлов (только изображения)
+- ✅ Ограничение размера файлов (5MB)
+- ✅ Уникальные имена файлов
+- ✅ Политики доступа на уровне Storage
+
+### 📈 Performance Optimizations
+
+#### **Database Optimizations**
+- ✅ Индексы на часто используемые поля
+- ✅ Партиционирование по датам (если нужно)
+- ✅ Материализованные представления для сложных запросов
+- ✅ Connection pooling через Supabase
+
+#### **API Optimizations**
+- ✅ Пагинация для больших списков
+- ✅ Select только нужных полей
+- ✅ Кеширование на уровне браузера
+- ✅ Lazy loading изображений
+
+#### **Storage Optimizations**
+- ✅ CDN для статических файлов
+- ✅ Автоматическое сжатие изображений
+- ✅ WebP формат для современных браузеров
+- ✅ Lazy loading для изображений
 
 ## 🚀 Установка и запуск
 

@@ -1,0 +1,280 @@
+/**
+ * @fileoverview Activities Management page for admin panel
+ * @module admin/pages/Activities
+ * @description Table-based activities management with CRUD operations
+ */
+
+import React, { useState, useEffect } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import { useAuth } from '../../../shared/contexts/AuthContext';
+import activitiesAPI from '../../../api/activities.api';
+import { Activity, UserRole } from '../../../types';
+import styles from './Activities.module.css';
+
+/**
+ * Activities Management page component
+ * @returns JSX element
+ */
+const Activities: React.FC = () => {
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+
+  const itemsPerPage = 10;
+
+  useEffect(() => {
+    loadActivities();
+  }, [currentPage]);
+
+  /**
+   * Load activities from API
+   */
+  const loadActivities = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      const response = await activitiesAPI.getActivities(
+        {},
+        currentPage,
+        itemsPerPage,
+        'created_at',
+        false, // newest first
+        user?.id, // current user ID
+        user?.role // current user role
+      );
+
+      setActivities(response.data);
+      setTotalPages(Math.ceil(response.total / itemsPerPage));
+    } catch (err) {
+      console.error('Failed to load activities:', err);
+      setError('Failed to load activities. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  /**
+   * Handle activity deletion
+   */
+  const handleDelete = async (activityId: string) => {
+    try {
+      await activitiesAPI.deleteActivity(activityId, user?.id, user?.role);
+      setDeleteConfirm(null);
+      await loadActivities(); // Reload the list
+    } catch (err) {
+      console.error('Failed to delete activity:', err);
+      setError('Failed to delete activity. Please try again.');
+    }
+  };
+
+  /**
+   * Handle edit activity
+   */
+  const handleEdit = (activityId: string) => {
+    navigate(`/admin/activities/edit/${activityId}`);
+  };
+
+  /**
+   * Format date for display
+   */
+  const formatDate = (date: Date | string | undefined): string => {
+    if (!date) return 'N/A';
+    const d = typeof date === 'string' ? new Date(date) : date;
+    return d.toLocaleDateString('fi-FI', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    });
+  };
+
+  /**
+   * Format price for display
+   */
+  const formatPrice = (price: number | undefined): string => {
+    if (!price) return 'Free';
+    return `${price}€/h`;
+  };
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>Loading activities...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.error}>
+          <p>{error}</p>
+          <button onClick={loadActivities} className={styles.retryButton}>
+            Retry
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className={styles.container}>
+      {/* Header */}
+      <div className={styles.header}>
+        <h1 className={styles.title}>ACTIVITIES</h1>
+        <Link to="/admin/activities/new" className={styles.addButton}>
+          Add activity
+        </Link>
+      </div>
+
+      {/* Activities Table */}
+      <div className={styles.tableContainer}>
+        <table className={styles.table}>
+          <thead>
+            <tr className={styles.tableHeader}>
+              <th className={styles.tableHeaderCell}>Name</th>
+              <th className={styles.tableHeaderCell}>Organisator</th>
+              <th className={styles.tableHeaderCell}>Date</th>
+              <th className={styles.tableHeaderCell}>Location</th>
+              <th className={styles.tableHeaderCell}>Price</th>
+              <th className={styles.tableHeaderCell}>Edit/Delete</th>
+            </tr>
+          </thead>
+          <tbody>
+            {activities.length > 0 ? (
+              activities.map((activity) => (
+                <tr key={activity.id} className={styles.tableRow}>
+                  <td className={styles.tableCell}>
+                    <div className={styles.activityInfo}>
+                      <div className={styles.activityImage}>
+                        <img
+                          src={activity.imageUrl || '/assets/default-activity.png'}
+                          alt={activity.title}
+                          onError={(e) => {
+                            const target = e.target as HTMLImageElement;
+                            target.src = '/assets/default-activity.png';
+                          }}
+                        />
+                      </div>
+                      <div className={styles.activityDetails}>
+                        <span className={styles.activityName}>{activity.title}</span>
+                        <span className={styles.activityCategory}>
+                          {activity.category?.name || activity.type}
+                        </span>
+                      </div>
+                    </div>
+                  </td>
+                  <td className={styles.tableCell}>
+                    {activity.organizer?.organizationName || 'Unknown'}
+                  </td>
+                  <td className={styles.tableCell}>
+                    {formatDate(activity.startDate)}
+                  </td>
+                  <td className={styles.tableCell}>
+                    {activity.location}
+                  </td>
+                  <td className={styles.tableCell}>
+                    {formatPrice(activity.price)}
+                  </td>
+                  <td className={styles.tableCell}>
+                    <div className={styles.actionButtons}>
+                      <button
+                        onClick={() => handleEdit(activity.id)}
+                        className={styles.editButton}
+                        title="Edit activity"
+                      >
+                        ✏️
+                      </button>
+                      <button
+                        onClick={() => setDeleteConfirm(activity.id)}
+                        className={styles.deleteButton}
+                        title="Delete activity"
+                      >
+                        🗑️
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              ))
+            ) : (
+              <tr>
+                <td colSpan={6} className={styles.emptyState}>
+                  <div className={styles.emptyContent}>
+                    <p>No activities found</p>
+                    <Link to="/admin/activities/new" className={styles.createButton}>
+                      Create your first activity
+                    </Link>
+                  </div>
+                </td>
+              </tr>
+            )}
+          </tbody>
+        </table>
+      </div>
+
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className={styles.pagination}>
+          <button
+            onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+            disabled={currentPage === 1}
+            className={styles.paginationButton}
+          >
+            Previous
+          </button>
+
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+            <button
+              key={page}
+              onClick={() => setCurrentPage(page)}
+              className={`${styles.paginationButton} ${
+                currentPage === page ? styles.activePage : ''
+              }`}
+            >
+              {page}
+            </button>
+          ))}
+
+          <button
+            onClick={() => setCurrentPage(Math.min(totalPages, currentPage + 1))}
+            disabled={currentPage === totalPages}
+            className={styles.paginationButton}
+          >
+            Next
+          </button>
+        </div>
+      )}
+
+      {/* Delete Confirmation Modal */}
+      {deleteConfirm && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3>Confirm Deletion</h3>
+            <p>Are you sure you want to delete this activity? This action cannot be undone.</p>
+            <div className={styles.modalActions}>
+              <button
+                onClick={() => setDeleteConfirm(null)}
+                className={styles.cancelButton}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={() => handleDelete(deleteConfirm)}
+                className={styles.confirmDeleteButton}
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+};
+
+export default Activities;

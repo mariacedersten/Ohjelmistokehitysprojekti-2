@@ -8,10 +8,18 @@ import React from 'react';
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ProtectedRoute } from '../shared/components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
+import Header from './components/Header';
 import Login from './pages/Login';
 import SignUp from './pages/SignUp';
 import Welcome from './pages/Welcome';
 import Dashboard from './pages/Dashboard';
+import Activities from './pages/Activities';
+import ActivityForm from './pages/ActivityForm';
+import ActivitiesRequests from './pages/ActivitiesRequests';
+import Users from './pages/Users';
+import UsersRequests from './pages/UsersRequests';
+import Profile from './pages/Profile';
+import Trash from './pages/Trash';
 import { UserRole } from '../types';
 import styles from './AdminApp.module.css';
 
@@ -61,8 +69,9 @@ const AdminApp: React.FC = () => {
   return (
     <div className={styles.adminApp}>
       <Sidebar />
-      
+
       <div className={styles.mainContent}>
+        <Header searchPlaceholder="Search activities, users..." />
         <Routes>
           {/* Защищенные маршруты */}
           <Route 
@@ -73,53 +82,69 @@ const AdminApp: React.FC = () => {
               </ProtectedRoute>
             } 
           />
-          <Route 
-            path="/activities" 
+          <Route
+            path="/activities"
             element={
               <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
-                <div>Activities Management Page (TODO)</div>
+                <Activities />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/activities/new" 
+          <Route
+            path="/activities/new"
             element={
               <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
-                <div>New Activity Form (TODO)</div>
+                <ActivityForm />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/activities/edit/:id" 
+          <Route
+            path="/activities/edit/:id"
             element={
               <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
-                <div>Edit Activity Form (TODO)</div>
+                <ActivityForm />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/activities/trash" 
+          <Route
+            path="/activities/trash"
             element={
               <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
-                <div>Trash Bin Page (TODO)</div>
+                <Trash />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/users" 
+          <Route
+            path="/activities/requests"
             element={
               <ProtectedRoute allowedRoles={[UserRole.ADMIN]} redirectTo="/admin/login">
-                <div>Users Management Page (TODO)</div>
+                <ActivitiesRequests />
               </ProtectedRoute>
-            } 
+            }
           />
-          <Route 
-            path="/personal-info" 
+          <Route
+            path="/users"
+            element={
+              <ProtectedRoute allowedRoles={[UserRole.ADMIN]} redirectTo="/admin/login">
+                <Users />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/users/requests"
+            element={
+              <ProtectedRoute allowedRoles={[UserRole.ADMIN]} redirectTo="/admin/login">
+                <UsersRequests />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/personal-info"
             element={
               <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
-                <div>Personal Info Page (TODO)</div>
+                <Profile />
               </ProtectedRoute>
-            } 
+            }
           />
           
           {/* Редирект для неизвестных маршрутов */}

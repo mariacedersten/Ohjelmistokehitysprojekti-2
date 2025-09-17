@@ -61,6 +61,8 @@ export interface User {
   organizationNumber?: string;
   /** URL аватара пользователя */
   photoUrl?: string;
+  /** URL фото профиля */
+  profilePhotoUrl?: string;
   /** Флаг подтверждения администратором (для организаторов) */
   isApproved: boolean;
   /** Дата создания аккаунта */
@@ -281,6 +283,8 @@ export interface ActivityFormData {
   title: string;
   /** Описание */
   description: string;
+  /** Краткое описание (до 100 символов) */
+  shortDescription?: string;
   /** Тип активности */
   type: ActivityType;
   /** ID категории */
@@ -293,6 +297,16 @@ export interface ActivityFormData {
   price?: number;
   /** Изображение */
   image?: File;
+  /** URL изображения */
+  imageUrl?: string;
+  /** Валюта */
+  currency?: string;
+  /** Email для связи */
+  contactEmail?: string;
+  /** Телефон для связи */
+  contactPhone?: string;
+  /** Внешняя ссылка */
+  externalLink?: string;
   /** Теги */
   tags: string[];
   /** Дата начала */
@@ -305,12 +319,6 @@ export interface ActivityFormData {
   minAge?: number;
   /** Максимальный возраст */
   maxAge?: number;
-  /** Контактный email */
-  contactEmail?: string;
-  /** Контактный телефон */
-  contactPhone?: string;
-  /** Внешняя ссылка */
-  externalLink?: string;
 }
 
 /**
@@ -353,15 +361,34 @@ export interface AuthContextType {
 // /**
 //  * Предопределенные теги
 //  */
-// export const TAGS: Omit<Tag, 'id'>[] = [
-//   { name: 'Бесплатно', color: '#65FF81' },
-//   { name: 'Открыто для всех', color: '#F5FF65' },
-//   { name: 'Подходит для начинающих', color: '#73B3FF' },
-//   { name: 'Постоянное событие', color: '#FF9473' },
-//   { name: 'Онлайн', color: '#B473FF' },
-//   { name: 'Подходит для семей', color: '#65FF81' },
-//   { name: 'Подходит для пожилых', color: '#F5FF65' },
-//   { name: 'Подходит для особых групп', color: '#73B3FF' },
-//   { name: 'Оборудование предоставляется', color: '#FF9473' },
-//   { name: 'Требуется регистрация', color: '#B473FF' }
-// ];
+/**
+ * Предопределенные категории активностей
+ */
+export const CATEGORIES: Omit<Category, 'id'>[] = [
+  { name: 'Sports and Physical Activity', icon: '🏃' },
+  { name: 'Music and Performing Arts', icon: '🎵' },
+  { name: 'Crafts and Art', icon: '🎨' },
+  { name: 'Science and Technology', icon: '🔬' },
+  { name: 'Games and Esports', icon: '🎮' },
+  { name: 'Food and Cooking', icon: '🍳' },
+  { name: 'Nature and Tourism', icon: '🌿' },
+  { name: 'Culture and History', icon: '🏛️' },
+  { name: 'Community and Volunteering', icon: '🤝' },
+  { name: 'Children and Families', icon: '👨‍👩‍👧‍👦' }
+];
+
+/**
+ * Предопределенные теги для активностей
+ */
+export const TAGS: Omit<Tag, 'id'>[] = [
+  { name: 'Free', color: '#65FF81' },
+  { name: 'Open to All', color: '#F5FF65' },
+  { name: 'Suitable for Beginners', color: '#73B3FF' },
+  { name: 'Ongoing Event', color: '#FF9473' },
+  { name: 'Online', color: '#B473FF' },
+  { name: 'Family-Friendly', color: '#65FF81' },
+  { name: 'Suitable for Seniors', color: '#F5FF65' },
+  { name: 'Suitable for Special Groups', color: '#73B3FF' },
+  { name: 'Equipment Provided', color: '#FF9473' },
+  { name: 'Registration Required', color: '#B473FF' }
+];

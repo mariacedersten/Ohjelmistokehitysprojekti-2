@@ -655,10 +655,19 @@ class AuthAPI {
    */
   async signIn(data: SignInFormData): Promise<AuthResult> {
     try {
+      console.log('🚀 Starting signIn process for:', data.email);
+
       // Отправляем запрос на вход
       const response: AxiosResponse<AuthResponse> = await authClient.post('/token?grant_type=password', {
         email: data.email,
         password: data.password
+      });
+
+      console.log('✅ Auth response received:', {
+        status: response.status,
+        hasToken: !!response.data?.access_token,
+        hasUser: !!response.data?.user,
+        userId: response.data?.user?.id
       });
 
       // Валидация ответа
@@ -677,7 +686,7 @@ class AuthAPI {
       // Сохраняем токен
       if (response.data.access_token) {
         setAuthToken(response.data.access_token);
-        
+
         // Если "Запомнить меня" - сохраняем refresh token
         if (data.rememberMe && response.data.refresh_token) {
           localStorage.setItem('refresh_token', response.data.refresh_token);
@@ -686,19 +695,52 @@ class AuthAPI {
 
       // Получаем профиль пользователя из user_profiles
       const userId = response.data.user.id;
-      const profileResponse = await apiClient.get(`/user_profiles?id=eq.${userId}&select=*`);
-      
-      if (!profileResponse.data || profileResponse.data.length === 0) {
-        throw new Error('Профиль пользователя не найден');
-      }
+      console.log('🔍 Fetching user profile for ID:', userId);
 
-      // Возвращаем результат с пользователем из user_profiles
-      return {
-        user: transformUserProfile(profileResponse.data[0]),
-        token: response.data.access_token
-      };
-    } catch (error) {
-      console.error('Ошибка входа:', error);
+      try {
+        const profileResponse = await apiClient.get(`/user_profiles?id=eq.${userId}&select=*`);
+
+        console.log('📊 Profile response:', {
+          status: profileResponse.status,
+          dataLength: profileResponse.data?.length || 0,
+          hasProfile: profileResponse.data?.length > 0
+        });
+
+        if (!profileResponse.data || profileResponse.data.length === 0) {
+          console.warn('⚠️ Profile not found in user_profiles, creating fallback user');
+          // Fallback to auth user data if profile doesn't exist
+          return {
+            user: transformSupabaseUser(response.data.user),
+            token: response.data.access_token
+          };
+        }
+
+        // Возвращаем результат с пользователем из user_profiles
+        return {
+          user: transformUserProfile(profileResponse.data[0]),
+          token: response.data.access_token
+        };
+      } catch (profileError: any) {
+        console.error('❌ Failed to fetch user profile:', profileError);
+        console.warn('⚠️ Using auth data as fallback');
+
+        // Fallback to auth user data
+        return {
+          user: transformSupabaseUser(response.data.user),
+          token: response.data.access_token
+        };
+      }
+    } catch (error: any) {
+      console.error('❌ SignIn error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data
+      });
+
+      // Clear any partial auth state on error
+      removeAuthToken();
+      localStorage.removeItem('refresh_token');
+
       throw error;
     }
   }
@@ -824,51 +866,70 @@ class AuthAPI {
    */
   async updateProfile(data: Partial<User>): Promise<User> {
     try {
+      console.log('🚀 Starting updateProfile with data:', data);
+
       // Проверяем наличие токена перед запросом
       const token = localStorage.getItem('auth_token');
       if (!token) {
         throw new Error('updateProfile: authentication token not found');
       }
-      // Подготавливаем данные для обновления в auth.users
-      const updateData: { phone?: string; data?: Partial<User> } = {};
-      const metadataToUpdate: Partial<User> = {};
 
-      // Собираем поля верхнего уровня
-      if (data.phone) updateData.phone = data.phone;
-
-      // Собираем поля для user_metadata
-      if (data.fullName) metadataToUpdate.fullName = data.fullName;
-      if (data.organizationName) metadataToUpdate.organizationName = data.organizationName;
-      if (data.role) metadataToUpdate.role = data.role;
-      if (data.photoUrl) metadataToUpdate.photoUrl = data.photoUrl;
-      if (data.address) metadataToUpdate.address = data.address;
-      if (data.organizationAddress) metadataToUpdate.organizationAddress = data.organizationAddress;
-      if (data.organizationNumber) metadataToUpdate.organizationNumber = data.organizationNumber;
-
-      if (Object.keys(metadataToUpdate).length > 0) {
-        updateData.data = metadataToUpdate;
+      // Получаем текущего пользователя для ID
+      const currentUserResponse = await authClient.get('/user');
+      if (!currentUserResponse.data?.user?.id) {
+        throw new Error('updateProfile: unable to get current user ID');
       }
 
-      // Отправляем запрос на обновление auth.users
-      const response: AxiosResponse<{ user: SupabaseUser }> = await authClient.put('/user', updateData);
-      
-      console.log('updateProfile response:', response.data);
-      
-      // Валидация ответа
-      if (!response.data || !response.data.user) {
-        throw new Error('updateProfile: user data is missing from response');
-      }
-      
-      // Используем данные из ответа GoTrue, чтобы избежать race condition с user_profiles
-      try {
-        return transformSupabaseUser(response.data.user);
-      } catch (transformError: any) {
-        console.error('updateProfile: Failed to transform user data:', transformError);
-        throw new Error(`Профиль обновлен, но не удалось обработать данные пользователя: ${transformError.message || transformError}`);
+      const userId = currentUserResponse.data.user.id;
+      console.log('📋 Updating profile for user ID:', userId);
+
+      // Подготавливаем данные для обновления в user_profiles
+      const profileUpdateData: any = {};
+
+      // Маппинг полей из нашего интерфейса User в поля БД
+      if (data.fullName !== undefined) profileUpdateData.full_name = data.fullName;
+      if (data.phone !== undefined) profileUpdateData.phone = data.phone;
+      if (data.address !== undefined) profileUpdateData.address = data.address;
+      if (data.organizationName !== undefined) profileUpdateData.organization_name = data.organizationName;
+      if (data.organizationAddress !== undefined) profileUpdateData.organization_address = data.organizationAddress;
+      if (data.organizationNumber !== undefined) profileUpdateData.organization_number = data.organizationNumber;
+      if (data.role !== undefined) profileUpdateData.role = data.role;
+      if (data.photoUrl !== undefined) profileUpdateData.avatar_url = data.photoUrl; // БД поле
+
+      console.log('💾 Profile update data:', profileUpdateData);
+
+      // Обновляем профиль в user_profiles напрямую
+      const updateResult = await apiClient.patch(`/user_profiles?id=eq.${userId}`, profileUpdateData);
+
+      console.log('✅ Profile update result:', {
+        status: updateResult.status,
+        statusText: updateResult.statusText
+      });
+
+      // Получаем обновленный профиль
+      console.log('🔍 Fetching updated profile...');
+      const updatedProfileResponse = await apiClient.get(`/user_profiles?id=eq.${userId}&select=*`);
+
+      if (!updatedProfileResponse.data || updatedProfileResponse.data.length === 0) {
+        throw new Error('updateProfile: unable to fetch updated profile');
       }
 
-    } catch (error) {
-      console.error('Ошибка обновления профиля:', error);
+      console.log('📊 Updated profile data:', updatedProfileResponse.data[0]);
+
+      // Возвращаем обновленный профиль
+      return transformUserProfile(updatedProfileResponse.data[0]);
+
+    } catch (error: any) {
+      console.error('❌ Profile update error:', {
+        message: error.message,
+        status: error.response?.status,
+        data: error.response?.data,
+        config: error.config ? {
+          method: error.config.method,
+          url: error.config.url,
+          data: error.config.data
+        } : null
+      });
       throw error;
     }
   }

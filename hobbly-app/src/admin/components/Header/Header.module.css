@@ -1,0 +1,156 @@
+/**
+ * Admin Header component styles
+ * Global header with search bar and user avatar according to wireframe
+ */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px 40px;
+  background: white;
+  border-bottom: 1px solid #e9ecef;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* Search Form */
+.searchForm {
+  flex: 1;
+  max-width: 500px;
+  margin-right: 32px;
+}
+
+.searchContainer {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 16px;
+  color: #666;
+  z-index: 1;
+}
+
+.searchInput {
+  width: 100%;
+  height: 48px;
+  padding: 0 16px 0 48px;
+  border: 2px solid #e9ecef;
+  border-radius: 24px;
+  font-size: 16px;
+  color: #2D2D2D;
+  background: #f8f9fa;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.searchInput::placeholder {
+  color: #666;
+}
+
+.searchInput:focus {
+  border-color: #2D5F5D;
+  background: white;
+  box-shadow: 0 0 0 3px rgba(45, 95, 93, 0.1);
+}
+
+/* User Section */
+.userSection {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.userInfo {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 2px;
+}
+
+.userName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #2D2D2D;
+  line-height: 1.2;
+}
+
+.userRole {
+  font-size: 14px;
+  color: #666;
+  text-transform: capitalize;
+}
+
+.userAvatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  overflow: hidden;
+  border: 2px solid #e9ecef;
+  flex-shrink: 0;
+  background: #f8f9fa;
+}
+
+.userAvatar img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .header {
+    padding: 16px 20px;
+    flex-direction: column;
+    gap: 16px;
+    position: static;
+  }
+
+  .searchForm {
+    margin-right: 0;
+    max-width: 100%;
+    order: 2;
+  }
+
+  .userSection {
+    align-self: flex-end;
+    order: 1;
+  }
+
+  .userInfo {
+    display: none;
+  }
+
+  .userAvatar {
+    width: 40px;
+    height: 40px;
+  }
+
+  .searchInput {
+    height: 44px;
+    font-size: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header {
+    padding: 12px 16px;
+  }
+
+  .searchInput {
+    height: 40px;
+    padding: 0 12px 0 40px;
+  }
+
+  .searchIcon {
+    left: 12px;
+    width: 16px;
+    height: 16px;
+  }
+}
