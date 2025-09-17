@@ -40,7 +40,24 @@
 
 /* Header */
 .header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
   margin-bottom: 32px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search {
+  min-width: 280px;
+  padding: 10px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 14px;
 }
 
 .title {
@@ -518,4 +535,13 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+.search {
+  min-width: 280px;
+  padding: 10px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 14px;
+  margin-top: 8px;
 }

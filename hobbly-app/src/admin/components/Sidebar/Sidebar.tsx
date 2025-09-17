@@ -9,9 +9,10 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import { UserRole } from '../../../types';
 import styles from './Sidebar.module.css';
+const ADMIN_LOGO_URL = `${process.env.PUBLIC_URL}/Logo Hobbly/logo_white@high-res.png`;
 
 /**
- * Admin Sidebar navigation component
+ * Admin Sidebar navigation componentяы
  * @returns JSX element
  */
 const Sidebar: React.FC = () => {
@@ -19,10 +20,8 @@ const Sidebar: React.FC = () => {
   const { user, signOut } = useAuth();
   
   const isActive = (path: string) => {
-    if (path === '/admin/dashboard') {
-      return location.pathname === '/admin/dashboard';
-    }
-    return location.pathname.startsWith(path);
+    // Exact match for all paths to avoid conflicts
+    return location.pathname === path;
   };
 
   const handleSignOut = async () => {
@@ -38,7 +37,7 @@ const Sidebar: React.FC = () => {
       path: '/admin/dashboard',
       label: 'Dashboard',
       icon: '📊',
-      roles: [UserRole.ORGANIZER, UserRole.ADMIN]
+      roles: [UserRole.ADMIN]
     },
     {
       path: '/admin/activities',
@@ -81,8 +80,7 @@ const Sidebar: React.FC = () => {
       {/* Logo section */}
       <div className={styles.logoSection}>
         <div className={styles.logoContainer}>
-          <div className={styles.logoSymbol}></div>
-          <span className={styles.logoText}>Hobbly</span>
+          <img src={ADMIN_LOGO_URL} alt="Hobbly" className={styles.logoImage} />
         </div>
         <div className={styles.adminBadge}>Admin Panel</div>
       </div>
@@ -104,27 +102,21 @@ const Sidebar: React.FC = () => {
         </ul>
       </nav>
 
-      {/* User info and sign out */}
-      <div className={styles.userSection}>
-        <div className={styles.userInfo}>
-          <div className={styles.userAvatar}>
-            {user?.fullName?.charAt(0) || user?.email?.charAt(0) || 'U'}
-          </div>
-          <div className={styles.userDetails}>
-            <div className={styles.userName}>
-              {user?.fullName || user?.email?.split('@')[0]}
-            </div>
-            <div className={styles.userRole}>
-              {user?.role === UserRole.ADMIN ? 'Administrator' : 'Organizer'}
-            </div>
-            {user?.organizationName && (
-              <div className={styles.organizationName}>
-                {user.organizationName}
-              </div>
-            )}
-          </div>
+      {/* Bottom navigation (Trash bin) to match design */}
+      {user && (user.role === UserRole.ADMIN || user.role === UserRole.ORGANIZER) && (
+        <div className={styles.bottomNav}>
+          <Link
+            to="/admin/activities/trash"
+            className={`${styles.menuLink} ${isActive('/admin/activities/trash') ? styles.active : ''}`}
+          >
+            <span className={styles.menuIcon}>🗑️</span>
+            <span className={styles.menuLabel}>Trash bin</span>
+          </Link>
         </div>
-        
+      )}
+
+      {/* Sign out button */}
+      <div className={styles.userSection}>
         <button 
           onClick={handleSignOut}
           className={styles.signOutButton}

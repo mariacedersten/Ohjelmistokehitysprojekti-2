@@ -21,6 +21,7 @@ const Users: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   const itemsPerPage = 10;
@@ -34,7 +35,7 @@ const Users: React.FC = () => {
     }
 
     loadUsers();
-  }, [currentPage, user]);
+  }, [currentPage, search, user]);
 
   /**
    * Load users from API
@@ -46,7 +47,8 @@ const Users: React.FC = () => {
 
       const response = await usersAPI.getUsers({
         page: currentPage,
-        limit: itemsPerPage
+        limit: itemsPerPage,
+        search: search || undefined
       });
       setUsers(response.data);
       setTotalPages(Math.ceil(response.total / itemsPerPage));
@@ -148,7 +150,15 @@ const Users: React.FC = () => {
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <h1 className={styles.title}>USERS</h1>
+        <div className={styles.headerActions}>
+          <input
+            type="search"
+            placeholder="Search users..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+            className={styles.search}
+          />
+        </div>
       </div>
 
       {/* Users Table */}

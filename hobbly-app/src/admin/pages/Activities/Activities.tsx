@@ -23,13 +23,30 @@ const Activities: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
+  const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
 
   const itemsPerPage = 10;
 
+  // Debounce search input (wait 500ms after user stops typing)
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      // Reset to first page when search changes
+      if (search !== debouncedSearch) {
+        setCurrentPage(1);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search, debouncedSearch]);
+
+  // Load activities when page or debounced search changes
   useEffect(() => {
     loadActivities();
-  }, [currentPage]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage, debouncedSearch]);
 
   /**
    * Load activities from API
@@ -40,13 +57,11 @@ const Activities: React.FC = () => {
       setError(null);
 
       const response = await activitiesAPI.getActivities(
-        {},
+        { search: debouncedSearch },
         currentPage,
         itemsPerPage,
         'created_at',
         false, // newest first
-        user?.id, // current user ID
-        user?.role // current user role
       );
 
       setActivities(response.data);
@@ -126,10 +141,18 @@ const Activities: React.FC = () => {
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <h1 className={styles.title}>ACTIVITIES</h1>
-        <Link to="/admin/activities/new" className={styles.addButton}>
-          Add activity
-        </Link>
+        <div className={styles.headerActions}>
+          <input
+            type="search"
+            placeholder="Search activities..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+            className={styles.search}
+          />
+          <Link to="/admin/activities/new" className={styles.addButton}>
+            Add activity
+          </Link>
+        </div>
       </div>
 
       {/* Activities Table */}
@@ -254,8 +277,8 @@ const Activities: React.FC = () => {
       {deleteConfirm && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
-            <h3>Confirm Deletion</h3>
-            <p>Are you sure you want to delete this activity? This action cannot be undone.</p>
+            <h3>Move Activity to Trash</h3>
+            <p>Are you sure you want to remove this activity? It will be moved to the Trash bin and can be restored later from there.</p>
             <div className={styles.modalActions}>
               <button
                 onClick={() => setDeleteConfirm(null)}
@@ -267,7 +290,7 @@ const Activities: React.FC = () => {
                 onClick={() => handleDelete(deleteConfirm)}
                 className={styles.confirmDeleteButton}
               >
-                Delete
+                Move to Trash
               </button>
             </div>
           </div>

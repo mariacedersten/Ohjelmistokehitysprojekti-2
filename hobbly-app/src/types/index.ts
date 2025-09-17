@@ -337,7 +337,7 @@ export interface AuthContextType {
   /** Функция выхода */
   signOut: () => Promise<void>;
   /** Функция обновления профиля */
-  updateProfile: (data: Partial<User>) => Promise<void>;
+  updateProfile: (data: Partial<User> & { photo?: File }) => Promise<void>;
   /** Функция смены пароля */
   changePassword: (oldPassword: string, newPassword: string) => Promise<void>;
 }

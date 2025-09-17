@@ -9,8 +9,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import { UserRole } from '../../../types';
 import styles from './Welcome.module.css';
-
-import logoWhite from '../../../shared/assets/Logo Hobbly/logo_white@high-res.png';
+const ADMIN_LOGO_URL = `${process.env.PUBLIC_URL}/Logo Hobbly/logo_white@high-res.png`;
 
 /**
  * Right-side illustration from public folder
@@ -50,7 +49,7 @@ const Welcome: React.FC = () => {
         <h2 className={styles.welcome}>Welcome to our web-page!</h2>
 
         <div className={styles.logoRow}>
-          <img src={logoWhite} alt="Hobbly" className={styles.brandLogo} />
+          <img src={ADMIN_LOGO_URL} alt="Hobbly" className={styles.brandLogo} />
         </div>
         <div className={styles.brandSubtitle}>Technologies Oy</div>
 

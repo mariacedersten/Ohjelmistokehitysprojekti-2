@@ -173,6 +173,7 @@ const ActivityForm: React.FC = () => {
         ...formData,
         tags: selectedTags,
         price: formData.price || undefined,
+        image: imageFile || undefined,
         // Convert empty date strings to undefined to avoid PostgreSQL timestamp errors
         startDate: formData.startDate && formData.startDate.trim() !== '' ? formData.startDate : undefined,
         endDate: formData.endDate && formData.endDate.trim() !== '' ? formData.endDate : undefined

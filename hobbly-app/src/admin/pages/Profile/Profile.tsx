@@ -108,14 +108,53 @@ const Profile: React.FC = () => {
    */
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
-    if (file) {
+    if (!file) return;
+
+    // Clear previous errors
+    setProfileError(null);
+
+    // Validate file type
+    const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+    if (!allowedTypes.includes(file.type)) {
+      setProfileError('Invalid file format. Please upload JPEG, PNG, or WebP images only.');
+      e.target.value = ''; // Clear the input
+      return;
+    }
+
+    // Validate file size (5MB = 5 * 1024 * 1024 bytes)
+    const maxSize = 5 * 1024 * 1024;
+    if (file.size > maxSize) {
+      const fileSizeMB = (file.size / (1024 * 1024)).toFixed(2);
+      setProfileError(`File too large. Maximum size allowed is 5MB, but got ${fileSizeMB}MB. Please choose a smaller image.`);
+      e.target.value = ''; // Clear the input
+      return;
+    }
+
+    // Validate image dimensions (optional - max 2000x2000)
+    const img = new Image();
+    img.onload = () => {
+      const maxDimension = 2000;
+      if (img.width > maxDimension || img.height > maxDimension) {
+        setProfileError(`Image too large. Maximum dimensions allowed are ${maxDimension}x${maxDimension}px, but got ${img.width}x${img.height}px.`);
+        e.target.value = ''; // Clear the input
+        return;
+      }
+
+      // All validations passed - set the file
       setImageFile(file);
       const reader = new FileReader();
       reader.onload = () => {
         setProfileImage(reader.result as string);
       };
       reader.readAsDataURL(file);
-    }
+    };
+
+    img.onerror = () => {
+      setProfileError('Failed to load image. Please select a valid image file.');
+      e.target.value = ''; // Clear the input
+    };
+
+    img.src = URL.createObjectURL(file);
   };
 
   /**
@@ -127,11 +166,43 @@ const Profile: React.FC = () => {
     setProfileError(null);
 
     try {
-      await updateProfile(profileData);
+      // Additional client-side validation before submission
+      if (imageFile) {
+        const maxSize = 5 * 1024 * 1024; // 5MB
+        if (imageFile.size > maxSize) {
+          const fileSizeMB = (imageFile.size / (1024 * 1024)).toFixed(2);
+          throw new Error(`File too large. Maximum size allowed is 5MB, but got ${fileSizeMB}MB.`);
+        }
+      }
+
+      await updateProfile({
+        ...profileData,
+        ...(imageFile ? { photo: imageFile } : {})
+      });
+
       setProfileSuccess('Profile updated successfully!');
+      setImageFile(null); // Clear the pending image file
     } catch (err: any) {
       console.error('Failed to update profile:', err);
-      setProfileError(err.message || 'Failed to update profile. Please try again.');
+
+      // Parse error message for better user experience
+      let errorMessage = 'Failed to update profile. Please try again.';
+
+      if (err.message) {
+        if (err.message.includes('File too large') || err.message.includes('too large')) {
+          errorMessage = err.message;
+        } else if (err.message.includes('Invalid file format') || err.message.includes('file format')) {
+          errorMessage = 'Invalid file format. Please upload JPEG, PNG, or WebP images only.';
+        } else if (err.message.includes('Network Error') || err.message.includes('timeout')) {
+          errorMessage = 'Network error. Please check your connection and try again.';
+        } else if (err.message.includes('authentication') || err.message.includes('token')) {
+          errorMessage = 'Session expired. Please log in again.';
+        } else {
+          errorMessage = err.message;
+        }
+      }
+
+      setProfileError(errorMessage);
     } finally {
       setProfileLoading(false);
     }
@@ -210,11 +281,6 @@ const Profile: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
-      <div className={styles.header}>
-        <h1 className={styles.title}>PERSONAL INFO</h1>
-      </div>
-
       <div className={styles.formLayout}>
         {/* Left Column - Personal Info */}
         <div className={styles.leftColumn}>
@@ -345,7 +411,7 @@ const Profile: React.FC = () => {
                 <div className={styles.cameraIcon}>📷</div>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/jpeg,image/jpg,image/png,image/webp"
                   onChange={handleImageChange}
                   className={styles.imageInput}
                 />

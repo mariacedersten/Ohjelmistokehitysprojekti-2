@@ -15,9 +15,9 @@ import Welcome from './pages/Welcome';
 import Dashboard from './pages/Dashboard';
 import Activities from './pages/Activities';
 import ActivityForm from './pages/ActivityForm';
-import ActivitiesRequests from './pages/ActivitiesRequests';
+import ActivitiesRequests from './pages/ActivitiesRequests/ActivitiesRequests';
 import Users from './pages/Users';
-import UsersRequests from './pages/UsersRequests';
+import UsersRequests from './pages/UsersRequests/UsersRequests';
 import Profile from './pages/Profile';
 import Trash from './pages/Trash';
 import { UserRole } from '../types';
@@ -71,7 +71,7 @@ const AdminApp: React.FC = () => {
       <Sidebar />
 
       <div className={styles.mainContent}>
-        <Header searchPlaceholder="Search activities, users..." />
+        <Header />
         <Routes>
           {/* Защищенные маршруты */}
           <Route 

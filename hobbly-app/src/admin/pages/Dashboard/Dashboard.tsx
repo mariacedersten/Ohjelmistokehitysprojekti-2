@@ -185,9 +185,6 @@ const Dashboard: React.FC = () => {
     <div className={styles.container}>
       {/* Header with title and stats */}
       <div className={styles.header}>
-        <div className={styles.titleSection}>
-          <h1 className={styles.mainTitle}>DASHBOARD</h1>
-        </div>
         <div className={styles.topStats}>
           <span className={styles.statItem}>Total posts: {stats.totalPosts}</span>
           <span className={styles.statItem}>Users: {stats.totalUsers}</span>

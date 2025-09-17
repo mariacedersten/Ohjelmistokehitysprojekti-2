@@ -1,45 +1,22 @@
 /**
- * @fileoverview Admin header component with search and user avatar
+ * @fileoverview Admin header component with user avatar and info
  * @module admin/components/Header
- * @description Global header for admin panel according to wireframe design
+ * @description Global header for admin panel showing user information
  */
 
-import React, { useState } from 'react';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import { UserRole } from '../../../types';
 import styles from './Header.module.css';
 
-interface HeaderProps {
-  onSearch?: (query: string) => void;
-  searchPlaceholder?: string;
-}
-
 /**
- * Admin Header component with search bar and user avatar
- * @param {HeaderProps} props - Component props
+ * Admin Header component with user avatar and info
  * @returns JSX element
  */
-const Header: React.FC<HeaderProps> = ({
-  onSearch,
-  searchPlaceholder = "Search..."
-}) => {
+const Header: React.FC = () => {
   const { user } = useAuth();
-  const [searchQuery, setSearchQuery] = useState('');
-
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const query = e.target.value;
-    setSearchQuery(query);
-    if (onSearch) {
-      onSearch(query);
-    }
-  };
-
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (onSearch) {
-      onSearch(searchQuery);
-    }
-  };
+  const location = useLocation();
 
   /**
    * Get user display name
@@ -81,43 +58,31 @@ const Header: React.FC<HeaderProps> = ({
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=48&background=2D5F5D&color=fff&format=png`;
   };
 
+  /**
+   * Get page title based on current route
+   */
+  const getPageTitle = (): string => {
+    const path = location.pathname;
+
+    if (path === '/admin/dashboard') return 'DASHBOARD';
+    if (path === '/admin/activities') return 'ACTIVITIES';
+    if (path === '/admin/activities/new') return 'NEW ACTIVITY';
+    if (path.startsWith('/admin/activities/edit/')) return 'EDIT ACTIVITY';
+    if (path === '/admin/activities/trash') return 'RECENTLY DELETED';
+    if (path === '/admin/activities/requests') return 'ACTIVITY REQUESTS';
+    if (path === '/admin/users') return 'USERS';
+    if (path === '/admin/users/requests') return 'USER REQUESTS';
+    if (path === '/admin/personal-info') return 'PERSONAL INFO';
+
+    return 'ADMIN PANEL';
+  };
+
   return (
     <header className={styles.header}>
-      {/* Search Bar */}
-      <form className={styles.searchForm} onSubmit={handleSearchSubmit}>
-        <div className={styles.searchContainer}>
-          <svg
-            className={styles.searchIcon}
-            width="20"
-            height="20"
-            viewBox="0 0 24 24"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <circle
-              cx="11"
-              cy="11"
-              r="8"
-              stroke="currentColor"
-              strokeWidth="2"
-            />
-            <path
-              d="m21 21-4.35-4.35"
-              stroke="currentColor"
-              strokeWidth="2"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-            />
-          </svg>
-          <input
-            type="text"
-            placeholder={searchPlaceholder}
-            value={searchQuery}
-            onChange={handleSearchChange}
-            className={styles.searchInput}
-          />
-        </div>
-      </form>
+      {/* Page Title */}
+      <div className={styles.pageTitle}>
+        <h1>{getPageTitle()}</h1>
+      </div>
 
       {/* User Avatar and Info */}
       <div className={styles.userSection}>

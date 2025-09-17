@@ -8,7 +8,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import { SignInFormData, UserRole } from '../../../types';
-import logoWhite from '../../../shared/assets/Logo Hobbly/logo_white@high-res.png';
+const ADMIN_LOGO_URL = `${process.env.PUBLIC_URL}/Logo Hobbly/logo_white@high-res.png`;
 
  
 
@@ -124,7 +124,7 @@ const Login: React.FC = () => {
         {/* Brand section (left side) */}
         <div className="brand">
           <div className="brand-row">
-            <img src={logoWhite} alt="Hobbly" className="logo" />
+            <img src={ADMIN_LOGO_URL} alt="Hobbly" className="logo" />
         </div>
         
           <div className="cta">

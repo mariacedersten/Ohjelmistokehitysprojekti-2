@@ -69,6 +69,7 @@ const transformUserProfile = (profile: any): User => {
     organizationAddress: profile.organization_address, // если есть в БД
     organizationNumber: profile.organization_number, // если есть в БД
     photoUrl: profile.avatar_url, // в БД называется avatar_url
+    profilePhotoUrl: profile.avatar_url, // дублируем для совместимости
     isApproved: profile.isApproved || false,
     createdAt: new Date(profile.created_at),
     updatedAt: new Date(profile.updated_at)
@@ -447,6 +448,7 @@ class AuthAPI {
           // Обновляем объект user с новым URL фото
           if (typeof user === 'object' && user !== null) {
             user.photoUrl = photoUrl; // В нашем интерфейсе User это поле называется photoUrl
+            user.profilePhotoUrl = photoUrl; // Дублируем для совместимости
           }
         } catch (uploadError: any) {
           console.error('❌ Photo upload failed:', uploadError);
@@ -787,7 +789,7 @@ class AuthAPI {
       }
 
       // Получаем базовые данные пользователя из auth
-      const authResponse: AxiosResponse<{ user: SupabaseUser }> = await authClient.get('/user');
+      const authResponse: AxiosResponse<any> = await authClient.get('/user');
       
       console.log('Auth response status:', authResponse.status);
       console.log('Auth response data:', authResponse.data);
@@ -797,11 +799,17 @@ class AuthAPI {
         throw new Error('Пустой ответ от сервера аутентификации');
       }
 
-      if (!authResponse.data.user) {
+      // Support both response shapes from Supabase (/auth/v1/user):
+      // - Root object with user fields
+      // - { user: { ... } }
+      if (false && !authResponse.data.user) {
         throw new Error('Данные пользователя отсутствуют в ответе сервера');
       }
 
-      const authUser = authResponse.data.user;
+      const authUser: SupabaseUser | undefined = (authResponse.data as any).user ?? authResponse.data;
+      if (!authUser) {
+        throw new Error('D"D�D�D��<D� D�D_D��OD�D_D�D��,D�D��? D_�,�?���,�?�,D����Z�, D� D_�,D�D�,D� �?D�?D�D�?D�');
+      }
       
       // Дополнительная валидация данных пользователя
       if (!authUser.id || !authUser.email) {
@@ -864,7 +872,7 @@ class AuthAPI {
    *   phone: '+1234567890'
    * });
    */
-  async updateProfile(data: Partial<User>): Promise<User> {
+  async updateProfile(data: Partial<User> & { photo?: File }): Promise<User> {
     try {
       console.log('🚀 Starting updateProfile with data:', data);
 
@@ -876,15 +884,27 @@ class AuthAPI {
 
       // Получаем текущего пользователя для ID
       const currentUserResponse = await authClient.get('/user');
-      if (!currentUserResponse.data?.user?.id) {
+      const currentAuthUser: SupabaseUser | undefined = (currentUserResponse.data as any).user ?? currentUserResponse.data;
+      if (!currentAuthUser?.id) {
         throw new Error('updateProfile: unable to get current user ID');
       }
 
-      const userId = currentUserResponse.data.user.id;
+      const userId = currentAuthUser.id;
       console.log('📋 Updating profile for user ID:', userId);
 
       // Подготавливаем данные для обновления в user_profiles
       const profileUpdateData: any = {};
+
+      // Optional: upload new photo if provided
+      if ((data as any).photo instanceof File) {
+        try {
+          const newUrl = await this.uploadProfilePhoto((data as any).photo as File);
+          profileUpdateData.avatar_url = newUrl;
+        } catch (uploadErr) {
+          console.error('updateProfile: photo upload failed', uploadErr);
+          throw uploadErr;
+        }
+      }
 
       // Маппинг полей из нашего интерфейса User в поля БД
       if (data.fullName !== undefined) profileUpdateData.full_name = data.fullName;

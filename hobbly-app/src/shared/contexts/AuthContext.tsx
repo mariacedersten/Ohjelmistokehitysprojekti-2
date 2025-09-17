@@ -122,7 +122,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   /**
    * Обновление профиля пользователя
    */
-  const updateProfile = useCallback(async (data: Partial<User>) => {
+  const updateProfile = useCallback(async (data: Partial<User> & { photo?: File }) => {
     if (!user) {
       throw new Error('No user logged in');
     }

@@ -26,12 +26,13 @@ const Trash: React.FC = () => {
     type: 'restore' | 'permanent';
     title: string;
   } | null>(null);
+  const [search, setSearch] = useState('');
 
   const itemsPerPage = 10;
 
   useEffect(() => {
     loadDeletedActivities();
-  }, [currentPage]);
+  }, [currentPage, search]);
 
   /**
    * Load deleted activities from API
@@ -46,7 +47,8 @@ const Trash: React.FC = () => {
         currentPage,
         itemsPerPage,
         user?.id, // current user ID
-        user?.role // current user role
+        user?.role, // current user role
+        search
       );
 
       setActivities(response.data);
@@ -132,7 +134,15 @@ const Trash: React.FC = () => {
     <div className={styles.container}>
       {/* Header */}
       <div className={styles.header}>
-        <h1 className={styles.title}>RECENTLY DELETED</h1>
+        <div className={styles.headerActions}>
+          <input
+            type="search"
+            placeholder="Search deleted..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+            className={styles.search}
+          />
+        </div>
       </div>
 
       {/* Activities Table */}

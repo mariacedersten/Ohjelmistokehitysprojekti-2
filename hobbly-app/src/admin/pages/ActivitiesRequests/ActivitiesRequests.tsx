@@ -4,174 +4,103 @@
  * @description Management page for pending activity requests from organizers
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useAuth } from '../../../shared/contexts/AuthContext';
-import { UserRole } from '../../../types';
+import activitiesAPI from '../../../api/activities.api';
+import { Activity } from '../../../types';
 import styles from './ActivitiesRequests.module.css';
 
-interface ActivityRequest {
+interface ActivityRequestView {
   id: string;
-  name: string;
+  title: string;
   organisation: string;
   location: string;
   price: string;
-  userAvatar?: string;
-  userName: string;
-  status: 'pending' | 'approved' | 'rejected';
-  submittedAt: Date;
+  imageUrl?: string;
 }
 
-/**
- * Activities Requests page component
- * @returns JSX element
- */
 const ActivitiesRequests: React.FC = () => {
   const { user } = useAuth();
-  const [requests, setRequests] = useState<ActivityRequest[]>([]);
+  const [items, setItems] = useState<ActivityRequestView[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const requestsPerPage = 10;
+  const [total, setTotal] = useState(0);
+  const pageSize = 10;
+  const [search, setSearch] = useState('');
 
-  // Mock data - in real app this would come from API
   useEffect(() => {
-    const loadRequests = async () => {
+    const load = async () => {
       try {
         setLoading(true);
-        // Simulate API call
-        await new Promise(resolve => setTimeout(resolve, 1000));
-
-        const mockRequests: ActivityRequest[] = [
-          {
-            id: '1',
-            name: 'Rick J',
-            organisation: 'Nokia',
-            location: 'Hämeentie 2',
-            price: 'Rick@gmail.com',
-            userName: 'Rick Johnson',
-            status: 'pending',
-            submittedAt: new Date()
-          },
-          {
-            id: '2',
-            name: 'Martin G',
-            organisation: 'Anora',
-            location: 'Viikintie 7',
-            price: 'ddgdgdfgdgdd',
-            userName: 'Martin Garcia',
-            status: 'pending',
-            submittedAt: new Date()
-          },
-          {
-            id: '3',
-            name: 'Joni M',
-            organisation: 'HSL',
-            location: 'Mannerheiminaukio',
-            price: 'dgdgdgdfgdfgd',
-            userName: 'Joni Mattila',
-            status: 'pending',
-            submittedAt: new Date()
-          }
-        ];
-
-        setRequests(mockRequests);
-      } catch (err) {
-        console.error('Failed to load activity requests:', err);
+        setError(null);
+        const res = await activitiesAPI.getPendingActivities({ page: currentPage, limit: pageSize, search });
+        const mapped: ActivityRequestView[] = res.data.map((a: Activity) => ({
+          id: a.id,
+          title: a.title,
+          organisation: a.organizer?.organizationName || 'Unknown',
+          location: a.location,
+          price: a.price ? `${a.price}€/h` : 'Free',
+          imageUrl: a.imageUrl
+        }));
+        setItems(mapped);
+        setTotal(res.total || 0);
+      } catch (e) {
+        console.error('Failed to load activity requests:', e);
         setError('Failed to load activity requests.');
       } finally {
         setLoading(false);
       }
     };
+    load();
+  }, [currentPage, search]);
 
-    loadRequests();
-  }, []);
+  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / pageSize)), [total, pageSize]);
 
-  /**
-   * Handle view request details
-   */
-  const handleViewRequest = (id: string) => {
-    console.log('View request:', id);
-    // TODO: Implement view request details modal/page
-  };
-
-  /**
-   * Handle approve request
-   */
-  const handleApproveRequest = async (id: string) => {
+  const approve = async (id: string) => {
     try {
-      // TODO: Implement approve request API call
-      console.log('Approve request:', id);
-      setRequests(prev => prev.filter(req => req.id !== id));
-    } catch (err) {
-      console.error('Failed to approve request:', err);
+      await activitiesAPI.approveActivity(id, true);
+      setItems((prev) => prev.filter((it) => it.id !== id));
+    } catch (e) {
+      console.error('Approve failed:', e);
     }
   };
 
-  /**
-   * Handle reject/delete request
-   */
-  const handleRejectRequest = async (id: string) => {
+  const reject = async (id: string) => {
     try {
-      // TODO: Implement reject request API call
-      console.log('Reject request:', id);
-      setRequests(prev => prev.filter(req => req.id !== id));
-    } catch (err) {
-      console.error('Failed to reject request:', err);
+      await activitiesAPI.softDeleteActivity(id, user?.id, user?.role);
+      setItems((prev) => prev.filter((it) => it.id !== id));
+    } catch (e) {
+      console.error('Reject failed:', e);
     }
-  };
-
-  /**
-   * Calculate pagination
-   */
-  const totalPages = Math.ceil(requests.length / requestsPerPage);
-  const startIndex = (currentPage - 1) * requestsPerPage;
-  const endIndex = startIndex + requestsPerPage;
-  const currentRequests = requests.slice(startIndex, endIndex);
-
-  /**
-   * Generate pagination buttons
-   */
-  const getPaginationButtons = () => {
-    const buttons = [];
-    const maxVisiblePages = 5;
-    let startPage = Math.max(1, currentPage - Math.floor(maxVisiblePages / 2));
-    let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
-
-    if (endPage - startPage + 1 < maxVisiblePages) {
-      startPage = Math.max(1, endPage - maxVisiblePages + 1);
-    }
-
-    for (let i = startPage; i <= endPage; i++) {
-      buttons.push(i);
-    }
-
-    return buttons;
   };
 
   if (loading) {
     return (
-      <div className={styles.container}>
-        <div className={styles.loading}>Loading activity requests...</div>
-      </div>
+      <div className={styles.container}><div className={styles.loading}>Loading activity requests...</div></div>
     );
   }
 
   if (error) {
     return (
-      <div className={styles.container}>
-        <div className={styles.error}>{error}</div>
-      </div>
+      <div className={styles.container}><div className={styles.error}>{error}</div></div>
     );
   }
 
   return (
     <div className={styles.container}>
-      {/* Header */}
       <div className={styles.header}>
-        <h1 className={styles.title}>ACTIVITIES' REQUESTS</h1>
+        <div className={styles.headerActions}>
+          <input
+            type="search"
+            placeholder="Search requests..."
+            value={search}
+            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+            className={styles.search}
+          />
+        </div>
       </div>
 
-      {/* Requests Table */}
       <div className={styles.tableContainer}>
         <div className={styles.tableHeader}>
           <div className={styles.headerCell}>Name</div>
@@ -182,50 +111,23 @@ const ActivitiesRequests: React.FC = () => {
         </div>
 
         <div className={styles.tableBody}>
-          {currentRequests.length === 0 ? (
-            <div className={styles.emptyState}>
-              No activity requests found.
-            </div>
+          {items.length === 0 ? (
+            <div className={styles.emptyState}>No activity requests found.</div>
           ) : (
-            currentRequests.map((request) => (
+            items.map((request) => (
               <div key={request.id} className={styles.tableRow}>
                 <div className={styles.nameCell}>
                   <div className={styles.userAvatar}>
-                    {request.userAvatar ? (
-                      <img src={request.userAvatar} alt={request.userName} />
-                    ) : (
-                      <div className={styles.avatarPlaceholder}>
-                        {request.name.charAt(0)}
-                      </div>
-                    )}
+                    {request.imageUrl ? (<img src={request.imageUrl} alt={request.title} />) : (<div className={styles.avatarPlaceholder}>A</div>)}
                   </div>
-                  <span className={styles.userName}>{request.name}</span>
+                  <span className={styles.userName}>{request.title}</span>
                 </div>
                 <div className={styles.cell}>{request.organisation}</div>
                 <div className={styles.cell}>{request.location}</div>
                 <div className={styles.cell}>{request.price}</div>
                 <div className={styles.actionsCell}>
-                  <button
-                    onClick={() => handleViewRequest(request.id)}
-                    className={styles.actionButton}
-                    title="View details"
-                  >
-                    👁️
-                  </button>
-                  <button
-                    onClick={() => handleApproveRequest(request.id)}
-                    className={`${styles.actionButton} ${styles.approveButton}`}
-                    title="Approve request"
-                  >
-                    ✅
-                  </button>
-                  <button
-                    onClick={() => handleRejectRequest(request.id)}
-                    className={`${styles.actionButton} ${styles.rejectButton}`}
-                    title="Reject request"
-                  >
-                    🗑️
-                  </button>
+                  <button onClick={() => approve(request.id)} className={`${styles.actionButton} ${styles.approveButton}`} title="Approve">✅</button>
+                  <button onClick={() => reject(request.id)} className={`${styles.actionButton} ${styles.rejectButton}`} title="Reject">🗑️</button>
                 </div>
               </div>
             ))
@@ -233,40 +135,16 @@ const ActivitiesRequests: React.FC = () => {
         </div>
       </div>
 
-      {/* Pagination */}
-      {totalPages > 1 && (
-        <div className={styles.pagination}>
-          <button
-            onClick={() => setCurrentPage(prev => Math.max(1, prev - 1))}
-            disabled={currentPage === 1}
-            className={styles.paginationButton}
-          >
-            Previous
-          </button>
-
-          {getPaginationButtons().map((pageNum) => (
-            <button
-              key={pageNum}
-              onClick={() => setCurrentPage(pageNum)}
-              className={`${styles.paginationButton} ${
-                currentPage === pageNum ? styles.paginationButtonActive : ''
-              }`}
-            >
-              {pageNum}
-            </button>
-          ))}
-
-          <button
-            onClick={() => setCurrentPage(prev => Math.min(totalPages, prev + 1))}
-            disabled={currentPage === totalPages}
-            className={styles.paginationButton}
-          >
-            Next
-          </button>
-        </div>
-      )}
+      <div className={styles.pagination}>
+        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className={styles.paginationButton}>Previous</button>
+        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
+          <button key={p} onClick={() => setCurrentPage(p)} className={`${styles.paginationButton} ${p === currentPage ? styles.paginationButtonActive : ''}`}>{p}</button>
+        ))}
+        <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className={styles.paginationButton}>Next</button>
+      </div>
     </div>
   );
 };
 
 export default ActivitiesRequests;
+

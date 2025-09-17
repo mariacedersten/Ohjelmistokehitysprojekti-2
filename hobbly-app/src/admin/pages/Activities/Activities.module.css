@@ -46,6 +46,20 @@
   margin-bottom: 32px;
 }
 
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.search {
+  min-width: 280px;
+  padding: 10px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
 .title {
   font-family: var(--font-heading);
   font-weight: 700;

@@ -35,6 +35,7 @@ class ActivitiesAPI {
 
   /**
    * Получение списка активностей с фильтрацией и пагинацией, используя view `activities_full`
+   * ⚠️ ВАЖНО: Возвращает только подтвержденные (isApproved=true) активности
    * @param {ActivityFilters} filters - Фильтры для поиска
    * @param {number} page - Номер страницы (начиная с 1)
    * @param {number} limit - Количество элементов на странице
@@ -42,9 +43,10 @@ class ActivitiesAPI {
    * @param {boolean} ascending - Направление сортировки
    * @param {string} currentUserId - ID текущего пользователя (для ORGANIZER - показывать только свои)
    * @param {UserRole} currentUserRole - Роль текущего пользователя
-   * @returns {Promise<ApiListResponse<Activity>>} Список активностей с метаданными
+   * @returns {Promise<ApiListResponse<Activity>>} Список подтвержденных активностей с метаданными
    *
    * @example
+   * // Получить только подтвержденные активности
    * const activities = await activitiesAPI.getActivities(
    *   { categoryId: '123', freeOnly: true },
    *   1,
@@ -68,6 +70,7 @@ class ActivitiesAPI {
       // Подготавливаем параметры запроса
       const queryParams: Record<string, any> = {
         is_deleted: 'is.false', // Используем 'is.false' для точного соответствия
+        isApproved: 'eq.true', // Показываем только подтвержденные активности
       };
 
       // Ограничиваем доступ для ORGANIZER - только свои активности
@@ -109,6 +112,7 @@ class ActivitiesAPI {
       const paginationConfig = buildPaginationConfig(page, limit);
 
       // Выполняем запрос к view `activities_full`
+      // Use view `activities_full` which already exposes related fields
       const response: AxiosResponse<any[]> = await apiClient.get(
         `${this.fullViewEndpoint}?${filterQuery}&order=${orderQuery}&select=*`,
         paginationConfig
@@ -515,16 +519,22 @@ class ActivitiesAPI {
     page: number = 1,
     limit: number = API_CONSTANTS.DEFAULT_PAGE_SIZE,
     currentUserId?: string,
-    currentUserRole?: UserRole
+    currentUserRole?: UserRole,
+    search?: string
   ): Promise<ApiListResponse<Activity>> {
     try {
       const queryParams: Record<string, any> = {
-        is_deleted: 'eq.true'
+        // boolean filter: use PostgREST `is.true` for clarity
+        is_deleted: 'is.true'
       };
 
       // Ограничиваем доступ для ORGANIZER - только свои активности
       if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
         queryParams.user_id = `eq.${currentUserId}`;
+      }
+
+      if (search) {
+        queryParams.or = `(title.ilike.*${search}*,organizer_name.ilike.*${search}*,location.ilike.*${search}*)`;
       }
 
       const filterQuery = buildFilterQuery(queryParams);
@@ -597,6 +607,96 @@ class ActivitiesAPI {
   }
 
   /**
+   * Получение всех активностей для админ-панели (включая неподтвержденные)
+   * @param {ActivityFilters} filters - Фильтры для поиска
+   * @param {number} page - Номер страницы
+   * @param {number} limit - Количество элементов на странице
+   * @param {string} orderBy - Поле для сортировки
+   * @param {boolean} ascending - Направление сортировки
+   * @param {string} currentUserId - ID текущего пользователя
+   * @param {UserRole} currentUserRole - Роль текущего пользователя
+   * @returns {Promise<ApiListResponse<Activity>>} Список всех активностей для админа
+   */
+  async getAllActivitiesForAdmin(
+    filters: ActivityFilters = {},
+    page: number = 1,
+    limit: number = API_CONSTANTS.DEFAULT_PAGE_SIZE,
+    orderBy: string = 'created_at',
+    ascending: boolean = false,
+    currentUserId?: string,
+    currentUserRole?: UserRole
+  ): Promise<ApiListResponse<Activity>> {
+    try {
+      // Подготавливаем параметры запроса
+      const queryParams: Record<string, any> = {
+        is_deleted: 'is.false', // Исключаем только удаленные
+        // Не фильтруем по isApproved - показываем все
+      };
+
+      // Ограничиваем доступ для ORGANIZER - только свои активности
+      if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
+        queryParams.user_id = `eq.${currentUserId}`;
+      }
+
+      // Добавляем фильтры
+      if (filters.search) {
+        queryParams.or = `(title.ilike.*${filters.search}*,description.ilike.*${filters.search}*,location.ilike.*${filters.search}*,organizer_name.ilike.*${filters.search}*)`;
+      }
+
+      if (filters.categoryId) {
+        queryParams.category_id = `eq.${filters.categoryId}`;
+      }
+
+      if (filters.type) {
+        queryParams.type = `eq.${filters.type}`;
+      }
+
+      if (filters.location) {
+        queryParams.location = `ilike.*${filters.location}*`;
+      }
+
+      if (filters.freeOnly) {
+        queryParams.price = 'eq.0';
+      } else {
+        if (filters.minPrice !== undefined) {
+          queryParams.price = `gte.${filters.minPrice}`;
+        }
+        if (filters.maxPrice !== undefined) {
+          queryParams.price = `${queryParams.price ? queryParams.price + ',' : ''}lte.${filters.maxPrice}`;
+        }
+      }
+
+      // Строим URL с параметрами
+      const filterQuery = buildFilterQuery(queryParams);
+      const orderQuery = buildOrderQuery(orderBy, ascending);
+      const paginationConfig = buildPaginationConfig(page, limit);
+
+      const response: AxiosResponse<any[]> = await apiClient.get(
+        `${this.fullViewEndpoint}?${filterQuery}&order=${orderQuery}&select=*`,
+        paginationConfig
+      );
+
+      const contentRange = response.headers['content-range'];
+      const total = contentRange ? parseInt(contentRange.split('/')[1]) : 0;
+
+      const activities = response.data.map(this.transformActivity);
+
+      return {
+        data: activities,
+        pagination: {
+          page,
+          limit,
+          total
+        },
+        total
+      };
+    } catch (error) {
+      console.error('Ошибка получения всех активностей для админа:', error);
+      throw error;
+    }
+  }
+
+  /**
    * Получение активностей пользователя
    * @param {string} userId - ID пользователя
    * @param {boolean} includeDeleted - Включать удаленные активности
@@ -619,17 +719,15 @@ class ActivitiesAPI {
         return []; // Возвращаем пустой массив если пытается получить чужие активности
       }
 
-      let query = `/activities?user_id=eq.${userId}`;
-
+      const filters: string[] = [`user_id=eq.${userId}`];
       if (!includeDeleted) {
-        query += '&is_deleted=eq.false';
+        filters.push('is_deleted=is.false');
       }
+      const query = `${this.fullViewEndpoint}?${filters.join('&')}&select=*`;
 
-      query += '&select=*,category:categories(*),tags:activity_tags(tag:tags(*))';
+      const response: AxiosResponse<any[]> = await apiClient.get(query);
 
-      const response: AxiosResponse<Activity[]> = await apiClient.get(query);
-
-      return response.data.map(this.transformActivity);
+      return response.data.map(this.transformActivity.bind(this));
     } catch (error) {
       console.error('Ошибка получения активностей пользователя:', error);
       throw error;
@@ -755,7 +853,7 @@ class ActivitiesAPI {
       contactPhone: activity.contact_phone,
       externalLink: activity.external_link,
       isDeleted: activity.is_deleted,
-      isApproved: activity.is_approved || false,
+      isApproved: activity.isApproved || false,
       createdAt: new Date(activity.created_at),
       updatedAt: new Date(activity.updated_at)
     };
@@ -866,6 +964,7 @@ class ActivitiesAPI {
    */
   async approveActivity(id: string, isApproved: boolean): Promise<Activity> {
     try {
+      // Note: Using 'isApproved' as per Supabase OpenAPI schema
       const response = await apiClient.patch(
         `${this.endpoint}?id=eq.${id}`,
         { isApproved }
@@ -922,11 +1021,22 @@ class ActivitiesAPI {
   async getPendingActivities(params: {
     page?: number;
     limit?: number;
+    search?: string;
   } = {}): Promise<ApiListResponse<Activity>> {
     try {
-      const { page = 1, limit = 20 } = params;
+      const { page = 1, limit = 20, search } = params;
 
-      const url = `${this.endpoint}?isApproved=eq.false&is_deleted=eq.false&order=created_at.desc&select=*,category:categories(*),organizer:user_profiles(*),tags:activity_tags(tag:tags(*))`;
+      // Build filters safely to avoid malformed URLs
+      // Note: Using 'isApproved' as per Supabase OpenAPI schema
+      const filterMap: Record<string, any> = {
+        isApproved: 'eq.false',
+        is_deleted: 'is.false',
+      };
+      if (search) {
+        filterMap.or = `(title.ilike.*${search}*,description.ilike.*${search}*,location.ilike.*${search}*,organizer_name.ilike.*${search}*)`;
+      }
+      const filterQuery = buildFilterQuery(filterMap);
+      const url = `${this.fullViewEndpoint}?${filterQuery}&order=created_at.desc&select=*`;
 
       const response = await apiClient.get(url, buildPaginationConfig(page, limit));
 
