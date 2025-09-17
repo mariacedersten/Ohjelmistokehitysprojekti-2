@@ -3,6 +3,7 @@
  * @module types
  * @description Этот файл содержит все TypeScript интерфейсы и типы,
  * используемые во всем приложении для обеспечения типобезопасности
+ * Updated: Address fields restored
  */
 
 /**
@@ -52,6 +53,14 @@ export interface User {
   fullName?: string;
   /** Телефон для связи */
   phone?: string;
+  /** Адрес пользователя - полное поле для адреса */
+  address?: string;
+  /** Адрес организации - отдельное поле для организаций */
+  organizationAddress?: string;
+  /** Номер организации - отдельное поле для организаций */
+  organizationNumber?: string;
+  /** URL аватара пользователя */
+  photoUrl?: string;
   /** Флаг подтверждения администратором (для организаторов) */
   isApproved: boolean;
   /** Дата создания аккаунта */
@@ -234,10 +243,18 @@ export interface SignUpFormData {
   confirmPassword: string;
   /** Полное имя */
   fullName: string;
-  /** Название организации */
-  organizationName?: string;
+  /** Адрес пользователя - полное поле для адреса */
+  address?: string;
   /** Телефон */
   phone?: string;
+  /** Название организации */
+  organizationName?: string;
+  /** Адрес организации - отдельное поле для организаций */
+  organizationAddress?: string;
+  /** Номер организации - отдельное поле для организаций */
+  organizationNumber?: string;
+  /** Фото/аватар */
+  photo?: File;
   /** Согласие с условиями */
   agreeToTerms: boolean;
 }

@@ -208,6 +208,18 @@
             "$ref": "#/parameters/rowFilter.user_profiles.updated_at"
           },
           {
+            "$ref": "#/parameters/rowFilter.user_profiles.isApproved"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.organization_address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.organization_number"
+          },
+          {
             "$ref": "#/parameters/select"
           },
           {
@@ -303,6 +315,18 @@
             "$ref": "#/parameters/rowFilter.user_profiles.updated_at"
           },
           {
+            "$ref": "#/parameters/rowFilter.user_profiles.isApproved"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.organization_address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.organization_number"
+          },
+          {
             "$ref": "#/parameters/preferReturn"
           }
         ],
@@ -347,6 +371,18 @@
           },
           {
             "$ref": "#/parameters/rowFilter.user_profiles.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.isApproved"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.organization_address"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.user_profiles.organization_number"
           },
           {
             "$ref": "#/parameters/body.user_profiles"
@@ -709,6 +745,9 @@
             "$ref": "#/parameters/rowFilter.activities.updated_at"
           },
           {
+            "$ref": "#/parameters/rowFilter.activities.isApproved"
+          },
+          {
             "$ref": "#/parameters/select"
           },
           {
@@ -846,6 +885,9 @@
             "$ref": "#/parameters/rowFilter.activities.updated_at"
           },
           {
+            "$ref": "#/parameters/rowFilter.activities.isApproved"
+          },
+          {
             "$ref": "#/parameters/preferReturn"
           }
         ],
@@ -932,6 +974,9 @@
           },
           {
             "$ref": "#/parameters/rowFilter.activities.updated_at"
+          },
+          {
+            "$ref": "#/parameters/rowFilter.activities.isApproved"
           },
           {
             "$ref": "#/parameters/body.activities"
@@ -1368,6 +1413,23 @@
           "default": "CURRENT_TIMESTAMP",
           "format": "timestamp with time zone",
           "type": "string"
+        },
+        "isApproved": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
+        },
+        "address": {
+          "format": "text",
+          "type": "string"
+        },
+        "organization_address": {
+          "format": "text",
+          "type": "string"
+        },
+        "organization_number": {
+          "format": "text",
+          "type": "string"
         }
       },
       "type": "object"
@@ -1562,6 +1624,11 @@
           "default": "CURRENT_TIMESTAMP",
           "format": "timestamp with time zone",
           "type": "string"
+        },
+        "isApproved": {
+          "default": false,
+          "format": "boolean",
+          "type": "boolean"
         }
       },
       "type": "object"
@@ -1968,6 +2035,30 @@
       "in": "query",
       "type": "string"
     },
+    "rowFilter.user_profiles.isApproved": {
+      "name": "isApproved",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.address": {
+      "name": "address",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.organization_address": {
+      "name": "organization_address",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
+    "rowFilter.user_profiles.organization_number": {
+      "name": "organization_number",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
     "body.activity_tags": {
       "name": "activity_tags",
       "description": "activity_tags",
@@ -2200,6 +2291,12 @@
       "in": "query",
       "type": "string"
     },
+    "rowFilter.activities.isApproved": {
+      "name": "isApproved",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
     "body.categories": {
       "name": "categories",
       "description": "categories",
@@ -2253,5 +2350,10 @@
   "externalDocs": {
     "description": "PostgREST Documentation",
     "url": "https://postgrest.org/en/v\"13\"/references/api.html"
-  }
+  },
+  "servers": [
+    {
+      "url": "https://jourvbtxuyavamxvddwc.supabase.co/rest/v1"
+    }
+  ]
 }

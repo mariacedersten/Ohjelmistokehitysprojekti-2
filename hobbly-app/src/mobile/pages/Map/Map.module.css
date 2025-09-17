@@ -1,0 +1,47 @@
+.map {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #8B8B8B;
+}
+
+.header {
+  background: linear-gradient(135deg, #1a5f5a 0%, #0d3b36 100%);
+  padding: 15px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.logoText {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.mapContainer {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 80px;
+}
+
+.placeholder {
+  color: white;
+  font-size: 18px;
+  font-family: 'Montserrat', sans-serif;
+}

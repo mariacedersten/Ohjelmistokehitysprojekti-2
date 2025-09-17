@@ -9,6 +9,7 @@ import { Routes, Route, Navigate, useLocation } from 'react-router-dom';
 import { ProtectedRoute } from '../shared/components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
 import Login from './pages/Login';
+import SignUp from './pages/SignUp';
 import Welcome from './pages/Welcome';
 import Dashboard from './pages/Dashboard';
 import { UserRole } from '../types';
@@ -47,7 +48,7 @@ const AdminApp: React.FC = () => {
             {/* Публичные маршруты */}
             <Route path="/" element={<Welcome />} />
             <Route path="/login" element={<Login />} />
-            <Route path="/signup" element={<div>Admin SignUp Page (TODO)</div>} />
+            <Route path="/signup" element={<SignUp />} />
             
             {/* Редирект для неизвестных маршрутов */}
             <Route path="*" element={<Navigate to="/" replace />} />

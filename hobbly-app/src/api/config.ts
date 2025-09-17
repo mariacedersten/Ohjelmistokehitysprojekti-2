@@ -135,58 +135,81 @@ storageClient.interceptors.request.use(
  * @description Преобразует ошибки axios в стандартизированный формат ApiError
  */
 const errorInterceptor = (error: AxiosError): Promise<ApiError> => {
+  // Log the full error for debugging purposes
+  console.error('API Error Intercepted:', {
+    message: error.message,
+    code: error.code,
+    status: error.response?.status,
+    response: error.response?.data,
+    request: {
+      url: error.config?.url,
+      method: error.config?.method,
+      headers: error.config?.headers,
+      data: error.config?.data,
+    },
+  });
+
   const apiError: ApiError = {
     code: error.code || 'UNKNOWN_ERROR',
-    message: 'Произошла неизвестная ошибка',
+    message: 'An unexpected error occurred. Please try again.',
     status: error.response?.status
   };
 
   if (error.response) {
-    // Ошибка от сервера
+    // Server responded with a status code that falls out of the range of 2xx
     apiError.status = error.response.status;
-    apiError.details = error.response.data;
+    const responseData = error.response.data as any;
+    apiError.details = responseData;
+
+    // Try to extract a more specific message from the response
+    const serverMessage = responseData?.message || responseData?.msg || responseData?.error_description;
+    const serverDetails = responseData?.details || responseData?.hint;
 
     switch (error.response.status) {
       case 400:
-        apiError.message = 'Неверный запрос';
+        apiError.message = serverMessage || 'Bad Request: The server could not understand the request due to invalid syntax.';
         break;
       case 401:
-        apiError.message = 'Необходима авторизация';
+        apiError.message = serverMessage || 'Authentication Failed: You must be logged in to perform this action.';
         apiError.code = 'UNAUTHORIZED';
-        // Удаляем токен при ошибке авторизации
+        // Remove token on auth error to prevent loops
         removeAuthToken();
         break;
       case 403:
-        apiError.message = 'Доступ запрещен';
+        apiError.message = serverMessage || 'Forbidden: You do not have permission to access this resource.';
         apiError.code = 'FORBIDDEN';
         break;
       case 404:
-        apiError.message = 'Ресурс не найден';
+        apiError.message = serverMessage || 'Not Found: The requested resource could not be found.';
         apiError.code = 'NOT_FOUND';
         break;
       case 409:
-        apiError.message = 'Конфликт данных';
+        apiError.message = serverMessage || 'Conflict: The request could not be completed due to a conflict with the current state of the resource (e.g., duplicate entry).';
         apiError.code = 'CONFLICT';
         break;
       case 422:
-        apiError.message = 'Неверные данные';
+        apiError.message = serverMessage || 'Validation Error: The provided data is invalid.';
         apiError.code = 'VALIDATION_ERROR';
         break;
       case 500:
-        apiError.message = 'Ошибка сервера';
+        apiError.message = serverMessage || 'Internal Server Error: Something went wrong on our end. Please try again later.';
         apiError.code = 'SERVER_ERROR';
         break;
       default:
-        const responseData = error.response.data as any;
-        apiError.message = responseData?.message || 'Произошла ошибка';
+        apiError.message = serverMessage || `Request failed with status code ${apiError.status}.`;
     }
+    
+    if (serverDetails && typeof serverDetails === 'string' && !apiError.message.includes(serverDetails)) {
+      apiError.message += ` (${serverDetails})`;
+    }
+
   } else if (error.request) {
-    // Запрос был отправлен, но ответ не получен
-    apiError.message = 'Нет ответа от сервера';
+    // The request was made but no response was received
+    apiError.message = 'Network Error: No response received from the server. Please check your internet connection.';
     apiError.code = 'NETWORK_ERROR';
   } else {
-    // Ошибка при настройке запроса
-    apiError.message = error.message;
+    // Something happened in setting up the request that triggered an Error
+    apiError.message = `Request Error: ${error.message}`;
     apiError.code = 'REQUEST_ERROR';
   }
 
@@ -223,7 +246,14 @@ export const buildFilterQuery = (filters: Record<string, any>): string => {
   
   Object.entries(filters).forEach(([key, value]) => {
     if (value !== undefined && value !== null && value !== '') {
-      if (Array.isArray(value)) {
+      // Особая обработка для OR условий
+      if (key === 'or' && typeof value === 'string') {
+        params.append(key, value);
+      }
+      // Если значение уже содержит оператор PostgREST (например, 'is.false'), добавляем как есть
+      else if (typeof value === 'string' && (value.startsWith('is.') || value.startsWith('eq.') || value.startsWith('ilike.') || value.startsWith('cs.') || value.startsWith('gte.') || value.startsWith('lte.'))) {
+        params.append(key, value);
+      } else if (Array.isArray(value)) {
         // Для массивов используем оператор cs (contains)
         params.append(key, `cs.{${value.join(',')}}`);
       } else if (typeof value === 'boolean') {

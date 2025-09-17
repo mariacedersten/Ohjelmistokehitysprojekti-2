@@ -7,7 +7,8 @@
       "Bash(PORT=3002 npm start)",
       "Bash(PORT=3005 npm start)",
       "Bash(PORT=3008 npm start)",
-      "Bash(PORT=3009 npm start)"
+      "Bash(PORT=3009 npm start)",
+      "Bash(npx tsc:*)"
     ],
     "deny": [],
     "ask": []

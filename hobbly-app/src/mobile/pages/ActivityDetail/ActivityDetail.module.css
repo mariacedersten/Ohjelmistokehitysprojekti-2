@@ -1,0 +1,355 @@
+/**
+ * Стили для ActivityDetail страницы
+ * Дизайн согласно макету Announcement
+ */
+
+.activityDetail {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #8B8B8B;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #1a5f5a 0%, #0d3b36 100%);
+  padding: 15px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.backButton {
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: transform 0.2s;
+}
+
+.backButton:hover {
+  transform: translateX(-2px);
+}
+
+.backButton svg {
+  width: 24px;
+  height: 24px;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+.logo {
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.logoText {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Content */
+.content {
+  flex: 1;
+  padding: 20px 15px 80px;
+  overflow-y: auto;
+}
+
+.activityCard {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Title Section */
+.titleSection {
+  padding: 20px;
+  background: #f8f8f8;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.title {
+  font-size: 24px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 5px 0;
+  font-family: 'Montserrat', sans-serif;
+  text-transform: uppercase;
+}
+
+.date {
+  font-size: 16px;
+  color: #666;
+  margin: 0;
+}
+
+/* Image */
+.imageContainer {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.activityImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Tags Section */
+.tagsSection {
+  padding: 15px 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #fff5f5;
+  border-bottom: 1px solid #ffe0e0;
+}
+
+.tagsLabel {
+  font-weight: 600;
+  color: #d32f2f;
+  font-size: 14px;
+}
+
+.tags {
+  font-size: 14px;
+  color: #d32f2f;
+}
+
+/* Section Styles */
+.descriptionSection,
+.locationSection,
+.organizerSection,
+.contactSection {
+  padding: 20px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.sectionTitle {
+  font-size: 18px;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin: 0 0 10px 0;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.description {
+  font-size: 14px;
+  line-height: 1.6;
+  color: #333;
+  margin: 0;
+  text-align: justify;
+}
+
+/* Location */
+.locationInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.locationDetails {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.locationIcon {
+  width: 20px;
+  height: 20px;
+  color: #666;
+  flex-shrink: 0;
+}
+
+.address {
+  color: #999;
+  font-size: 13px;
+}
+
+.checkMapButton {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: #d32f2f;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  padding: 5px 0;
+  transition: color 0.2s;
+}
+
+.checkMapButton:hover {
+  color: #b71c1c;
+}
+
+/* Organizer */
+.organizerName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* Contact Section */
+.contactCard {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  padding: 10px;
+  background: #f8f8f8;
+  border-radius: 10px;
+}
+
+.contactPhoto {
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+}
+
+.contactInfo {
+  flex: 1;
+}
+
+.contactName {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1a1a1a;
+  margin: 0 0 5px 0;
+}
+
+.contactPhone,
+.contactEmail {
+  font-size: 14px;
+  margin: 2px 0;
+}
+
+.contactPhone a,
+.contactEmail a {
+  color: #1976d2;
+  text-decoration: none;
+}
+
+.contactPhone a:hover,
+.contactEmail a:hover {
+  text-decoration: underline;
+}
+
+/* Additional Info */
+.additionalInfo {
+  padding: 20px;
+  background: #f8f8f8;
+}
+
+.infoItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.infoItem:last-child {
+  border-bottom: none;
+}
+
+.infoLabel {
+  font-size: 14px;
+  color: #666;
+  font-weight: 500;
+}
+
+.infoValue {
+  font-size: 14px;
+  color: #333;
+  font-weight: 600;
+}
+
+.externalLink {
+  color: #1976d2;
+  text-decoration: none;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.externalLink:hover {
+  text-decoration: underline;
+}
+
+/* Loading & Error States */
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.retryButton {
+  padding: 10px 30px;
+  background: white;
+  color: #1a5f5a;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.retryButton:hover {
+  background: #f0f0f0;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 375px) {
+  .title {
+    font-size: 20px;
+  }
+  
+  .sectionTitle {
+    font-size: 16px;
+  }
+  
+  .contactPhoto {
+    width: 50px;
+    height: 50px;
+  }
+}

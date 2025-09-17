@@ -4,21 +4,23 @@
  * @description Обеспечивает CRUD операции для активностей через Supabase REST API
  */
 
-import { 
-  apiClient, 
+import {
+  apiClient,
   storageClient,
-  buildFilterQuery, 
-  buildPaginationConfig, 
+  buildFilterQuery,
+  buildPaginationConfig,
   buildOrderQuery,
-  API_CONSTANTS 
+  API_CONSTANTS
 } from './config';
-import { 
-  Activity, 
-  ActivityFormData, 
-  ActivityFilters, 
-  ApiListResponse, 
-  Category, 
-  Tag 
+import {
+  Activity,
+  ActivityFormData,
+  ActivityFilters,
+  ApiListResponse,
+  Category,
+  Tag,
+  User,
+  UserRole
 } from '../types';
 import { AxiosResponse } from 'axios';
 
@@ -29,16 +31,17 @@ import { AxiosResponse } from 'axios';
  */
 class ActivitiesAPI {
   private readonly endpoint = '/activities';
+  private readonly fullViewEndpoint = '/activities_full';
 
   /**
-   * Получение списка активностей с фильтрацией и пагинацией
+   * Получение списка активностей с фильтрацией и пагинацией, используя view `activities_full`
    * @param {ActivityFilters} filters - Фильтры для поиска
    * @param {number} page - Номер страницы (начиная с 1)
    * @param {number} limit - Количество элементов на странице
    * @param {string} orderBy - Поле для сортировки
    * @param {boolean} ascending - Направление сортировки
    * @returns {Promise<ApiListResponse<Activity>>} Список активностей с метаданными
-   * 
+   *
    * @example
    * const activities = await activitiesAPI.getActivities(
    *   { categoryId: '123', freeOnly: true },
@@ -58,21 +61,20 @@ class ActivitiesAPI {
     try {
       // Подготавливаем параметры запроса
       const queryParams: Record<string, any> = {
-        is_deleted: false, // Не показываем удаленные активности
+        is_deleted: 'is.false', // Используем 'is.false' для точного соответствия
       };
 
       // Добавляем фильтры
       if (filters.search) {
-        // Для текстового поиска используем специальную функцию на бэкенде
-        queryParams.or = `(title.ilike.*${filters.search}*,description.ilike.*${filters.search}*,location.ilike.*${filters.search}*)`;
+        queryParams.or = `(title.ilike.*${filters.search}*,description.ilike.*${filters.search}*,location.ilike.*${filters.search}*,organizer_name.ilike.*${filters.search}*)`;
       }
 
       if (filters.categoryId) {
-        queryParams.category_id = filters.categoryId;
+        queryParams.category_id = `eq.${filters.categoryId}`;
       }
 
       if (filters.type) {
-        queryParams.type = filters.type;
+        queryParams.type = `eq.${filters.type}`;
       }
 
       if (filters.location) {
@@ -80,13 +82,13 @@ class ActivitiesAPI {
       }
 
       if (filters.freeOnly) {
-        queryParams.price = 0;
+        queryParams.price = 'eq.0';
       } else {
         if (filters.minPrice !== undefined) {
           queryParams.price = `gte.${filters.minPrice}`;
         }
         if (filters.maxPrice !== undefined) {
-          queryParams.price = `lte.${filters.maxPrice}`;
+          queryParams.price = `${queryParams.price ? queryParams.price + ',' : ''}lte.${filters.maxPrice}`;
         }
       }
 
@@ -95,9 +97,9 @@ class ActivitiesAPI {
       const orderQuery = buildOrderQuery(orderBy, ascending);
       const paginationConfig = buildPaginationConfig(page, limit);
 
-      // Выполняем запрос
-      const response: AxiosResponse<Activity[]> = await apiClient.get(
-        `/activities?${filterQuery}&order=${orderQuery}&select=*,category:categories(*),tags:activity_tags(tag:tags(*))`,
+      // Выполняем запрос к view `activities_full`
+      const response: AxiosResponse<any[]> = await apiClient.get(
+        `${this.fullViewEndpoint}?${filterQuery}&order=${orderQuery}&select=*`,
         paginationConfig
       );
 
@@ -128,23 +130,23 @@ class ActivitiesAPI {
    * @param {string} id - ID активности
    * @returns {Promise<Activity>} Активность с полной информацией
    * @throws {ApiError} Если активность не найдена
-   * 
+   *
    * @example
    * const activity = await activitiesAPI.getActivityById('123-456-789');
    */
   async getActivityById(id: string): Promise<Activity> {
     try {
-      const response: AxiosResponse<Activity[]> = await apiClient.get(
-        `/activities?id=eq.${id}&select=*,category:categories(*),tags:activity_tags(tag:tags(*)),organizer:user_profiles(*)`
+      const response: AxiosResponse<any[]> = await apiClient.get(
+        `${this.fullViewEndpoint}?id=eq.${id}&select=*`
       );
 
       if (!response.data || response.data.length === 0) {
-        throw new Error('Активность не найдена');
+        throw new Error('Activity not found');
       }
 
       return this.transformActivity(response.data[0]);
     } catch (error) {
-      console.error('Ошибка получения активности:', error);
+      console.error('Error fetching activity by ID:', error);
       throw error;
     }
   }
@@ -154,7 +156,7 @@ class ActivitiesAPI {
    * @param {ActivityFormData} data - Данные для создания активности
    * @returns {Promise<Activity>} Созданная активность
    * @throws {ApiError} Ошибка создания
-   * 
+   *
    * @example
    * const newActivity = await activitiesAPI.createActivity({
    *   title: 'Футбольная секция',
@@ -221,7 +223,7 @@ class ActivitiesAPI {
    * @param {Partial<ActivityFormData>} data - Данные для обновления
    * @returns {Promise<Activity>} Обновленная активность
    * @throws {ApiError} Ошибка обновления
-   * 
+   *
    * @example
    * const updated = await activitiesAPI.updateActivity('123', {
    *   title: 'Новое название',
@@ -238,7 +240,7 @@ class ActivitiesAPI {
 
       // Подготавливаем данные для обновления
       const updateData: any = {};
-      
+
       if (data.title !== undefined) updateData.title = data.title;
       if (data.description !== undefined) {
         updateData.description = data.description;
@@ -283,7 +285,7 @@ class ActivitiesAPI {
    * @param {string} id - ID активности
    * @returns {Promise<void>}
    * @throws {ApiError} Ошибка удаления
-   * 
+   *
    * @example
    * await activitiesAPI.softDeleteActivity('123');
    */
@@ -304,7 +306,7 @@ class ActivitiesAPI {
    * @param {string} id - ID активности
    * @returns {Promise<void>}
    * @throws {ApiError} Ошибка восстановления
-   * 
+   *
    * @example
    * await activitiesAPI.restoreActivity('123');
    */
@@ -325,7 +327,7 @@ class ActivitiesAPI {
    * @param {string} id - ID активности
    * @returns {Promise<void>}
    * @throws {ApiError} Ошибка удаления
-   * 
+   *
    * @example
    * await activitiesAPI.deleteActivityPermanently('123');
    */
@@ -333,7 +335,7 @@ class ActivitiesAPI {
     try {
       // Получаем активность для удаления изображения
       const activity = await this.getActivityById(id);
-      
+
       // Удаляем изображение из хранилища
       if (activity.imageUrl) {
         await this.deleteImage(activity.imageUrl);
@@ -352,22 +354,22 @@ class ActivitiesAPI {
    * @param {string} userId - ID пользователя
    * @param {boolean} includeDeleted - Включать удаленные активности
    * @returns {Promise<Activity[]>} Список активностей пользователя
-   * 
+   *
    * @example
    * const userActivities = await activitiesAPI.getUserActivities('user-123');
    */
   async getUserActivities(userId: string, includeDeleted: boolean = false): Promise<Activity[]> {
     try {
       let query = `/activities?user_id=eq.${userId}`;
-      
+
       if (!includeDeleted) {
         query += '&is_deleted=eq.false';
       }
-      
+
       query += '&select=*,category:categories(*),tags:activity_tags(tag:tags(*))';
 
       const response: AxiosResponse<Activity[]> = await apiClient.get(query);
-      
+
       return response.data.map(this.transformActivity);
     } catch (error) {
       console.error('Ошибка получения активностей пользователя:', error);
@@ -378,7 +380,7 @@ class ActivitiesAPI {
   /**
    * Получение всех категорий
    * @returns {Promise<Category[]>} Список категорий
-   * 
+   *
    * @example
    * const categories = await activitiesAPI.getCategories();
    */
@@ -395,7 +397,7 @@ class ActivitiesAPI {
   /**
    * Получение всех тегов
    * @returns {Promise<Tag[]>} Список тегов
-   * 
+   *
    * @example
    * const tags = await activitiesAPI.getTags();
    */
@@ -415,7 +417,7 @@ class ActivitiesAPI {
    * @param {number} page - Номер страницы
    * @param {number} limit - Количество элементов
    * @returns {Promise<ApiListResponse<Activity>>} Результаты поиска
-   * 
+   *
    * @example
    * const results = await activitiesAPI.searchActivities('футбол');
    */
@@ -463,7 +465,11 @@ class ActivitiesAPI {
       shortDescription: activity.short_description,
       type: activity.type,
       categoryId: activity.category_id,
-      category: activity.category,
+      category: {
+        id: activity.category_id,
+        name: activity.category_name,
+        icon: activity.category_icon,
+      } as Category,
       location: activity.location,
       address: activity.address,
       coordinates: activity.coordinates,
@@ -471,8 +477,15 @@ class ActivitiesAPI {
       currency: activity.currency || 'EUR',
       imageUrl: activity.image_url,
       userId: activity.user_id,
-      organizer: activity.organizer,
-      tags: activity.tags?.map((at: any) => at.tag) || [],
+      organizer: {
+        id: activity.user_id,
+        fullName: activity.organizer_name,
+        organizationName: activity.organizer_organization,
+        email: activity.organizer_email,
+        role: UserRole.ORGANIZER, // Assuming role from context, as it's not in the view
+        isApproved: true, // Assuming approved, not available in view
+      } as User,
+      tags: activity.tags || [],
       startDate: activity.start_date ? new Date(activity.start_date) : undefined,
       endDate: activity.end_date ? new Date(activity.end_date) : undefined,
       maxParticipants: activity.max_participants,
@@ -482,7 +495,7 @@ class ActivitiesAPI {
       contactPhone: activity.contact_phone,
       externalLink: activity.external_link,
       isDeleted: activity.is_deleted,
-      isApproved: activity.isApproved || false,
+      isApproved: activity.is_approved || false,
       createdAt: new Date(activity.created_at),
       updatedAt: new Date(activity.updated_at)
     };
@@ -574,7 +587,7 @@ class ActivitiesAPI {
     try {
       // Удаляем старые связи
       await apiClient.delete(`/activity_tags?activity_id=eq.${activityId}`);
-      
+
       // Добавляем новые
       if (tagIds.length > 0) {
         await this.addTagsToActivity(activityId, tagIds);
@@ -641,7 +654,7 @@ class ActivitiesAPI {
 
   /**
    * Получение активностей, ожидающих одобрения
-   * @param {Object} params - Параметры запроса  
+   * @param {Object} params - Параметры запроса
    * @param {number} params.page - Номер страницы
    * @param {number} params.limit - Количество элементов на странице
    * @returns {Promise<ApiListResponse<Activity>>} Список активностей
@@ -652,11 +665,11 @@ class ActivitiesAPI {
   } = {}): Promise<ApiListResponse<Activity>> {
     try {
       const { page = 1, limit = 20 } = params;
-      
+
       const url = `${this.endpoint}?isApproved=eq.false&is_deleted=eq.false&order=created_at.desc&select=*,category:categories(*),organizer:user_profiles(*),tags:activity_tags(tag:tags(*))`;
 
       const response = await apiClient.get(url, buildPaginationConfig(page, limit));
-      
+
       const activities = response.data.map(this.transformActivity.bind(this));
       const total = parseInt(response.headers['content-range']?.split('/')[1] || '0');
 

@@ -1,0 +1,126 @@
+/**
+ * Стили для стартовой страницы Cover
+ * Дизайн: темно-зеленый фон, белый логотип, кнопки с зеленой обводкой
+ */
+
+.cover {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1a5f5a 0%, #0d3b36 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.container {
+  width: 100%;
+  max-width: 375px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 80px;
+}
+
+/* Логотип и название */
+.logoContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+  margin-top: -50px;
+}
+
+.logo {
+  height: 120px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.title {
+  font-size: 48px;
+  font-weight: 700;
+  color: white;
+  margin: 0;
+  letter-spacing: -1px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Кнопки */
+.buttonsContainer {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  padding: 0 40px;
+}
+
+.button {
+  width: 100%;
+  padding: 16px 32px;
+  border-radius: 50px;
+  font-size: 18px;
+  font-weight: 600;
+  font-family: 'Montserrat', sans-serif;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: capitalize;
+}
+
+/* Кнопка Guest - темная с зеленой обводкой */
+.guestButton {
+  background: rgba(13, 59, 54, 0.7);
+  border: 2px solid #4fd1c5;
+  color: white;
+}
+
+.guestButton:hover {
+  background: rgba(13, 59, 54, 0.9);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 209, 197, 0.3);
+}
+
+/* Кнопка Log in - прозрачная с зеленой обводкой */
+.loginButton {
+  background: transparent;
+  border: 2px solid #4fd1c5;
+  color: white;
+}
+
+.loginButton:hover {
+  background: rgba(79, 209, 197, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 209, 197, 0.3);
+}
+
+/* Кнопка Sign up - прозрачная с зеленой обводкой */
+.signUpButton {
+  background: transparent;
+  border: 2px solid #4fd1c5;
+  color: white;
+}
+
+.signUpButton:hover {
+  background: rgba(79, 209, 197, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(79, 209, 197, 0.3);
+}
+
+/* Мобильная адаптация */
+@media (max-width: 375px) {
+  .container {
+    gap: 60px;
+  }
+  
+  .title {
+    font-size: 42px;
+  }
+  
+  .buttonsContainer {
+    padding: 0 20px;
+  }
+  
+  .button {
+    font-size: 16px;
+    padding: 14px 28px;
+  }
+}

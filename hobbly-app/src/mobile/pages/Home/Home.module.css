@@ -1,0 +1,223 @@
+/**
+ * Стили для Homepage
+ * Дизайн: темно-зеленый header, серый фон, карточки с цветными рамками
+ */
+
+.home {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #8B8B8B;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #1a5f5a 0%, #0d3b36 100%);
+  padding: 15px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.logoText {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  font-family: 'Montserrat', sans-serif;
+}
+
+/* Content */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 15px 80px; /* Отступ снизу для навигации */
+}
+
+/* Activities List */
+.activitiesList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Activity Card */
+.activityCard {
+  background: white;
+  border-radius: 20px;
+  border: 4px solid;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.activityCard:active {
+  transform: scale(0.98);
+}
+
+/* Image Container */
+.imageContainer {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.activityImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Activity Info */
+.activityInfo {
+  padding: 15px;
+}
+
+.activityTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #1a1a1a;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.activityDescription {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 15px 0;
+  line-height: 1.4;
+}
+
+.label {
+  font-weight: 600;
+  color: #333;
+}
+
+/* Activity Meta */
+.activityMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #666;
+}
+
+.organizer {
+  font-weight: 500;
+  color: #333;
+}
+
+.arrow {
+  margin-left: auto;
+  font-size: 20px;
+  font-weight: 300;
+  color: #999;
+}
+
+/* Loading States */
+.loadingContainer,
+.errorContainer,
+.emptyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  gap: 20px;
+  color: white;
+  font-size: 16px;
+  font-family: 'Montserrat', sans-serif;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.retryButton {
+  padding: 10px 30px;
+  background: white;
+  color: #1a5f5a;
+  border: none;
+  border-radius: 25px;
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.3s ease;
+}
+
+.retryButton:hover {
+  background: #f0f0f0;
+}
+
+.loadMoreContainer {
+  display: flex;
+  justify-content: center;
+  padding: 20px;
+}
+
+/* Адаптация для маленьких экранов */
+@media (max-width: 375px) {
+  .header {
+    padding: 12px 15px;
+  }
+  
+  .logoText {
+    font-size: 20px;
+  }
+  
+  .content {
+    padding: 15px 10px 80px;
+  }
+  
+  .activityCard {
+    border-width: 3px;
+  }
+  
+  .activityTitle {
+    font-size: 18px;
+  }
+  
+  .activityDescription {
+    font-size: 13px;
+  }
+  
+  .metaItem {
+    font-size: 13px;
+  }
+}
