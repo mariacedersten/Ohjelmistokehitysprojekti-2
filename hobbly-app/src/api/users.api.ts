@@ -33,23 +33,34 @@ export class UsersAPI {
   } = {}): Promise<ApiListResponse<User>> {
     try {
       const { page = 1, limit = 20, search, role, isApproved } = params;
-      
+
       const filters: Record<string, any> = {};
-      
+      const queryParts: string[] = [];
+
+      // Handle search with 'or' parameter separately
       if (search) {
-        filters['or'] = `full_name.ilike.*${search}*,email.ilike.*${search}*,organization_name.ilike.*${search}*`;
+        const searchTerm = encodeURIComponent(search);
+        queryParts.push(`or=(full_name.ilike.*${searchTerm}*,email.ilike.*${searchTerm}*,organization_name.ilike.*${searchTerm}*)`);
       }
-      
+
       if (role) {
         filters.role = `eq.${role}`;
       }
-      
+
       if (isApproved !== undefined) {
         filters.isApproved = `eq.${isApproved}`;
       }
 
-      const queryString = buildFilterQuery(filters);
+      // Build query string manually to properly handle 'or' parameter
+      const filterQuery = buildFilterQuery(filters);
+      if (filterQuery) {
+        queryParts.push(filterQuery);
+      }
+
+      const queryString = queryParts.join('&');
       const url = `${this.endpoint}?${queryString}&order=created_at.desc`;
+
+      console.log('Users API URL:', url); // Debug log
 
       const response = await apiClient.get(url, buildPaginationConfig(page, limit));
       

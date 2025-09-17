@@ -116,6 +116,9 @@
             "$ref": "#/parameters/rowFilter.activities_full.updated_at"
           },
           {
+            "$ref": "#/parameters/rowFilter.activities_full.isApproved"
+          },
+          {
             "$ref": "#/parameters/rowFilter.activities_full.category_name"
           },
           {
@@ -1323,6 +1326,10 @@
           "format": "timestamp with time zone",
           "type": "string"
         },
+        "isApproved": {
+          "format": "boolean",
+          "type": "boolean"
+        },
         "category_name": {
           "format": "character varying",
           "maxLength": 255,
@@ -1925,6 +1932,12 @@
       "in": "query",
       "type": "string"
     },
+    "rowFilter.activities_full.isApproved": {
+      "name": "isApproved",
+      "required": false,
+      "in": "query",
+      "type": "string"
+    },
     "rowFilter.activities_full.category_name": {
       "name": "category_name",
       "required": false,
@@ -2350,10 +2363,5 @@
   "externalDocs": {
     "description": "PostgREST Documentation",
     "url": "https://postgrest.org/en/v\"13\"/references/api.html"
-  },
-  "servers": [
-    {
-      "url": "https://jourvbtxuyavamxvddwc.supabase.co/rest/v1"
-    }
-  ]
+  }
 }

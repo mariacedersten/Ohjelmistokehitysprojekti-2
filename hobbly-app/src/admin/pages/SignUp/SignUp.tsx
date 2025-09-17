@@ -248,7 +248,6 @@ const SignUp: React.FC = () => {
         <img src={logo} alt="Hobbly" className={styles.logo} />
       </header>
       <main className={styles.mainContent}>
-        <h1 className={styles.title}>SIGN UP</h1>
         <form onSubmit={handleSubmit} className={styles.form}>
           {/* Left Column - Personal Info */}
           <div className={styles.column}>
@@ -355,6 +354,7 @@ const SignUp: React.FC = () => {
 
           {/* Right Column - Photo Upload */}
           <div className={styles.rightSection}>
+            <h1 className={styles.pageTitle}>SIGN UP</h1>
             <div className={styles.photoUpload}>
               <p>Add photo</p>
               <div className={styles.avatarContainer}>

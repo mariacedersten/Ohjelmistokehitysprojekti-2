@@ -17,7 +17,8 @@ import styles from './Trash.module.css';
 const Trash: React.FC = () => {
   const { user } = useAuth();
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -27,19 +28,37 @@ const Trash: React.FC = () => {
     title: string;
   } | null>(null);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
 
   const itemsPerPage = 10;
 
+  // Debounce search input (wait 500ms after user stops typing)
+  useEffect(() => {
+    // Show searching indicator when user is typing
+    if (search !== debouncedSearch) {
+      setSearching(true);
+    }
+
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      // Reset to first page when search changes
+      if (search !== debouncedSearch) {
+        setCurrentPage(1);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search, debouncedSearch]);
+
   useEffect(() => {
     loadDeletedActivities();
-  }, [currentPage, search]);
+  }, [currentPage, debouncedSearch]);
 
   /**
    * Load deleted activities from API
    */
   const loadDeletedActivities = async () => {
     try {
-      setLoading(true);
       setError(null);
 
       // Get only soft-deleted activities
@@ -48,7 +67,7 @@ const Trash: React.FC = () => {
         itemsPerPage,
         user?.id, // current user ID
         user?.role, // current user role
-        search
+        debouncedSearch
       );
 
       setActivities(response.data);
@@ -57,7 +76,8 @@ const Trash: React.FC = () => {
       console.error('Failed to load deleted activities:', err);
       setError('Failed to load deleted activities. Please try again.');
     } finally {
-      setLoading(false);
+      setInitialLoading(false);
+      setSearching(false);
     }
   };
 
@@ -109,7 +129,7 @@ const Trash: React.FC = () => {
     return user?.role === UserRole.ADMIN || activity.userId === user?.id;
   };
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className={styles.container}>
         <div className={styles.loading}>Loading deleted activities...</div>
@@ -135,13 +155,20 @@ const Trash: React.FC = () => {
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerActions}>
-          <input
-            type="search"
-            placeholder="Search deleted..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-            className={styles.search}
-          />
+          <div className={styles.searchContainer}>
+            <input
+              type="search"
+              placeholder="Search deleted..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+              className={`${styles.search} ${searching ? styles.searching : ''}`}
+            />
+            {searching && (
+              <div className={styles.searchIndicator}>
+                <span className={styles.spinner}>🔍</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

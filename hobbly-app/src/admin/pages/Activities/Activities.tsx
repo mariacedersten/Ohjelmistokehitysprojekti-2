@@ -19,7 +19,8 @@ const Activities: React.FC = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
@@ -31,6 +32,11 @@ const Activities: React.FC = () => {
 
   // Debounce search input (wait 500ms after user stops typing)
   useEffect(() => {
+    // Show searching indicator when user is typing
+    if (search !== debouncedSearch) {
+      setSearching(true);
+    }
+
     const timer = setTimeout(() => {
       setDebouncedSearch(search);
       // Reset to first page when search changes
@@ -53,7 +59,6 @@ const Activities: React.FC = () => {
    */
   const loadActivities = async () => {
     try {
-      setLoading(true);
       setError(null);
 
       const response = await activitiesAPI.getActivities(
@@ -70,7 +75,8 @@ const Activities: React.FC = () => {
       console.error('Failed to load activities:', err);
       setError('Failed to load activities. Please try again.');
     } finally {
-      setLoading(false);
+      setInitialLoading(false); // Only set false after first load
+      setSearching(false); // Hide searching indicator
     }
   };
 
@@ -116,7 +122,7 @@ const Activities: React.FC = () => {
     return `${price}€/h`;
   };
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className={styles.container}>
         <div className={styles.loading}>Loading activities...</div>
@@ -142,13 +148,20 @@ const Activities: React.FC = () => {
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerActions}>
-          <input
-            type="search"
-            placeholder="Search activities..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-            className={styles.search}
-          />
+          <div className={styles.searchContainer}>
+            <input
+              type="search"
+              placeholder="Search activities..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+              className={`${styles.search} ${searching ? styles.searching : ''}`}
+            />
+            {searching && (
+              <div className={styles.searchIndicator}>
+                <span className={styles.spinner}>🔍</span>
+              </div>
+            )}
+          </div>
           <Link to="/admin/activities/new" className={styles.addButton}>
             Add activity
           </Link>

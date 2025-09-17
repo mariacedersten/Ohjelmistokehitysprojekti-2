@@ -21,19 +21,38 @@ interface UserRequest {
 const UsersRequests: React.FC = () => {
   const { user } = useAuth();
   const [items, setItems] = useState<UserRequest[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
   const pageSize = 10;
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Debounce search input (wait 500ms after user stops typing)
+  useEffect(() => {
+    // Show searching indicator when user is typing
+    if (search !== debouncedSearch) {
+      setSearching(true);
+    }
+
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      // Reset to first page when search changes
+      if (search !== debouncedSearch) {
+        setCurrentPage(1);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search, debouncedSearch]);
 
   useEffect(() => {
     const load = async () => {
       try {
-        setLoading(true);
         setError(null);
-        const res = await usersAPI.getUsers({ page: currentPage, limit: pageSize, isApproved: false, search });
+        const res = await usersAPI.getUsers({ page: currentPage, limit: pageSize, isApproved: false, search: debouncedSearch });
         const mapped: UserRequest[] = res.data.map(u => ({
           id: u.id,
           name: u.fullName || u.email,
@@ -47,11 +66,12 @@ const UsersRequests: React.FC = () => {
         console.error('Failed to load user requests:', e);
         setError('Failed to load user requests.');
       } finally {
-        setLoading(false);
+        setInitialLoading(false);
+        setSearching(false);
       }
     };
     load();
-  }, [currentPage, search]);
+  }, [currentPage, debouncedSearch]);
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / pageSize)), [total, pageSize]);
 
@@ -73,7 +93,7 @@ const UsersRequests: React.FC = () => {
     }
   };
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className={styles.container}><div className={styles.loading}>Loading user requests...</div></div>
     );
@@ -89,13 +109,20 @@ const UsersRequests: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.headerActions}>
-          <input
-            type="search"
-            placeholder="Search users..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-            className={styles.search}
-          />
+          <div className={styles.searchContainer}>
+            <input
+              type="search"
+              placeholder="Search users..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+              className={`${styles.search} ${searching ? styles.searching : ''}`}
+            />
+            {searching && (
+              <div className={styles.searchIndicator}>
+                <span className={styles.spinner}>🔍</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

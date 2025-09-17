@@ -769,6 +769,30 @@ class ActivitiesAPI {
   }
 
   /**
+   * Получение всех типов активностей
+   * @returns {Promise<ActivityType[]>} Список типов активностей
+   *
+   * @example
+   * const types = await activitiesAPI.getActivityTypes();
+   */
+  async getActivityTypes(): Promise<{id: string, name: string, value: string}[]> {
+    try {
+      const response: AxiosResponse<{id: string, name: string, value: string}[]> = await apiClient.get('/activity_types');
+      return response.data;
+    } catch (error) {
+      console.error('Ошибка получения типов активностей:', error);
+      // Fallback - возвращаем статичные типы если таблица не существует
+      return [
+        { id: '1', name: 'Activity', value: 'activity' },
+        { id: '2', name: 'Event', value: 'event' },
+        { id: '3', name: 'Hobby Opportunity', value: 'hobby_opportunity' },
+        { id: '4', name: 'Club', value: 'club' },
+        { id: '5', name: 'Competition', value: 'competition' }
+      ];
+    }
+  }
+
+  /**
    * Поиск активностей (полнотекстовый поиск)
    * @param {string} query - Поисковый запрос
    * @param {number} page - Номер страницы

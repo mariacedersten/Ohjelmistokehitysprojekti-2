@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import usersAPI from '../../../api/users.api';
 import { User, UserRole } from '../../../types';
@@ -16,39 +17,73 @@ import styles from './Users.module.css';
  */
 const Users: React.FC = () => {
   const { user } = useAuth();
+  const navigate = useNavigate();
   const [users, setUsers] = useState<User[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [editUser, setEditUser] = useState<User | null>(null);
+  const [editFormData, setEditFormData] = useState<{
+    fullName: string;
+    organizationName: string;
+    phone: string;
+    role: UserRole;
+    isApproved: boolean;
+  }>({
+    fullName: '',
+    organizationName: '',
+    phone: '',
+    role: UserRole.USER,
+    isApproved: false
+  });
 
   const itemsPerPage = 10;
+
+  // Debounce search input (wait 500ms after user stops typing)
+  useEffect(() => {
+    // Show searching indicator when user is typing
+    if (search !== debouncedSearch) {
+      setSearching(true);
+    }
+
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      // Reset to first page when search changes
+      if (search !== debouncedSearch) {
+        setCurrentPage(1);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search, debouncedSearch]);
 
   useEffect(() => {
     // Check if user has admin role
     if (user?.role !== UserRole.ADMIN) {
       setError('Access denied. Admin role required.');
-      setLoading(false);
+      setInitialLoading(false);
       return;
     }
 
     loadUsers();
-  }, [currentPage, search, user]);
+  }, [currentPage, debouncedSearch, user]);
 
   /**
    * Load users from API
    */
   const loadUsers = async () => {
     try {
-      setLoading(true);
       setError(null);
 
       const response = await usersAPI.getUsers({
         page: currentPage,
         limit: itemsPerPage,
-        search: search || undefined
+        search: debouncedSearch || undefined
       });
       setUsers(response.data);
       setTotalPages(Math.ceil(response.total / itemsPerPage));
@@ -56,7 +91,8 @@ const Users: React.FC = () => {
       console.error('Failed to load users:', err);
       setError('Failed to load users. Please try again.');
     } finally {
-      setLoading(false);
+      setInitialLoading(false);
+      setSearching(false);
     }
   };
 
@@ -75,16 +111,57 @@ const Users: React.FC = () => {
   };
 
   /**
-   * Handle user role update
+   * Open edit modal for user
    */
-  const handleRoleUpdate = async (userId: string, newRole: UserRole) => {
+  const handleEditUser = (userData: User) => {
+    setEditUser(userData);
+    setEditFormData({
+      fullName: userData.fullName || '',
+      organizationName: userData.organizationName || '',
+      phone: userData.phone || '',
+      role: userData.role,
+      isApproved: userData.isApproved || false
+    });
+  };
+
+  /**
+   * Handle edit form input changes
+   */
+  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+    const { name, value, type } = e.target;
+    setEditFormData(prev => ({
+      ...prev,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
+    }));
+  };
+
+  /**
+   * Save user changes
+   */
+  const handleSaveUser = async () => {
+    if (!editUser) return;
+
     try {
-      await usersAPI.updateUser(userId, { role: newRole });
+      await usersAPI.updateUser(editUser.id, {
+        fullName: editFormData.fullName,
+        organizationName: editFormData.organizationName,
+        phone: editFormData.phone,
+        role: editFormData.role,
+        isApproved: editFormData.isApproved
+      });
+      setEditUser(null);
       await loadUsers(); // Reload the list
     } catch (err) {
-      console.error('Failed to update user role:', err);
-      setError('Failed to update user role. Please try again.');
+      console.error('Failed to update user:', err);
+      setError('Failed to update user. Please try again.');
     }
+  };
+
+  /**
+   * Navigate to user profile page
+   */
+  const handleViewProfile = (userId: string) => {
+    navigate(`/admin/personal-info?userId=${userId}`);
   };
 
   /**
@@ -123,7 +200,7 @@ const Users: React.FC = () => {
     return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=48&background=f0f0f0&color=666&format=png`;
   };
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className={styles.container}>
         <div className={styles.loading}>Loading users...</div>
@@ -151,13 +228,20 @@ const Users: React.FC = () => {
       {/* Header */}
       <div className={styles.header}>
         <div className={styles.headerActions}>
-          <input
-            type="search"
-            placeholder="Search users..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-            className={styles.search}
-          />
+          <div className={styles.searchContainer}>
+            <input
+              type="search"
+              placeholder="Search users..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+              className={`${styles.search} ${searching ? styles.searching : ''}`}
+            />
+            {searching && (
+              <div className={styles.searchIndicator}>
+                <span className={styles.spinner}>🔍</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 
@@ -180,7 +264,11 @@ const Users: React.FC = () => {
                 <tr key={userData.id} className={styles.tableRow}>
                   <td className={styles.tableCell}>
                     <div className={styles.userInfo}>
-                      <div className={styles.userAvatar}>
+                      <div
+                        className={`${styles.userAvatar} ${styles.clickableAvatar}`}
+                        onClick={() => handleViewProfile(userData.id)}
+                        title="View profile"
+                      >
                         <img
                           src={getUserAvatar(userData)}
                           alt={userData.fullName || userData.email}
@@ -217,14 +305,9 @@ const Users: React.FC = () => {
                   <td className={styles.tableCell}>
                     <div className={styles.actionButtons}>
                       <button
-                        onClick={() => {
-                          const newRole = userData.role === UserRole.ADMIN
-                            ? UserRole.ORGANIZER
-                            : UserRole.ADMIN;
-                          handleRoleUpdate(userData.id, newRole);
-                        }}
+                        onClick={() => handleEditUser(userData)}
                         className={styles.editButton}
-                        title="Toggle admin role"
+                        title="Edit user"
                         disabled={userData.id === user?.id} // Prevent self-modification
                       >
                         ✏️
@@ -305,6 +388,95 @@ const Users: React.FC = () => {
                 className={styles.confirmDeleteButton}
               >
                 Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Edit User Modal */}
+      {editUser && (
+        <div className={styles.modalOverlay}>
+          <div className={styles.modal}>
+            <h3>Edit User</h3>
+            <div className={styles.editForm}>
+              <div className={styles.formGroup}>
+                <label>Full Name:</label>
+                <input
+                  type="text"
+                  name="fullName"
+                  value={editFormData.fullName}
+                  onChange={handleEditFormChange}
+                  className={styles.formInput}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Organization Name:</label>
+                <input
+                  type="text"
+                  name="organizationName"
+                  value={editFormData.organizationName}
+                  onChange={handleEditFormChange}
+                  className={styles.formInput}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Phone:</label>
+                <input
+                  type="text"
+                  name="phone"
+                  value={editFormData.phone}
+                  onChange={handleEditFormChange}
+                  className={styles.formInput}
+                />
+              </div>
+
+              <div className={styles.formGroup}>
+                <label>Role:</label>
+                <select
+                  name="role"
+                  value={editFormData.role}
+                  onChange={handleEditFormChange}
+                  className={styles.formInput}
+                >
+                  <option value={UserRole.USER}>User</option>
+                  <option value={UserRole.ORGANIZER}>Organizer</option>
+                  <option value={UserRole.ADMIN}>Admin</option>
+                </select>
+              </div>
+
+              <div className={styles.formGroup}>
+                <label className={styles.checkboxLabel}>
+                  <input
+                    type="checkbox"
+                    name="isApproved"
+                    checked={editFormData.isApproved}
+                    onChange={handleEditFormChange}
+                  />
+                  Approved
+                </label>
+              </div>
+
+              <div className={styles.userInfo}>
+                <p><strong>Email:</strong> {editUser.email}</p>
+                <p><strong>Created:</strong> {formatDate(editUser.createdAt)}</p>
+              </div>
+            </div>
+
+            <div className={styles.modalActions}>
+              <button
+                onClick={() => setEditUser(null)}
+                className={styles.cancelButton}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleSaveUser}
+                className={styles.saveButton}
+              >
+                Save Changes
               </button>
             </div>
           </div>

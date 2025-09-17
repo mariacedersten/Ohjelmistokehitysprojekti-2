@@ -22,19 +22,38 @@ interface ActivityRequestView {
 const ActivitiesRequests: React.FC = () => {
   const { user } = useAuth();
   const [items, setItems] = useState<ActivityRequestView[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [initialLoading, setInitialLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [total, setTotal] = useState(0);
   const pageSize = 10;
   const [search, setSearch] = useState('');
+  const [debouncedSearch, setDebouncedSearch] = useState('');
+
+  // Debounce search input (wait 500ms after user stops typing)
+  useEffect(() => {
+    // Show searching indicator when user is typing
+    if (search !== debouncedSearch) {
+      setSearching(true);
+    }
+
+    const timer = setTimeout(() => {
+      setDebouncedSearch(search);
+      // Reset to first page when search changes
+      if (search !== debouncedSearch) {
+        setCurrentPage(1);
+      }
+    }, 500);
+
+    return () => clearTimeout(timer);
+  }, [search, debouncedSearch]);
 
   useEffect(() => {
     const load = async () => {
       try {
-        setLoading(true);
         setError(null);
-        const res = await activitiesAPI.getPendingActivities({ page: currentPage, limit: pageSize, search });
+        const res = await activitiesAPI.getPendingActivities({ page: currentPage, limit: pageSize, search: debouncedSearch });
         const mapped: ActivityRequestView[] = res.data.map((a: Activity) => ({
           id: a.id,
           title: a.title,
@@ -49,11 +68,12 @@ const ActivitiesRequests: React.FC = () => {
         console.error('Failed to load activity requests:', e);
         setError('Failed to load activity requests.');
       } finally {
-        setLoading(false);
+        setInitialLoading(false);
+        setSearching(false);
       }
     };
     load();
-  }, [currentPage, search]);
+  }, [currentPage, debouncedSearch]);
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / pageSize)), [total, pageSize]);
 
@@ -75,7 +95,7 @@ const ActivitiesRequests: React.FC = () => {
     }
   };
 
-  if (loading) {
+  if (initialLoading) {
     return (
       <div className={styles.container}><div className={styles.loading}>Loading activity requests...</div></div>
     );
@@ -91,13 +111,20 @@ const ActivitiesRequests: React.FC = () => {
     <div className={styles.container}>
       <div className={styles.header}>
         <div className={styles.headerActions}>
-          <input
-            type="search"
-            placeholder="Search requests..."
-            value={search}
-            onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-            className={styles.search}
-          />
+          <div className={styles.searchContainer}>
+            <input
+              type="search"
+              placeholder="Search requests..."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
+              className={`${styles.search} ${searching ? styles.searching : ''}`}
+            />
+            {searching && (
+              <div className={styles.searchIndicator}>
+                <span className={styles.spinner}>🔍</span>
+              </div>
+            )}
+          </div>
         </div>
       </div>
 

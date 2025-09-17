@@ -52,12 +52,45 @@
   gap: 12px;
 }
 
+.searchContainer {
+  position: relative;
+  display: inline-block;
+}
+
 .search {
   min-width: 280px;
   padding: 10px 12px;
   border: 1px solid #dee2e6;
   border-radius: 8px;
   font-size: 14px;
+  padding-right: 40px; /* Space for search indicator */
+}
+
+.search.searching {
+  border-color: var(--color-primary-dark);
+  background-color: #f8f9ff;
+}
+
+.searchIndicator {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  pointer-events: none;
+}
+
+.spinner {
+  display: inline-block;
+  animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
 }
 
 .title {
@@ -137,6 +170,10 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+}
+
+.clickableAvatar {
+  cursor: pointer;
 }
 
 .userDetails {
@@ -319,7 +356,7 @@
   justify-content: center;
 }
 
-.cancelButton, .confirmDeleteButton {
+.cancelButton, .confirmDeleteButton, .saveButton {
   padding: 12px 24px;
   border: none;
   border-radius: 8px;
@@ -345,6 +382,15 @@
 
 .confirmDeleteButton:hover {
   background: #ff5252;
+}
+
+.saveButton {
+  background: var(--color-primary-dark);
+  color: white;
+}
+
+.saveButton:hover {
+  background: #1a4f4d;
 }
 
 /* Responsive Design */
@@ -453,4 +499,70 @@
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+/* Edit Form Styles */
+.editForm {
+  margin-bottom: 24px;
+  text-align: left;
+}
+
+.formGroup {
+  margin-bottom: 16px;
+}
+
+.formGroup label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
+  color: var(--color-primary-dark);
+  font-size: 14px;
+}
+
+.formInput {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  font-size: 14px;
+  transition: border-color 0.2s ease;
+  box-sizing: border-box;
+}
+
+.formInput:focus {
+  outline: none;
+  border-color: var(--color-primary-dark);
+  box-shadow: 0 0 0 2px rgba(7, 59, 58, 0.1);
+}
+
+.checkboxLabel {
+  display: flex !important;
+  align-items: center;
+  gap: 8px;
+  font-weight: 400 !important;
+  cursor: pointer;
+}
+
+.checkboxLabel input[type="checkbox"] {
+  width: auto;
+}
+
+.userInfo {
+  background: #f8f9fa;
+  padding: 12px;
+  border-radius: 6px;
+  margin-top: 16px;
+}
+
+.userInfo p {
+  margin: 4px 0;
+  font-size: 13px;
+  color: #666;
+}
+
+/* Update modal max-width for edit form */
+.modal {
+  max-width: 500px;
+  max-height: 80vh;
+  overflow-y: auto;
 }

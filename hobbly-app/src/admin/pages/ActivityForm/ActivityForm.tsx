@@ -47,10 +47,11 @@ const ActivityForm: React.FC = () => {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [categories, setCategories] = useState<Category[]>([]);
   const [tags, setTags] = useState<Tag[]>([]);
+  const [activityTypes, setActivityTypes] = useState<{id: string, name: string, value: string}[]>([]);
 
-  // Load categories and tags on component mount
+  // Load categories, tags and types on component mount
   useEffect(() => {
-    loadCategoriesAndTags();
+    loadCategoriesAndTagsAndTypes();
   }, []);
 
   // Load activity data if editing
@@ -61,18 +62,20 @@ const ActivityForm: React.FC = () => {
   }, [isEditing, id]);
 
   /**
-   * Load categories and tags from API
+   * Load categories, tags and types from API
    */
-  const loadCategoriesAndTags = async () => {
+  const loadCategoriesAndTagsAndTypes = async () => {
     try {
-      const [categoriesResponse, tagsResponse] = await Promise.all([
+      const [categoriesResponse, tagsResponse, typesResponse] = await Promise.all([
         activitiesAPI.getCategories(),
-        activitiesAPI.getTags()
+        activitiesAPI.getTags(),
+        activitiesAPI.getActivityTypes()
       ]);
       setCategories(categoriesResponse);
       setTags(tagsResponse);
+      setActivityTypes(typesResponse);
     } catch (err) {
-      console.error('Failed to load categories and tags:', err);
+      console.error('Failed to load categories, tags and types:', err);
       setError('Failed to load form data.');
     }
   };
@@ -83,7 +86,7 @@ const ActivityForm: React.FC = () => {
   const loadActivity = async (activityId: string) => {
     try {
       setLoading(true);
-      const activity = await activitiesAPI.getActivity(activityId);
+      const activity = await activitiesAPI.getActivityById(activityId);
 
       setFormData({
         title: activity.title,
@@ -214,11 +217,6 @@ const ActivityForm: React.FC = () => {
 
   return (
     <div className={styles.container}>
-      {/* Header */}
-      <div className={styles.header}>
-        <h1 className={styles.title}>ACTIVITY</h1>
-      </div>
-
       {error && (
         <div className={styles.error}>
           {error}
@@ -265,11 +263,12 @@ const ActivityForm: React.FC = () => {
                 className={styles.select}
                 required
               >
-                <option value={ActivityType.ACTIVITY}>Activity</option>
-                <option value={ActivityType.EVENT}>Event</option>
-                <option value={ActivityType.HOBBY_OPPORTUNITY}>Hobby Opportunity</option>
-                <option value={ActivityType.CLUB}>Club</option>
-                <option value={ActivityType.COMPETITION}>Competition</option>
+                <option value="">Select type</option>
+                {activityTypes.map((type) => (
+                  <option key={type.id} value={type.value}>
+                    {type.name}
+                  </option>
+                ))}
               </select>
             </div>
 

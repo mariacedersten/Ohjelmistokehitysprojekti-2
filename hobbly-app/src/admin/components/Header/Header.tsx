@@ -5,7 +5,7 @@
  */
 
 import React from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import { UserRole } from '../../../types';
 import styles from './Header.module.css';
@@ -17,6 +17,7 @@ import styles from './Header.module.css';
 const Header: React.FC = () => {
   const { user } = useAuth();
   const location = useLocation();
+  const navigate = useNavigate();
 
   /**
    * Get user display name
@@ -77,6 +78,13 @@ const Header: React.FC = () => {
     return 'ADMIN PANEL';
   };
 
+  /**
+   * Handle avatar click to navigate to profile
+   */
+  const handleAvatarClick = () => {
+    navigate('/admin/personal-info');
+  };
+
   return (
     <header className={styles.header}>
       {/* Page Title */}
@@ -90,7 +98,11 @@ const Header: React.FC = () => {
           <span className={styles.userName}>{getUserDisplayName()}</span>
           <span className={styles.userRole}>{getUserRoleDisplay()}</span>
         </div>
-        <div className={styles.userAvatar}>
+        <div
+          className={`${styles.userAvatar} ${styles.clickableAvatar}`}
+          onClick={handleAvatarClick}
+          title="Go to profile"
+        >
           <img
             src={getUserAvatar()}
             alt={getUserDisplayName()}

@@ -137,8 +137,8 @@ const Login: React.FC = () => {
 
         {/* Card section (right side) */}
         <div className="card">
-          <h2 className="card-title">Login to your panel</h2>
-          
+          <h1 className="card-title">Login to your panel</h1>
+
           {error && (
             <div className="error-message">
               {error}
