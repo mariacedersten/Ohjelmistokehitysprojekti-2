@@ -8,6 +8,8 @@ figma mobile first: https://www.figma.com/design/L2QPi6B2bLuw8EARHIdh7j/Project-
 
 figma desktop: https://www.figma.com/design/CCiNQr1dYbliBi4irSXxO0/AdminHobbly?node-id=0-1&p=f&t=ftcBUY0RnGM2jfBO-0
 
+figma website: https://www.figma.com/design/ZULnTgYQq7lur8l4aRTQ2U/Untitled?node-id=0-1&p=f&t=ROoe5XxCbMvlnz0F-0
+
 figma: https://www.figma.com/design/39ZB8toax36wqw4mdC1FBq/Hobbly?t=LZ6GUfZ2rkYm49vv-0
 
 supabase: https://supabase.com/dashboard/project/jourvbtxuyavamxvddwc/sql/66baaae4-1dd0-45d6-8f04-f59fa367e221
