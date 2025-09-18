@@ -7,7 +7,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #8B8B8B;
+  background-color: #8b8b8b;
 }
 
 /* Header */
@@ -35,13 +35,13 @@
   font-size: 24px;
   font-weight: 700;
   color: white;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 /* Search Bar */
 .searchBarContainer {
   padding: 20px 15px;
-  background-color: #8B8B8B;
+  background-color: #8b8b8b;
 }
 
 .searchBar {
@@ -59,7 +59,7 @@
   border: none;
   outline: none;
   font-size: 16px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
   padding: 10px 5px;
 }
 
@@ -83,10 +83,51 @@
   margin-top: 10px;
   color: white;
   font-size: 14px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
-/* Content - рециклируем стили из Home */
+/* ======================= */
+/* Фильтры в колонку       */
+/* ======================= */
+
+.filtersColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+/* Универсальный стиль для select и input-блоков */
+.filterInput {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+
+/* Для блока с чекбоксом */
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ======================= */
+/* Content - список        */
+/* ======================= */
+
 .content {
   flex: 1;
   overflow-y: auto;
@@ -134,7 +175,7 @@
   font-weight: 700;
   margin: 0 0 10px 0;
   color: #1a1a1a;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .activityDescription {
@@ -182,7 +223,10 @@
   color: #999;
 }
 
-/* Loading States */
+/* ======================= */
+/* Loading States          */
+/* ======================= */
+
 .loadingContainer,
 .errorContainer,
 .emptyContainer {
@@ -194,7 +238,7 @@
   gap: 20px;
   color: white;
   font-size: 16px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .spinner {

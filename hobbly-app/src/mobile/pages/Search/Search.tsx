@@ -1,89 +1,124 @@
 /**
  * @fileoverview Search страница мобильного приложения
  * @module mobile/pages/Search
- * @description Страница поиска активностей с фильтрацией
+ * @description Страница поиска активностей с расширенной фильтрацией
  */
 
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Search.module.css';
-import { Activity } from '../../../types';
+import {
+  Activity,
+  Category,
+  Tag,
+  ActivityType,
+  ActivityFilters
+} from '../../../types';
 import activitiesAPI from '../../../api/activities.api';
 import { debounce } from 'lodash';
 
-/**
- * Цвета рамок для карточек (циклично повторяются)
- */
 const cardBorderColors = ['#FFD93D', '#6BCF7C', '#1DB9C3'];
 
-/**
- * Search компонент для поиска активностей
- * @component
- * @returns {JSX.Element} Страница поиска
- */
 const Search: React.FC = () => {
   const navigate = useNavigate();
+
+  // Данные для фильтров
+  const [categories, setCategories] = useState<Category[]>([]);
+  const [tags, setTags] = useState<Tag[]>([]);
+
+  // Выбранные фильтры
+  const [filters, setFilters] = useState<ActivityFilters>({});
   const [searchQuery, setSearchQuery] = useState('');
+
   const [activities, setActivities] = useState<Activity[]>([]);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [hasSearched, setHasSearched] = useState(false);
 
-  /**
-   * Дебаунсированный поиск активностей
-   */
-  const debouncedSearch = useCallback(
-    debounce(async (query: string) => {
-      if (!query.trim()) {
-        setActivities([]);
-        setHasSearched(false);
-        return;
-      }
-
+  // Загружаем категории и теги при монтировании
+  useEffect(() => {
+    (async () => {
       try {
-        setLoading(true);
-        setError(null);
-        setHasSearched(true);
-        
-        const response = await activitiesAPI.getActivities(
-          { search: query },
-          1,
-          50, // Загружаем до 50 результатов
-          'created_at',
-          false
-        );
-
-        setActivities(response.data);
+        const [cats, tgs] = await Promise.all([
+          activitiesAPI.getCategories(),
+          activitiesAPI.getTags()
+        ]);
+        setCategories(cats);
+        setTags(tgs);
       } catch (err) {
-        console.error('Ошибка поиска:', err);
-        setError('Search failed. Please try again.');
-      } finally {
-        setLoading(false);
+        console.error('Failed to load categories or tags', err);
       }
-    }, 500),
-    []
-  );
+    })();
+  }, []);
 
-  /**
-   * Обработчик изменения поискового запроса
-   */
+  // Общий дебаунс поиска
+  const debouncedSearch = useCallback(
+  debounce(async (filters: ActivityFilters) => {
+    try {
+      setLoading(true);
+      setError(null);
+      setHasSearched(true);
+
+      const queryFilters = { ...filters }; // копия фильтров
+      let sortField: string = 'created_at';
+      let sortOrder: boolean = false; // false = по убыванию
+
+      switch (filters.sortOption) {
+        case 'asc':
+          sortField = 'price';
+          sortOrder = true;
+          break;
+        case 'desc':
+          sortField = 'price';
+          sortOrder = false;
+          break;
+        case 'free':
+          // предполагаем, что API понимает price=0 как фильтр
+          queryFilters.minPrice = 0;
+          queryFilters.maxPrice = 0;
+          break;
+        default:
+          sortField = 'created_at';
+          sortOrder = false;
+      }
+
+      const response = await activitiesAPI.getActivities(
+        queryFilters,
+        1,
+        50,
+        sortField,
+        sortOrder
+      );
+
+      setActivities(response.data);
+    } catch (err) {
+      console.error('Search error:', err);
+      setError('Search failed. Please try again.');
+    } finally {
+      setLoading(false);
+    }
+  }, 500),
+  []
+);
+
+
+  // Обновление фильтров и запуск поиска
+  const updateFilters = (patch: Partial<ActivityFilters>) => {
+    const next = { ...filters, ...patch };
+    setFilters(next);
+    debouncedSearch(next);
+  };
+
+  // Обработчик текстового поиска
   const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const query = e.target.value;
     setSearchQuery(query);
-    debouncedSearch(query);
+    updateFilters({ search: query });
   };
 
-  /**
-   * Обработчик клика на карточку активности
-   */
-  const handleActivityClick = (id: string) => {
-    navigate(`/mobile/activity/${id}`);
-  };
+  const handleActivityClick = (id: string) => navigate(`/mobile/activity/${id}`);
 
-  /**
-   * Форматирование даты
-   */
-  const formatDate = (date: Date | string | undefined): string => {
+  const formatDate = (date?: Date | string) => {
     if (!date) return '';
     const d = typeof date === 'string' ? new Date(date) : date;
     return d.toLocaleDateString('fi-FI', { day: '2-digit', month: '2-digit' });
@@ -91,112 +126,194 @@ const Search: React.FC = () => {
 
   return (
     <div className={styles.search}>
-      {/* Header */}
       <header className={styles.header}>
         <div className={styles.logoContainer}>
-          <img 
-            src="/assets/wireframes/Logo Hobbly/logo_white@low-res.png" 
-            alt="Hobbly" 
+          <img
+            src="/assets/wireframes/Logo Hobbly/logo_white@low-res.png"
+            alt="Hobbly"
             className={styles.logo}
           />
         </div>
       </header>
 
-      {/* Search Bar */}
+      {/* Панель поиска */}
       <div className={styles.searchBarContainer}>
         <div className={styles.searchBar}>
           <input
             type="text"
-            placeholder="Lorem ipsum"
+            placeholder="Search activities..."
             value={searchQuery}
             onChange={handleSearchChange}
             className={styles.searchInput}
             autoFocus
           />
-          <button className={styles.searchButton}>
-            <svg viewBox="0 0 24 24" fill="none" className={styles.searchIcon}>
-              <circle cx="11" cy="11" r="8" stroke="currentColor" strokeWidth="2"/>
-              <path d="M21 21L16.65 16.65" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-            </svg>
-          </button>
         </div>
-        
-        {/* Results Count */}
-        {hasSearched && !loading && (
-          <div className={styles.resultsCount}>
-            Result: {activities.length} results "{searchQuery}"
-          </div>
-        )}
+
+        {/* Фильтры */}
+        <div className={styles.filtersColumn}>
+          {/* Категория */}
+          <select
+            className={styles.filterInput}
+            value={filters.categoryId || ''}
+            onChange={e =>
+              updateFilters({ categoryId: e.target.value || undefined })
+            }
+            lang="en"
+            translate="no"
+          >
+            <option value="">All Categories</option>
+            {categories.map(c => (
+              <option key={c.id} value={c.id}>
+                {c.name}
+              </option>
+            ))}
+          </select>
+
+          {/* Тип события */}
+          <select
+            className={styles.filterInput}
+            value={filters.type || ''}
+            onChange={e =>
+              updateFilters({
+                type: (e.target.value as ActivityType) || undefined
+              })
+            }
+            lang="en"
+            translate="no"
+          >
+            <option value="">All Types</option>
+            {Object.values(ActivityType).map(t => (
+              <option key={t} value={t}>
+                {t}
+              </option>
+            ))}
+          </select>
+
+          {/* Возрастная группа */}
+          <select
+            className={styles.filterInput}
+            value={filters.ageGroup || 'all'}
+            onChange={e =>
+              updateFilters({
+                ageGroup: e.target.value as
+                  | 'children'
+                  | 'teens'
+                  | 'adults'
+                  | 'seniors'
+                  | 'all'
+              })
+            }
+            lang="en"
+            translate="no"
+          >
+            <option value="all">All Ages</option>
+            <option value="children">Children</option>
+            <option value="teens">Teens</option>
+            <option value="adults">Adults</option>
+            <option value="seniors">Seniors</option>
+          </select>
+
+          {/* Теги */}
+          <select
+            className={styles.filterInput}
+            value={filters.tags && filters.tags.length > 0 ? filters.tags[0] : 'all'}
+            onChange={e =>
+              updateFilters({
+                tags: e.target.value === 'all' ? [] : [e.target.value]
+              })
+            }
+            lang="en"
+            translate="no"
+          >
+            <option value="all">All Tags</option>
+            {tags
+              .filter(t => /^[A-Za-z0-9\s]+$/.test(t.name))
+              .map(t => (
+                <option key={t.id} value={t.id}>
+                  {t.name}
+                </option>
+              ))}
+          </select>
+
+          {/* Сортировка / Цена */}
+            <select
+              className={styles.filterInput}
+              value={filters.sortOption || 'all'}
+              onChange={e =>
+                updateFilters({
+                  sortOption: e.target.value as 'all' | 'free' | 'asc' | 'desc',
+                  freeOnly: e.target.value === 'free' ? true : false, // сбрасываем freeOnly для остальных
+                })
+              }
+              lang="en"
+              translate="no"
+            >
+              <option value="all">All</option>
+              <option value="free">Free Only</option>
+              <option value="asc">Cheapest First</option>
+              <option value="desc">Most Expensive First</option>
+            </select>
+
+
+
+          {hasSearched && !loading && (
+            <div className={styles.resultsCount}>
+              Result: {activities.length} activities
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Content */}
+      {/* Список результатов */}
       <div className={styles.content}>
         {loading ? (
-          <div className={styles.loadingContainer}>
-            <div className={styles.spinner}></div>
-            <p>Searching...</p>
-          </div>
+          <p>Searching...</p>
         ) : error ? (
-          <div className={styles.errorContainer}>
-            <p>{error}</p>
-          </div>
+          <p className={styles.error}>{error}</p>
         ) : !hasSearched ? (
-          <div className={styles.emptyContainer}>
-            <p>Start typing to search for activities</p>
-          </div>
+          <p>Start typing or set filters to search for activities</p>
         ) : activities.length === 0 ? (
-          <div className={styles.emptyContainer}>
-            <p>No results found for "{searchQuery}"</p>
-          </div>
+          <p>No results</p>
         ) : (
           <div className={styles.activitiesList}>
-            {activities.map((activity, index) => (
+            {activities.map((activity, idx) => (
               <div
                 key={activity.id}
                 className={styles.activityCard}
-                style={{ borderColor: cardBorderColors[index % cardBorderColors.length] }}
+                style={{
+                  borderColor:
+                    cardBorderColors[idx % cardBorderColors.length]
+                }}
                 onClick={() => handleActivityClick(activity.id)}
               >
-                {/* Изображение активности */}
                 <div className={styles.imageContainer}>
                   <img
-                    src={activity.imageUrl || '/assets/wireframes/Photos/Events/1.1 Sea Expedition.jpg'}
+                    src={
+                      activity.imageUrl ||
+                      '/assets/wireframes/Photos/Events/1.1 Sea Expedition.jpg'
+                    }
                     alt={activity.title}
-                    className={styles.activityImage}
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.src = '/assets/wireframes/Photos/Events/1.1 Sea Expedition.jpg';
-                    }}
                   />
                 </div>
-
-                {/* Информация об активности */}
                 <div className={styles.activityInfo}>
-                  <h3 className={styles.activityTitle}>{activity.title}</h3>
-                  <p className={styles.activityDescription}>
-                    <span className={styles.label}>Description:</span> {activity.shortDescription || activity.description?.substring(0, 100) + '...'}
-                  </p>
-                  
-                  <div className={styles.activityMeta}>
-                    <div className={styles.metaItem}>
-                      <img src="/assets/wireframes/Icons/location.svg" alt="Location" className={styles.icon} />
-                      <span>{activity.location}</span>
-                    </div>
-                    
-                    <div className={styles.metaItem}>
-                      <svg className={styles.icon} viewBox="0 0 24 24" fill="none">
-                        <rect x="3" y="6" width="18" height="14" stroke="currentColor" strokeWidth="2"/>
-                        <path d="M3 10H21" stroke="currentColor" strokeWidth="2"/>
-                        <path d="M8 6V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                        <path d="M16 6V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                      </svg>
-                      <span>{formatDate(activity.startDate)}</span>
-                    </div>
-                    
-                    <div className={styles.metaItem}>
-                      <span className={styles.organizer}>{activity.organizer?.organizationName || 'Organizer'}</span>
-                      <span className={styles.arrow}>›</span>
-                    </div>
+                  <h3>{activity.title}</h3>
+                  <p>{activity.shortDescription}</p>
+                  <div>
+                    <span>{activity.location}</span> |{' '}
+                    <span>{formatDate(activity.startDate)}</span>
+                  </div>
+                  <div>
+                    {activity.category?.name} |{' '}
+                    {activity.price === 0
+                      ? 'Free'
+                      : `${activity.price} €`}
+                  </div>
+                  <div>
+                    {activity.tags?.map(t => (
+                      <span key={t.id} className={styles.tag}>
+                        {t.name}
+                      </span>
+                    ))}
                   </div>
                 </div>
               </div>
@@ -209,3 +326,6 @@ const Search: React.FC = () => {
 };
 
 export default Search;
+
+
+

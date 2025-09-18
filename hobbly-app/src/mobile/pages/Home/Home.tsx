@@ -28,28 +28,23 @@ const Home: React.FC = () => {
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
 
-  /**
-   * Загрузка активностей при монтировании компонента
-   */
   useEffect(() => {
     loadActivities();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  /**
-   * Загрузка активностей через API
-   */
   const loadActivities = async (loadMore = false) => {
     try {
       setLoading(true);
       setError(null);
-      
+
       const currentPage = loadMore ? page + 1 : 1;
       const response = await activitiesAPI.getActivities(
-        {}, // Без фильтров для гостевого режима
+        {},
         currentPage,
-        20, // Загружаем по 20 активностей
+        20,
         'created_at',
-        false // Сортировка по убыванию (новые первые)
+        false
       );
 
       if (loadMore) {
@@ -60,10 +55,8 @@ const Home: React.FC = () => {
         setPage(1);
       }
 
-      // Проверяем, есть ли еще страницы
       const totalPages = Math.ceil(response.total / response.pagination.limit);
       setHasMore(currentPage < totalPages);
-
     } catch (err) {
       console.error('Ошибка загрузки активностей:', err);
       setError('Failed to load activities. Please try again later.');
@@ -72,29 +65,19 @@ const Home: React.FC = () => {
     }
   };
 
-  /**
-   * Обработчик клика на карточку активности
-   */
   const handleActivityClick = (id: string) => {
     navigate(`/mobile/activity/${id}`);
   };
 
-  /**
-   * Форматирование даты
-   */
   const formatDate = (date: Date | string | undefined): string => {
     if (!date) return '';
     const d = typeof date === 'string' ? new Date(date) : date;
     return d.toLocaleDateString('fi-FI', { day: '2-digit', month: '2-digit' });
   };
 
-  /**
-   * Обработчик прокрутки для загрузки дополнительных активностей
-   */
   const handleScroll = (e: React.UIEvent<HTMLDivElement>) => {
     const { scrollTop, scrollHeight, clientHeight } = e.currentTarget;
-    
-    // Загружаем больше, когда доскроллили почти до конца
+
     if (scrollHeight - scrollTop <= clientHeight * 1.5) {
       if (hasMore && !loading) {
         loadActivities(true);
@@ -107,9 +90,9 @@ const Home: React.FC = () => {
       {/* Header */}
       <header className={styles.header}>
         <div className={styles.logoContainer}>
-          <img 
-            src="/assets/wireframes/Logo Hobbly/logo_white@low-res.png" 
-            alt="Hobbly" 
+          <img
+            src="/assets/wireframes/Logo Hobbly/logo_white@low-res.png"
+            alt="Hobbly"
             className={styles.logo}
           />
         </div>
@@ -142,7 +125,7 @@ const Home: React.FC = () => {
                 style={{ borderColor: cardBorderColors[index % cardBorderColors.length] }}
                 onClick={() => handleActivityClick(activity.id)}
               >
-                {/* Изображение активности */}
+                {/* Image */}
                 <div className={styles.imageContainer}>
                   <img
                     src={activity.imageUrl || '/assets/wireframes/Photos/Events/1.1 Sea Expedition.jpg'}
@@ -155,39 +138,53 @@ const Home: React.FC = () => {
                   />
                 </div>
 
-                {/* Информация об активности */}
+                {/* Info */}
                 <div className={styles.activityInfo}>
                   <h3 className={styles.activityTitle}>{activity.title}</h3>
                   <p className={styles.activityDescription}>
-                    <span className={styles.label}>Description:</span> {activity.shortDescription || activity.description?.substring(0, 100) + '...'}
+                    <span className={styles.label}>Description:</span>{' '}
+                    {activity.shortDescription || activity.description?.substring(0, 100) + '...'}
                   </p>
-                  
+
+                  {/* Meta: Location, Date, Organizer + Read More */}
                   <div className={styles.activityMeta}>
-                    <div className={styles.metaItem}>
-                      <img src="/assets/wireframes/Icons/location.svg" alt="Location" className={styles.icon} />
-                      <span>{activity.location}</span>
-                    </div>
-                    
+                    {/* Location */}
+                   <div className={styles.metaItem}>
+                        <svg className={styles.icon} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
+                          <path d="M12 2C8 2 4 6 4 10c0 5 8 12 8 12s8-7 8-12c0-4-4-8-8-8z"/>
+                          <circle cx="12" cy="10" r="3" fill="currentColor"/>
+                        </svg>
+                        <span>{activity.location}</span>
+                      </div>
+
+                    {/* Date */}
                     <div className={styles.metaItem}>
                       <svg className={styles.icon} viewBox="0 0 24 24" fill="none">
-                        <rect x="3" y="6" width="18" height="14" stroke="currentColor" strokeWidth="2"/>
-                        <path d="M3 10H21" stroke="currentColor" strokeWidth="2"/>
-                        <path d="M8 6V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
-                        <path d="M16 6V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round"/>
+                        <rect x="3" y="6" width="18" height="14" stroke="currentColor" strokeWidth="2" />
+                        <path d="M3 10H21" stroke="currentColor" strokeWidth="2" />
+                        <path d="M8 6V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+                        <path d="M16 6V3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
                       </svg>
                       <span>{formatDate(activity.startDate)}</span>
                     </div>
-                    
+
+                    {/* Organizer */}
                     <div className={styles.metaItem}>
                       <span className={styles.organizer}>{activity.organizer?.organizationName || 'Organizer'}</span>
-                      <span className={styles.arrow}>›</span>
                     </div>
+
+                    {/* Read More */}
+                    <span className={styles.readMore}>
+                      Read More
+                      <svg className={styles.icon} viewBox="0 0 24 24">
+                        <path d="M9 18l6-6-6-6" />
+                      </svg>
+                    </span>
                   </div>
                 </div>
               </div>
             ))}
 
-            {/* Загрузчик для дополнительных страниц */}
             {loading && activities.length > 0 && (
               <div className={styles.loadMoreContainer}>
                 <div className={styles.spinner}></div>
@@ -201,3 +198,5 @@ const Home: React.FC = () => {
 };
 
 export default Home;
+
+

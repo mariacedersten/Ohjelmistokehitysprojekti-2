@@ -7,7 +7,7 @@
   min-height: 100vh;
   display: flex;
   flex-direction: column;
-  background-color: #8B8B8B;
+  background-color: #8b8b8b;
 }
 
 /* Header */
@@ -35,7 +35,7 @@
   font-size: 24px;
   font-weight: 700;
   color: white;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 /* Content */
@@ -90,7 +90,7 @@
   font-weight: 700;
   margin: 0 0 10px 0;
   color: #1a1a1a;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .activityDescription {
@@ -105,11 +105,11 @@
   color: #333;
 }
 
-/* Activity Meta */
+/* Activity Meta — теперь все элементы в одну строку */
 .activityMeta {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  align-items: center;
+  gap: 12px;
 }
 
 .metaItem {
@@ -132,6 +132,17 @@
   color: #333;
 }
 
+/* Прижимаем Read More к правому краю */
+.readMore {
+  margin-left: auto;
+  display: flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-weight: 600;
+  color: #000;
+  cursor: pointer;
+}
+
 .arrow {
   margin-left: auto;
   font-size: 20px;
@@ -151,7 +162,7 @@
   gap: 20px;
   color: white;
   font-size: 16px;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .spinner {
@@ -196,27 +207,27 @@
   .header {
     padding: 12px 15px;
   }
-  
+
   .logoText {
     font-size: 20px;
   }
-  
+
   .content {
     padding: 15px 10px 80px;
   }
-  
+
   .activityCard {
     border-width: 3px;
   }
-  
+
   .activityTitle {
     font-size: 18px;
   }
-  
+
   .activityDescription {
     font-size: 13px;
   }
-  
+
   .metaItem {
     font-size: 13px;
   }

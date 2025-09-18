@@ -4,7 +4,7 @@
  * @description Детальная страница активности согласно дизайну Announcement
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './ActivityDetail.module.css';
 import { Activity } from '../../../types';
@@ -16,6 +16,7 @@ import activitiesAPI from '../../../api/activities.api';
  * @returns {JSX.Element} Детальная страница активности
  */
 const ActivityDetail: React.FC = () => {
+  type NamedObject = { name: string };
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [activity, setActivity] = useState<Activity | null>(null);
@@ -136,7 +137,7 @@ const ActivityDetail: React.FC = () => {
               />
             </div>
 
-            {/* Теги */}
+           {/* Теги */}
             {activity.tags && activity.tags.length > 0 && (
               <div className={styles.tagsSection}>
                 <span className={styles.tagsLabel}>Tags:</span>
@@ -150,6 +151,20 @@ const ActivityDetail: React.FC = () => {
                 </span>
               </div>
             )}
+
+            {/* Тип события и категория */}
+              <div className={styles.typeCategoryContent}>
+                {activity.type && (
+                  <span className={styles.typeItem}>
+                    <strong>Type:</strong> {typeof activity.type === 'string' ? activity.type : (activity.type as NamedObject).name}
+                  </span>
+                )}
+                {activity.category && (
+                  <span className={styles.categoryItem}>
+                    <strong>Category:</strong> {typeof activity.category === 'string' ? activity.category : (activity.category as NamedObject).name}
+                  </span>
+                )}
+              </div>
 
             {/* Описание */}
             <div className={styles.descriptionSection}>

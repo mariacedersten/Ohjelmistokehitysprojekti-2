@@ -188,6 +188,8 @@ export interface ActivityFilters {
   freeOnly?: boolean;
   /** Возрастная группа */
   ageGroup?: 'children' | 'teens' | 'adults' | 'seniors' | 'all';
+  /** Сортировка */
+  sortOption?: 'all' | 'free' | 'asc' | 'desc';
 }
 
 /**
