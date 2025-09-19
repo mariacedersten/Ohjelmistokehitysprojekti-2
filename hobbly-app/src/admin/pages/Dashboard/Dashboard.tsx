@@ -15,6 +15,8 @@ interface DashboardStats {
   totalPosts: number;
   totalUsers: number;
   totalOrganisations: number;
+  totalAppUsers: number;
+  totalAdmins: number;
   activities: Activity[];
   eventTypesData: { [key: string]: number };
   weeklyData: number[];
@@ -32,6 +34,8 @@ const Dashboard: React.FC = () => {
     totalPosts: 0,
     totalUsers: 0,
     totalOrganisations: 0,
+    totalAppUsers: 0,
+    totalAdmins: 0,
     activities: [],
     eventTypesData: {},
     weeklyData: [0, 0, 0, 0, 0, 0, 0],
@@ -44,94 +48,112 @@ const Dashboard: React.FC = () => {
     loadDashboardData();
   }, []);
 
-  const loadDashboardData = async () => {
-    try {
-      setLoading(true);
+ const loadDashboardData = async () => {
+  try {
+    setLoading(true);
 
-      // Load all activities for comprehensive stats
-      const activitiesResponse = await activitiesAPI.getActivities({}, 1, 100);
-      const activities = activitiesResponse.data;
+    // 1. Загружаем все активности
+    const activitiesResponse = await activitiesAPI.getActivities({}, 1, 100);
+    const activities = activitiesResponse.data;
 
-      // Calculate event types distribution
-      const eventTypesData = activities.reduce((acc: { [key: string]: number }, activity: Activity) => {
-        const type = activity.type || 'ACTIVITY';
-        acc[type] = (acc[type] || 0) + 1;
-        return acc;
-      }, {});
+    // 2. Считаем посты
+    const totalPosts = activities.length;
 
-      // Generate mock weekly data (activities created per day)
-      const weeklyData = [12, 8, 15, 20, 25, 18, 22];
+    // 3. Распределение по типам событий
+    const eventTypesData = activities.reduce((acc: { [key: string]: number }, activity: Activity) => {
+      const type = activity.type || 'ACTIVITY';
+      acc[type] = (acc[type] || 0) + 1;
+      return acc;
+    }, {});
 
-      // Generate mock user engagement data
-      const userEngagementData = [30, 45, 35, 60, 80, 50, 40];
+    // 4. Генерация мок-данных для недельной активности и вовлеченности
+    const weeklyData = [12, 8, 15, 20, 25, 18, 22];
+    const userEngagementData = [30, 45, 35, 60, 80, 50, 40];
 
-      // Calculate top tags
-      const tagCounts: { [key: string]: number } = {};
-      activities.forEach((activity: Activity) => {
-        if (activity.tags) {
-          activity.tags.forEach((tag) => {
-            const tagName = typeof tag === 'string' ? tag : tag.name;
-            tagCounts[tagName] = (tagCounts[tagName] || 0) + 1;
-          });
-        }
-      });
-
-      const topTags = Object.entries(tagCounts)
-        .sort(([,a], [,b]) => b - a)
-        .slice(0, 4)
-        .map(([name, count], index) => ({
-          name: name.toUpperCase(),
-          count,
-          color: ['#FFD93D', '#2D5F5D', '#6BCF7C', '#9E9E9E'][index] || '#9E9E9E'
-        }));
-
-      let usersStats = { total: 4, pending: 0 };
-      let organisationsCount = 8;
-
-      // Load users stats (only for admins)
-      if (user?.role === UserRole.ADMIN) {
-        try {
-          usersStats = await usersAPI.getUsersStats();
-          // Calculate unique organisations from activities
-          const uniqueOrgs = new Set(activities.map((a: Activity) => a.organizer?.organizationName).filter(Boolean));
-          organisationsCount = uniqueOrgs.size;
-        } catch (error) {
-          console.error('Failed to load users stats:', error);
-        }
+    // 5. Подсчет топ-тегов
+    const tagCounts: { [key: string]: number } = {};
+    activities.forEach((activity: Activity) => {
+      if (activity.tags) {
+        activity.tags.forEach((tag) => {
+          const tagName = typeof tag === 'string' ? tag : tag.name;
+          tagCounts[tagName] = (tagCounts[tagName] || 0) + 1;
+        });
       }
+    });
+    const topTags = Object.entries(tagCounts)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 4)
+      .map(([name, count], index) => ({
+        name: name.toUpperCase(),
+        count,
+        color: ['#FFD93D', '#2D5F5D', '#6BCF7C', '#9E9E9E'][index] || '#9E9E9E'
+      }));
 
-      setStats({
-        totalPosts: activities.length || 233, // Use wireframe number as fallback
-        totalUsers: usersStats.total,
-        totalOrganisations: organisationsCount,
-        activities,
-        eventTypesData,
-        weeklyData,
-        userEngagementData,
-        topTags
-      });
-    } catch (error) {
-      console.error('Failed to load dashboard data:', error);
-      // Set fallback data from wireframe
-      setStats({
-        totalPosts: 233,
-        totalUsers: 4,
-        totalOrganisations: 8,
-        activities: [],
-        eventTypesData: { ACTIVITY: 5, EVENTS: 3, HOBBY: 2, CLUB: 1, COMPETITION: 1, 'MASTER-CLASS': 1 },
-        weeklyData: [12, 8, 15, 20, 25, 18, 22],
-        userEngagementData: [30, 45, 35, 60, 80, 50, 40],
-        topTags: [
-          { name: 'FREE', count: 85, color: '#FFD93D' },
-          { name: 'BEGINNER-FRIENDLY', count: 72, color: '#2D5F5D' },
-          { name: 'FAMILY-FRIENDLY', count: 68, color: '#6BCF7C' },
-          { name: 'ONLINE', count: 45, color: '#9E9E9E' }
-        ]
-      });
-    } finally {
-      setLoading(false);
-    }
-  };
+    // 6. Инициализация статистики пользователей и организаций
+    let totalUsers = 0;
+    let totalAppUsers = 0;
+    let totalAdmins = 0;
+    let totalOrganisations = 0;
+
+    if (user?.role === UserRole.ADMIN) {
+  try {
+    // Загружаем всех пользователей
+    const usersListResponse = await usersAPI.getUsers(); // ApiListResponse<User>
+    const usersList = usersListResponse.data; // массив пользователей
+
+    // Подсчет по ролям
+    totalUsers = usersList.length;
+    totalAppUsers = usersList.filter(u => u.role === 'user').length;
+    totalAdmins = usersList.filter(u => u.role === 'admin').length;
+
+    // Уникальные организации
+    const uniqueOrgs = new Set(activities.map(a => a.organizer?.organizationName).filter(Boolean));
+    totalOrganisations = uniqueOrgs.size;
+  } catch (error) {
+    console.error('Failed to load users stats:', error);
+  }
+}
+
+
+    // 7. Обновляем стейт
+    setStats({
+      totalPosts,
+      totalUsers,
+      totalAppUsers,
+      totalAdmins,
+      totalOrganisations,
+      activities,
+      eventTypesData,
+      weeklyData,
+      userEngagementData,
+      topTags
+    });
+  } catch (error) {
+    console.error('Failed to load dashboard data:', error);
+
+    // Фоллбэк на мок-данные
+    setStats({
+      totalPosts: 233,
+      totalUsers: 4,
+      totalAppUsers: 3,
+      totalAdmins: 1,
+      totalOrganisations: 8,
+      activities: [],
+      eventTypesData: { ACTIVITY: 5, EVENTS: 3, HOBBY: 2, CLUB: 1, COMPETITION: 1, 'MASTER-CLASS': 1 },
+      weeklyData: [12, 8, 15, 20, 25, 18, 22],
+      userEngagementData: [30, 45, 35, 60, 80, 50, 40],
+      topTags: [
+        { name: 'FREE', count: 85, color: '#FFD93D' },
+        { name: 'BEGINNER-FRIENDLY', count: 72, color: '#2D5F5D' },
+        { name: 'FAMILY-FRIENDLY', count: 68, color: '#6BCF7C' },
+        { name: 'ONLINE', count: 45, color: '#9E9E9E' }
+      ]
+    });
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   if (loading) {
     return (
@@ -187,8 +209,10 @@ const Dashboard: React.FC = () => {
       <div className={styles.header}>
         <div className={styles.topStats}>
           <span className={styles.statItem}>Total posts: {stats.totalPosts}</span>
-          <span className={styles.statItem}>Users: {stats.totalUsers}</span>
+          <span className={styles.statItem}>All users: {stats.totalUsers}</span>
+          <span className={styles.statItem}>App users: {stats.totalAppUsers}</span>
           <span className={styles.statItem}>Organisations: {stats.totalOrganisations}</span>
+          <span className={styles.statItem}>Admins: {stats.totalAdmins}</span>
         </div>
       </div>
 
