@@ -208,9 +208,9 @@ const Dashboard: React.FC = () => {
       {/* Header with title and stats */}
       <div className={styles.header}>
         <div className={styles.topStats}>
-          <span className={styles.statItem}>Total posts: {stats.totalPosts}</span>
-          <span className={styles.statItem}>All users: {stats.totalUsers}</span>
-          <span className={styles.statItem}>App users: {stats.totalAppUsers}</span>
+          <span className={styles.statItem}>All Activities: {stats.totalPosts}</span>
+          <span className={styles.statItem}>All Users: {stats.totalUsers}</span>
+          <span className={styles.statItem}>App Users: {stats.totalAppUsers}</span>
           <span className={styles.statItem}>Organisations: {stats.totalOrganisations}</span>
           <span className={styles.statItem}>Admins: {stats.totalAdmins}</span>
         </div>
