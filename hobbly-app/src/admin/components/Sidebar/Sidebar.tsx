@@ -82,7 +82,6 @@ const Sidebar: React.FC = () => {
         <div className={styles.logoContainer}>
           <img src={ADMIN_LOGO_URL} alt="Hobbly" className={styles.logoImage} />
         </div>
-        <div className={styles.adminBadge}>Admin Panel</div>
       </div>
 
       {/* Navigation menu */}

@@ -69,7 +69,7 @@ const Header: React.FC = () => {
     if (path === '/admin/activities') return 'ACTIVITIES';
     if (path === '/admin/activities/new') return 'NEW ACTIVITY';
     if (path.startsWith('/admin/activities/edit/')) return 'EDIT ACTIVITY';
-    if (path === '/admin/activities/trash') return 'RECENTLY DELETED';
+    if (path === '/admin/activities/trash') return 'TRASH BIN';
     if (path === '/admin/activities/requests') return 'ACTIVITY REQUESTS';
     if (path === '/admin/users') return 'USERS';
     if (path === '/admin/users/requests') return 'USER REQUESTS';
