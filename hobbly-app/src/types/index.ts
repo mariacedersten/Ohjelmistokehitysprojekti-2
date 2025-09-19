@@ -176,7 +176,7 @@ export interface ActivityFilters {
   categoryId?: string;
   /** Фильтр по типу */
   type?: ActivityType;
-  /** Фильтр по тегам */
+  /** Фильтр по тегам, включая возрастные группы */
   tags?: string[];
   /** Фильтр по местоположению */
   location?: string;
@@ -186,8 +186,6 @@ export interface ActivityFilters {
   maxPrice?: number;
   /** Только бесплатные */
   freeOnly?: boolean;
-  /** Возрастная группа */
-  ageGroup?: 'children' | 'teens' | 'adults' | 'seniors' | 'all';
   /** Сортировка */
   sortOption?: 'all' | 'free' | 'asc' | 'desc';
 }

@@ -189,31 +189,7 @@ const Search: React.FC = () => {
             ))}
           </select>
 
-          {/* Возрастная группа */}
-          <select
-            className={styles.filterInput}
-            value={filters.ageGroup || 'all'}
-            onChange={e =>
-              updateFilters({
-                ageGroup: e.target.value as
-                  | 'children'
-                  | 'teens'
-                  | 'adults'
-                  | 'seniors'
-                  | 'all'
-              })
-            }
-            lang="en"
-            translate="no"
-          >
-            <option value="all">All Ages</option>
-            <option value="children">Children</option>
-            <option value="teens">Teens</option>
-            <option value="adults">Adults</option>
-            <option value="seniors">Seniors</option>
-          </select>
-
-          {/* Теги */}
+         {/* Теги (включают возрастные группы и другие) */}
           <select
             className={styles.filterInput}
             value={filters.tags && filters.tags.length > 0 ? filters.tags[0] : 'all'}
@@ -227,7 +203,7 @@ const Search: React.FC = () => {
           >
             <option value="all">All Tags</option>
             {tags
-              .filter(t => /^[A-Za-z0-9\s]+$/.test(t.name))
+              .filter(t => /^[A-Za-z0-9\s-]+$/.test(t.name)) // фильтруем по имени
               .map(t => (
                 <option key={t.id} value={t.id}>
                   {t.name}
@@ -248,7 +224,7 @@ const Search: React.FC = () => {
               lang="en"
               translate="no"
             >
-              <option value="all">All</option>
+              <option value="all">Price</option>
               <option value="free">Free Only</option>
               <option value="asc">Cheapest First</option>
               <option value="desc">Most Expensive First</option>
