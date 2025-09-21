@@ -103,7 +103,7 @@ body{
 /* ABOUT (big pale yellow box) */
 .about{
   background: var(--yellow);
-  padding-top: 16px;
+  padding-top: 0;    /* removes the gap */
   padding-bottom: 28px;
 }
 .about-hero{
@@ -125,20 +125,23 @@ body{
   color: var(--green-dark);
   letter-spacing: 0.28em;
   font-weight:700;
+  text-align: center;
 }
 .about-text{
-  color: #2f4a42;
-  line-height:1.9;
-  font-weight:300;
-  max-width:760px;
+   color: #2f4a42;
+  line-height: 1.9;
+  font-weight: 300;
+  max-width: 760px;
   margin: 0 auto;
-  font-size:16px;
+  font-size: 16px;
+  text-align: center;
 }
 
 /* ACTIVITIES area (muted bluish panel behind cards) */
 .activities{
+
   background: #9fb3b3;
-  padding: 28px 24px;
+  padding: 0 24px 28px; /* no top padding, keep side + bottom */
 }
 .cards-wrap{
   max-width:1100px;
@@ -177,6 +180,9 @@ body{
   margin:0;
 }
 
+
+
+
 /* APPLICATION and ORGANISATIONS - two column layout */
 .application{ background: #d7d7d7; }
 .organisations{ background: #cffadf; }
@@ -198,7 +204,12 @@ body{
 .phone-mockup{ width:220px; border-radius: 18px; box-shadow: 0 8px 18px rgba(0,0,0,0.25); }
 .laptop-mockup{ width:420px; border-radius: 12px; box-shadow: 0 8px 18px rgba(0,0,0,0.25); }
 
+
 .lead{ color:#28322f; line-height:1.8; font-size:16px; font-weight:300; }
+
+
+
+
 
 /* buttons */
 .btn{
@@ -239,6 +250,7 @@ body{
 }
 .send-area{ display:flex; justify-content:flex-end; margin-top:8px; }
 
+
 /* FOOTER */
 .footer{
   background: linear-gradient(180deg,#003d33,#023b32);
@@ -272,3 +284,4 @@ body{
   .logo-text{ font-size:16px; }
   .about-text{ font-size:15px; line-height:1.7 }
 }
+
