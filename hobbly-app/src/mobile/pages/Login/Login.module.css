@@ -1,0 +1,207 @@
+/**
+ * Стили для Login страницы
+ * Дизайн согласно современному макету Hobbly
+ */
+
+/* Подключаем шрифты через Google Fonts (добавить в <head> HTML) */
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@500;600&family=Montserrat:wght@400;500;600;700;800&display=swap");
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #8b8b8b;
+}
+
+/* Основной текст */
+body,
+p,
+span,
+li,
+.input,
+.link {
+  font-family: "Montserrat", sans-serif;
+  font-weight: 400; /* Regular */
+}
+
+/* Заголовки */
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+.title,
+.pageTitle {
+  font-family: "Kanit", sans-serif;
+  font-weight: 500; /* Medium */
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #1a5f5a 0%, #0d3b36 100%);
+  padding: 15px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.logoText {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Centered Content */
+.centerContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* вертикальное центрирование */
+  align-items: center; /* горизонтальное центрирование */
+  padding: 20px;
+}
+
+/* Content */
+.title {
+  font-size: 26px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  text-align: center;
+}
+
+.pageTitle {
+  font-size: 40px; /* крупнее чем у остальных */
+  font-weight: 600; /* более жирный */
+  text-align: left;
+  margin-bottom: 32px;
+  color: #ffffff; /* чисто белый для контраста */
+  letter-spacing: 0.5px; /* легкий акцент */
+  font-family: "Montserrat", sans-serif;
+}
+
+.error {
+  background: #fee;
+  color: #dc3545;
+  border-radius: 8px;
+  padding: 10px;
+  margin-bottom: 16px;
+  text-align: center;
+  width: 100%;
+  max-width: 360px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 360px;
+}
+
+/* 👇 новый wrap для input + глазика */
+.inputWrap {
+  position: relative;
+  width: 100%;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 48px 14px 16px; /* место справа под кнопку-глаз */
+  border-radius: 12px;
+  border: 1px solid #e5eeea;
+  background: #f6f8f7;
+  font-size: 16px;
+  outline: none;
+}
+
+/* 👁️ кнопка-глаз */
+.eyeBtn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  transform: translateY(-50%);
+  background: #fff;
+  border: 1px solid #e5eeea;
+  border-radius: 50%;
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  color: #7d908c; /* 👈 приглушённый серый цвет, как в админке */
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.eyeBtn:hover {
+  color: #3d5b54; /* чуть темнее при hover */
+}
+
+.loginBtn {
+  width: 160px;
+  margin: 0 auto; /* чтобы выровнять по центру */
+  padding: 6px 0;
+  border: none;
+  border-radius: 10px;
+  background: #0f3c35;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: block; /* обязательно для margin auto */
+}
+
+.loginBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.links {
+  margin-top: 20px;
+  text-align: center;
+}
+
+.link {
+  display: block;
+  margin-bottom: 12px;
+  color: #fff;
+  text-decoration: underline;
+  font-size: 14px;
+}
+
+.or {
+  font-size: 14px;
+  color: #ddd;
+}
+
+/* Кнопка BACK прижимается вниз */
+.backBtn {
+  margin-top: auto; /* 👈 вместо фиксированного отступа */
+  background: #0d3b36;
+  color: #fff;
+  padding: 20px 24px;
+  font-size: 20px;
+  font-weight: 400;
+  cursor: pointer;
+  width: 100%; /* 👈 по всей ширине */
+  border: none;
+}
+
+@media (max-width: 767px) {
+  body .MobileApp_mobileApp__q0UuA {
+    padding-bottom: 0 !important;
+  }
+}
