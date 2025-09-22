@@ -135,12 +135,24 @@ export default function App() {
         </form>
       </section>
 
-      {/* FOOTER */}
+
+ {/* FOOTER */}
       <footer className="footer">
         <div className="footer-left">
-          <div>🏠 Rautatieläisenkatu 5, 00520 Helsinki</div>
-          <div>📞 +7405330530 &nbsp; | &nbsp; ✉️ hobbly@gmail.com</div>
+          <div>🏠 Rautatieläisenkatu 5</div>
+          <div>📍 00520 Helsinki</div>
+
         </div>
+
+        <footer className="footer-center">
+          <div> &nbsp;  📞 +7405330530 &nbsp;  </div>
+        </footer>
+
+         <footer className="footer-center1">
+          <div> &nbsp;  ✉️ hobbly@gmail.com &nbsp; </div>
+        </footer>
+
+
         <div className="footer-right">
           <a href="/#" aria-label="website">🌐</a>
           <a href="/#" aria-label="facebook">f</a>
