@@ -16,7 +16,6 @@ import Map from './pages/Map/Map';
 import ActivityDetail from './pages/ActivityDetail/ActivityDetail';
 import Login from './pages/Login/Login';
 // TODO: Импортировать когда будут созданы
-// import Login from './pages/Login/Login';
 // import SignUp from './pages/SignUp/SignUp';
 
 // Импорт компонентов
@@ -65,10 +64,11 @@ const MobileApp: React.FC = () => {
         <Route path="/activity/:id" element={<ActivityDetail />} /> 
         
         {/* Редирект с корня на стартовую страницу */}
-        <Route path="/" element={<Navigate to="/cover" replace />} />
+        <Route path="/" element={<Navigate to="/mobile/cover" replace />} />
         {/* Редирект для неизвестных маршрутов */}
-        <Route path="*" element={<Navigate to="/cover" replace />} />
+        <Route path="*" element={<Navigate to="/mobile/cover" replace />} />
 
+        {/* Страницы авторизации */}
         <Route path="/login" element={<Login />} />
       </Routes>
       
