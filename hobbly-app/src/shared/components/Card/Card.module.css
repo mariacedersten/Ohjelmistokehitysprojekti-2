@@ -1,0 +1,162 @@
+/**
+ * Стили для компонента Card
+ * Соответствует дизайн-системе Hobbly
+ */
+
+.card {
+  display: flex;
+  flex-direction: column;
+  background-color: var(--color-white);
+  border-radius: var(--radius-large);
+  overflow: hidden;
+  transition: var(--transition-normal);
+}
+
+/* Варианты */
+.default {
+  box-shadow: var(--shadow-small);
+}
+
+.elevated {
+  box-shadow: var(--shadow-large);
+}
+
+.outlined {
+  border: 2px solid var(--color-border);
+  box-shadow: none;
+}
+
+.interactive {
+  cursor: pointer;
+  box-shadow: var(--shadow-small);
+}
+
+.interactive:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-xl);
+}
+
+.interactive:active {
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-large);
+}
+
+/* Размеры отступов */
+.padding-none {
+  padding: 0;
+}
+
+.padding-small {
+  padding: var(--spacing-sm);
+}
+
+.padding-medium {
+  padding: var(--spacing-md);
+}
+
+.padding-large {
+  padding: var(--spacing-lg);
+}
+
+/* Полная ширина */
+.fullWidth {
+  width: 100%;
+}
+
+/* Изображение */
+.imageWrapper {
+  position: relative;
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  margin: calc(var(--spacing-md) * -1);
+  margin-bottom: var(--spacing-md);
+}
+
+.padding-none .imageWrapper {
+  margin: 0;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: var(--transition-normal);
+}
+
+.interactive:hover .image {
+  transform: scale(1.05);
+}
+
+/* Заголовок */
+.header {
+  margin-bottom: var(--spacing-md);
+}
+
+.title {
+  font-family: var(--font-heading);
+  font-size: var(--font-size-xl);
+  font-weight: var(--font-weight-semibold);
+  color: var(--color-text-primary);
+  margin: 0;
+  margin-bottom: var(--spacing-xs);
+  line-height: var(--line-height-tight);
+}
+
+.subtitle {
+  font-family: var(--font-primary);
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: var(--line-height-normal);
+}
+
+/* Контент */
+.content {
+  flex: 1;
+  font-family: var(--font-primary);
+  font-size: var(--font-size-base);
+  color: var(--color-text-primary);
+  line-height: var(--line-height-normal);
+}
+
+.content p {
+  margin: 0;
+  margin-bottom: var(--spacing-sm);
+}
+
+.content p:last-child {
+  margin-bottom: 0;
+}
+
+/* Действия */
+.actions {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--color-border-light);
+}
+
+.actions > * {
+  flex: 1;
+}
+
+/* Мобильная адаптация */
+@media (max-width: 767px) {
+  .imageWrapper {
+    height: 180px;
+  }
+  
+  .title {
+    font-size: var(--font-size-lg);
+  }
+  
+  .actions {
+    flex-direction: column;
+  }
+  
+  .actions > * {
+    width: 100%;
+  }
+}

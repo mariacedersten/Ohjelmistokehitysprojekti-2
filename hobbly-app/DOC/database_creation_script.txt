@@ -1,0 +1,490 @@
+-- ============================================================================
+-- Hobbly Database Initialization Script
+-- ============================================================================
+-- Описание: Этот скрипт создает всю структуру базы данных для приложения Hobbly
+-- Версия: 1.0.0
+-- ============================================================================
+
+-- Включаем необходимые расширения
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+CREATE EXTENSION IF NOT EXISTS "pgcrypto";
+
+-- ============================================================================
+-- СОЗДАНИЕ ТАБЛИЦ
+-- ============================================================================
+
+-- -----------------------------------------------------------------------------
+-- Таблица: categories (Категории активностей)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS categories (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name VARCHAR(255) NOT NULL UNIQUE,
+    icon VARCHAR(50),
+    description TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE categories IS 'Категории активностей и мероприятий';
+COMMENT ON COLUMN categories.id IS 'Уникальный идентификатор категории';
+COMMENT ON COLUMN categories.name IS 'Название категории';
+COMMENT ON COLUMN categories.icon IS 'Иконка категории (emoji или URL)';
+COMMENT ON COLUMN categories.description IS 'Описание категории';
+
+-- -----------------------------------------------------------------------------
+-- Таблица: tags (Теги)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS tags (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    name VARCHAR(100) NOT NULL UNIQUE,
+    color VARCHAR(7) DEFAULT '#808080',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+COMMENT ON TABLE tags IS 'Теги для маркировки активностей';
+COMMENT ON COLUMN tags.id IS 'Уникальный идентификатор тега';
+COMMENT ON COLUMN tags.name IS 'Название тега';
+COMMENT ON COLUMN tags.color IS 'Цвет тега в HEX формате';
+
+-- -----------------------------------------------------------------------------
+-- Таблица: activities (Активности/Мероприятия)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS activities (
+    id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
+    title VARCHAR(255) NOT NULL,
+    description TEXT NOT NULL,
+    short_description VARCHAR(100),
+    type VARCHAR(50) NOT NULL CHECK (type IN ('activity', 'event', 'hobby_opportunity', 'club', 'competition')),
+    category_id UUID REFERENCES categories(id) ON DELETE SET NULL,
+    location VARCHAR(255) NOT NULL,
+    address TEXT,
+    coordinates JSONB,
+    price DECIMAL(10, 2) DEFAULT 0,
+    currency VARCHAR(3) DEFAULT 'EUR',
+    image_url TEXT,
+    user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE,
+    start_date TIMESTAMP WITH TIME ZONE,
+    end_date TIMESTAMP WITH TIME ZONE,
+    max_participants INTEGER,
+    min_age INTEGER CHECK (min_age >= 0),
+    max_age INTEGER CHECK (max_age >= 0),
+    contact_email VARCHAR(255),
+    contact_phone VARCHAR(50),
+    external_link TEXT,
+    is_deleted BOOLEAN DEFAULT FALSE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    CONSTRAINT age_check CHECK (min_age IS NULL OR max_age IS NULL OR min_age <= max_age),
+    CONSTRAINT date_check CHECK (start_date IS NULL OR end_date IS NULL OR start_date <= end_date)
+);
+
+CREATE INDEX idx_activities_user_id ON activities(user_id);
+CREATE INDEX idx_activities_category_id ON activities(category_id);
+CREATE INDEX idx_activities_type ON activities(type);
+CREATE INDEX idx_activities_is_deleted ON activities(is_deleted);
+CREATE INDEX idx_activities_location ON activities(location);
+CREATE INDEX idx_activities_price ON activities(price);
+CREATE INDEX idx_activities_created_at ON activities(created_at DESC);
+
+COMMENT ON TABLE activities IS 'Основная таблица активностей и мероприятий';
+COMMENT ON COLUMN activities.id IS 'Уникальный идентификатор активности';
+COMMENT ON COLUMN activities.title IS 'Заголовок активности';
+COMMENT ON COLUMN activities.description IS 'Полное описание активности';
+COMMENT ON COLUMN activities.short_description IS 'Краткое описание (до 100 символов)';
+COMMENT ON COLUMN activities.type IS 'Тип активности';
+COMMENT ON COLUMN activities.category_id IS 'Ссылка на категорию';
+COMMENT ON COLUMN activities.location IS 'Местоположение проведения';
+COMMENT ON COLUMN activities.address IS 'Полный адрес';
+COMMENT ON COLUMN activities.coordinates IS 'GPS координаты в формате JSON {lat, lng}';
+COMMENT ON COLUMN activities.price IS 'Цена участия';
+COMMENT ON COLUMN activities.currency IS 'Валюта цены (ISO 4217)';
+COMMENT ON COLUMN activities.image_url IS 'URL изображения активности';
+COMMENT ON COLUMN activities.user_id IS 'ID организатора (пользователя)';
+COMMENT ON COLUMN activities.is_deleted IS 'Флаг мягкого удаления (для корзины)';
+
+-- -----------------------------------------------------------------------------
+-- Таблица: activity_tags (Связь активностей и тегов)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS activity_tags (
+    activity_id UUID REFERENCES activities(id) ON DELETE CASCADE,
+    tag_id UUID REFERENCES tags(id) ON DELETE CASCADE,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (activity_id, tag_id)
+);
+
+CREATE INDEX idx_activity_tags_activity_id ON activity_tags(activity_id);
+CREATE INDEX idx_activity_tags_tag_id ON activity_tags(tag_id);
+
+COMMENT ON TABLE activity_tags IS 'Связующая таблица между активностями и тегами';
+COMMENT ON COLUMN activity_tags.activity_id IS 'ID активности';
+COMMENT ON COLUMN activity_tags.tag_id IS 'ID тега';
+
+-- -----------------------------------------------------------------------------
+-- Таблица: user_profiles (Профили пользователей)
+-- -----------------------------------------------------------------------------
+CREATE TABLE IF NOT EXISTS user_profiles (
+    id UUID REFERENCES auth.users(id) ON DELETE CASCADE PRIMARY KEY,
+    email VARCHAR(255) UNIQUE NOT NULL,
+    full_name VARCHAR(255),
+    organization_name VARCHAR(255),
+    phone VARCHAR(50),
+    role VARCHAR(20) DEFAULT 'user' CHECK (role IN ('user', 'organizer', 'admin')),
+    avatar_url TEXT,
+    bio TEXT,
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE INDEX idx_user_profiles_email ON user_profiles(email);
+CREATE INDEX idx_user_profiles_role ON user_profiles(role);
+CREATE INDEX idx_user_profiles_organization ON user_profiles(organization_name);
+
+COMMENT ON TABLE user_profiles IS 'Расширенные профили пользователей';
+COMMENT ON COLUMN user_profiles.id IS 'ID пользователя из auth.users';
+COMMENT ON COLUMN user_profiles.email IS 'Email пользователя';
+COMMENT ON COLUMN user_profiles.full_name IS 'Полное имя пользователя';
+COMMENT ON COLUMN user_profiles.organization_name IS 'Название организации (для организаторов)';
+COMMENT ON COLUMN user_profiles.role IS 'Роль пользователя в системе';
+
+-- ============================================================================
+-- ФУНКЦИИ И ТРИГГЕРЫ
+-- ============================================================================
+
+-- -----------------------------------------------------------------------------
+-- Функция: Автоматическое обновление updated_at
+-- -----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION update_updated_at_column()
+RETURNS TRIGGER AS $$
+BEGIN
+    NEW.updated_at = CURRENT_TIMESTAMP;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+-- Применяем триггер к таблицам
+CREATE TRIGGER update_categories_updated_at BEFORE UPDATE ON categories
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_activities_updated_at BEFORE UPDATE ON activities
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+CREATE TRIGGER update_user_profiles_updated_at BEFORE UPDATE ON user_profiles
+    FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
+
+-- -----------------------------------------------------------------------------
+-- Функция: Создание профиля пользователя при регистрации
+-- -----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO user_profiles (
+        id, 
+        email, 
+        full_name,
+        organization_name,
+        phone,
+        role
+    ) VALUES (
+        NEW.id,
+        NEW.email,
+        NEW.raw_user_meta_data->>'fullName',
+        NEW.raw_user_meta_data->>'organizationName',
+        NEW.phone,
+        COALESCE(NEW.raw_user_meta_data->>'role', 'user')
+    );
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Триггер для автоматического создания профиля
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION handle_new_user();
+
+-- -----------------------------------------------------------------------------
+-- Функция: Генерация короткого описания
+-- -----------------------------------------------------------------------------
+CREATE OR REPLACE FUNCTION generate_short_description()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.short_description IS NULL OR NEW.short_description = '' THEN
+        NEW.short_description = LEFT(NEW.description, 97) || '...';
+    END IF;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER generate_activity_short_description
+    BEFORE INSERT OR UPDATE ON activities
+    FOR EACH ROW EXECUTE FUNCTION generate_short_description();
+
+-- ============================================================================
+-- ВСТАВКА НАЧАЛЬНЫХ ДАННЫХ
+-- ============================================================================
+
+-- Вставка категорий
+INSERT INTO categories (name, icon, description) VALUES
+    ('Спорт и физическая активность', '⚽', 'Спортивные секции, тренировки, соревнования'),
+    ('Музыка и исполнительское искусство', '🎵', 'Музыкальные кружки, концерты, театр'),
+    ('Ремесла и искусство', '🎨', 'Художественные студии, рукоделие, творчество'),
+    ('Наука и технологии', '🔬', 'Научные кружки, программирование, робототехника'),
+    ('Игры и киберспорт', '🎮', 'Игровые клубы, турниры, настольные игры'),
+    ('Еда и кулинария', '🍳', 'Кулинарные курсы, дегустации, мастер-классы'),
+    ('Природа и туризм', '🏕️', 'Походы, экскурсии, экологические проекты'),
+    ('Культура и история', '🏛️', 'Музеи, исторические клубы, культурные мероприятия'),
+    ('Сообщество и добровольчество', '🤝', 'Волонтерство, социальные проекты, помощь'),
+    ('Дети и семьи', '👨‍👩‍👧‍👦', 'Семейные мероприятия, детские праздники')
+ON CONFLICT (name) DO NOTHING;
+
+-- Вставка тегов
+INSERT INTO tags (name, color) VALUES
+    ('Бесплатно', '#65FF81'),
+    ('Открыто для всех', '#F5FF65'),
+    ('Подходит для начинающих', '#73B3FF'),
+    ('Постоянное событие', '#FF9473'),
+    ('Онлайн', '#B473FF'),
+    ('Подходит для семей', '#65FF81'),
+    ('Подходит для пожилых', '#F5FF65'),
+    ('Подходит для особых групп', '#73B3FF'),
+    ('Оборудование предоставляется', '#FF9473'),
+    ('Требуется регистрация', '#B473FF')
+ON CONFLICT (name) DO NOTHING;
+
+-- ============================================================================
+-- ROW LEVEL SECURITY (RLS)
+-- ============================================================================
+
+-- Включаем RLS для таблиц
+ALTER TABLE categories ENABLE ROW LEVEL SECURITY;
+ALTER TABLE tags ENABLE ROW LEVEL SECURITY;
+ALTER TABLE activities ENABLE ROW LEVEL SECURITY;
+ALTER TABLE activity_tags ENABLE ROW LEVEL SECURITY;
+ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
+
+-- -----------------------------------------------------------------------------
+-- Политики для categories
+-- -----------------------------------------------------------------------------
+-- Все могут читать категории
+CREATE POLICY "Categories are viewable by everyone" ON categories
+    FOR SELECT USING (true);
+
+-- Только администраторы могут изменять категории
+CREATE POLICY "Only admins can manage categories" ON categories
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE user_profiles.id = auth.uid()
+            AND user_profiles.role = 'admin'
+        )
+    );
+
+-- -----------------------------------------------------------------------------
+-- Политики для tags
+-- -----------------------------------------------------------------------------
+-- Все могут читать теги
+CREATE POLICY "Tags are viewable by everyone" ON tags
+    FOR SELECT USING (true);
+
+-- Только администраторы могут изменять теги
+CREATE POLICY "Only admins can manage tags" ON tags
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE user_profiles.id = auth.uid()
+            AND user_profiles.role = 'admin'
+        )
+    );
+
+-- -----------------------------------------------------------------------------
+-- Политики для activities
+-- -----------------------------------------------------------------------------
+-- Все могут читать неудаленные активности
+CREATE POLICY "Activities are viewable by everyone" ON activities
+    FOR SELECT USING (is_deleted = FALSE);
+
+-- Организаторы могут создавать активности
+CREATE POLICY "Organizers can create activities" ON activities
+    FOR INSERT WITH CHECK (
+        auth.uid() = user_id AND
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE user_profiles.id = auth.uid()
+            AND user_profiles.role IN ('organizer', 'admin')
+        )
+    );
+
+-- Пользователи могут обновлять только свои активности
+CREATE POLICY "Users can update own activities" ON activities
+    FOR UPDATE USING (
+        auth.uid() = user_id OR
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE user_profiles.id = auth.uid()
+            AND user_profiles.role = 'admin'
+        )
+    );
+
+-- Пользователи могут удалять только свои активности
+CREATE POLICY "Users can delete own activities" ON activities
+    FOR DELETE USING (
+        auth.uid() = user_id OR
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE user_profiles.id = auth.uid()
+            AND user_profiles.role = 'admin'
+        )
+    );
+
+-- -----------------------------------------------------------------------------
+-- Политики для activity_tags
+-- -----------------------------------------------------------------------------
+-- Все могут читать связи тегов
+CREATE POLICY "Activity tags are viewable by everyone" ON activity_tags
+    FOR SELECT USING (true);
+
+-- Только владельцы активностей могут управлять тегами
+CREATE POLICY "Activity owners can manage tags" ON activity_tags
+    FOR ALL USING (
+        EXISTS (
+            SELECT 1 FROM activities
+            WHERE activities.id = activity_tags.activity_id
+            AND (
+                activities.user_id = auth.uid() OR
+                EXISTS (
+                    SELECT 1 FROM user_profiles
+                    WHERE user_profiles.id = auth.uid()
+                    AND user_profiles.role = 'admin'
+                )
+            )
+        )
+    );
+
+-- -----------------------------------------------------------------------------
+-- Политики для user_profiles
+-- -----------------------------------------------------------------------------
+-- Пользователи могут читать все профили
+CREATE POLICY "Profiles are viewable by everyone" ON user_profiles
+    FOR SELECT USING (true);
+
+-- Пользователи могут обновлять свой профиль
+CREATE POLICY "Users can update own profile" ON user_profiles
+    FOR UPDATE USING (
+        auth.uid() = id OR
+        EXISTS (
+            SELECT 1 FROM user_profiles
+            WHERE user_profiles.id = auth.uid()
+            AND user_profiles.role = 'admin'
+        )
+    );
+
+-- ============================================================================
+-- СОЗДАНИЕ ХРАНИЛИЩА (Storage Bucket)
+-- ============================================================================
+
+-- Создаем bucket для изображений активностей
+INSERT INTO storage.buckets (id, name, public, avif_autodetection, file_size_limit, allowed_mime_types)
+VALUES (
+    'activities',
+    'activities',
+    true,
+    false,
+    5242880, -- 5MB
+    ARRAY['image/jpeg', 'image/png', 'image/gif', 'image/webp']
+) ON CONFLICT (id) DO NOTHING;
+
+-- Политики для хранилища
+CREATE POLICY "Anyone can view activity images" ON storage.objects
+    FOR SELECT USING (bucket_id = 'activities');
+
+CREATE POLICY "Authenticated users can upload activity images" ON storage.objects
+    FOR INSERT WITH CHECK (
+        bucket_id = 'activities' AND
+        auth.uid() IS NOT NULL
+    );
+
+CREATE POLICY "Users can update own activity images" ON storage.objects
+    FOR UPDATE USING (
+        bucket_id = 'activities' AND
+        auth.uid()::text = (storage.foldername(name))[1]
+    );
+
+CREATE POLICY "Users can delete own activity images" ON storage.objects
+    FOR DELETE USING (
+        bucket_id = 'activities' AND
+        auth.uid()::text = (storage.foldername(name))[1]
+    );
+
+-- ============================================================================
+-- СОЗДАНИЕ ПРЕДСТАВЛЕНИЙ (Views)
+-- ============================================================================
+
+-- Представление для активностей с полной информацией
+CREATE OR REPLACE VIEW activities_full AS
+SELECT 
+    a.*,
+    c.name as category_name,
+    c.icon as category_icon,
+    u.full_name as organizer_name,
+    u.organization_name as organizer_organization,
+    u.email as organizer_email,
+    COALESCE(
+        json_agg(
+            DISTINCT jsonb_build_object(
+                'id', t.id,
+                'name', t.name,
+                'color', t.color
+            )
+        ) FILTER (WHERE t.id IS NOT NULL),
+        '[]'::json
+    ) as tags
+FROM activities a
+LEFT JOIN categories c ON a.category_id = c.id
+LEFT JOIN user_profiles u ON a.user_id = u.id
+LEFT JOIN activity_tags at ON a.id = at.activity_id
+LEFT JOIN tags t ON at.tag_id = t.id
+WHERE a.is_deleted = FALSE
+GROUP BY a.id, c.name, c.icon, u.full_name, u.organization_name, u.email;
+
+-- Предоставляем доступ к представлению
+GRANT SELECT ON activities_full TO anon, authenticated;
+
+-- ============================================================================
+-- ФИНАЛЬНЫЕ НАСТРОЙКИ
+-- ============================================================================
+
+-- Создаем индекс для полнотекстового поиска
+CREATE INDEX activities_search_idx ON activities 
+USING gin(to_tsvector('russian', title || ' ' || description));
+
+-- Функция для поиска активностей
+CREATE OR REPLACE FUNCTION search_activities(search_query text)
+RETURNS SETOF activities AS $$
+BEGIN
+    RETURN QUERY
+    SELECT * FROM activities
+    WHERE 
+        is_deleted = FALSE AND
+        (
+            to_tsvector('russian', title || ' ' || description) @@ plainto_tsquery('russian', search_query)
+            OR title ILIKE '%' || search_query || '%'
+            OR description ILIKE '%' || search_query || '%'
+            OR location ILIKE '%' || search_query || '%'
+        )
+    ORDER BY created_at DESC;
+END;
+$$ LANGUAGE plpgsql;
+
+-- ============================================================================
+-- КОНЕЦ СКРИПТА
+-- ============================================================================
+
+-- Выводим сообщение об успешной инициализации
+DO $$
+BEGIN
+    RAISE NOTICE 'База данных Hobbly успешно инициализирована!';
+    RAISE NOTICE 'Созданы таблицы: categories, tags, activities, activity_tags, user_profiles';
+    RAISE NOTICE 'Настроены политики безопасности (RLS)';
+    RAISE NOTICE 'Создано хранилище для изображений';
+    RAISE NOTICE 'Добавлены начальные данные';
+END $$;

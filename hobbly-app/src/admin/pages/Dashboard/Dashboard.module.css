@@ -1,0 +1,302 @@
+/**
+ * Dashboard page styles - according to wireframe design
+ * Implements 2x2 widget grid layout with charts and analytics
+ */
+
+.container {
+  min-height: 100vh;
+  background: #f5f5f5;
+  padding: 40px;
+}
+
+.loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 50vh;
+  font-size: 18px;
+  color: var(--color-primary-dark);
+}
+
+/* Header Section */
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 40px;
+}
+
+.titleSection {
+  flex: 1;
+}
+
+.mainTitle {
+  font-family: var(--font-heading);
+  font-weight: 700;
+  font-size: 36px;
+  color: #2D2D2D;
+  margin: 0;
+  letter-spacing: 2px;
+}
+
+.topStats {
+  display: flex;
+  gap: 32px;
+  align-items: center;
+}
+
+.statItem {
+  font-size: 16px;
+  color: #2D2D2D;
+  font-weight: 500;
+}
+
+/* Widgets Grid - 2x2 layout */
+.widgetsGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr 1fr;
+  gap: 24px;
+  height: calc(100vh - 200px);
+  min-height: 600px;
+}
+
+.widget {
+  background: var(--color-white);
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e0e0e0;
+  display: flex;
+  flex-direction: column;
+}
+
+.widgetTitle {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 16px;
+  color: #2D2D2D;
+  margin: 0 0 20px 0;
+  letter-spacing: 1px;
+  text-transform: uppercase;
+}
+
+.chartContainer {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  position: relative;
+}
+
+/* Line Chart Styles */
+.lineChart {
+  width: 100%;
+  height: 100%;
+  max-height: 200px;
+}
+
+.lineChart text {
+  font-family: var(--font-body);
+  font-size: 10px;
+  fill: #666;
+}
+
+/* Pie Chart Styles */
+.pieChart {
+  width: 180px;
+  height: 180px;
+  margin-bottom: 20px;
+}
+
+.legend {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  width: 100%;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.legendColor {
+  width: 12px;
+  height: 12px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.legendLabel {
+  font-size: 10px;
+  color: #2D2D2D;
+  font-weight: 500;
+  text-transform: uppercase;
+}
+
+/* Bar Chart Styles */
+.barChart {
+  width: 100%;
+  height: 100%;
+  max-height: 200px;
+}
+
+.barChart text {
+  font-family: var(--font-body);
+  font-size: 10px;
+  fill: #666;
+}
+
+/* Tags Container */
+.tagsContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  justify-content: center;
+  flex: 1;
+}
+
+.tagBar {
+  padding: 16px 20px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  position: relative;
+  min-height: 50px;
+}
+
+.tagName {
+  font-size: 14px;
+  color: #2D2D2D;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Color assignments for tags */
+.tagBar:nth-child(1) {
+  background-color: #FFD93D;
+}
+
+.tagBar:nth-child(2) {
+  background-color: #2D5F5D;
+}
+
+.tagBar:nth-child(2) .tagName {
+  color: white;
+}
+
+.tagBar:nth-child(3) {
+  background-color: #6BCF7C;
+}
+
+.tagBar:nth-child(4) {
+  background-color: #9E9E9E;
+}
+
+.tagBar:nth-child(4) .tagName {
+  color: white;
+}
+
+/* Responsive design */
+@media (max-width: 1200px) {
+  .container {
+    padding: 20px;
+  }
+
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 16px;
+  }
+
+  .topStats {
+    gap: 24px;
+  }
+
+  .mainTitle {
+    font-size: 32px;
+  }
+
+  .widgetsGrid {
+    height: auto;
+    min-height: 800px;
+  }
+}
+
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .widgetsGrid {
+    grid-template-columns: 1fr;
+    grid-template-rows: repeat(4, 300px);
+    gap: 16px;
+    height: auto;
+    min-height: auto;
+  }
+
+  .widget {
+    padding: 16px;
+  }
+
+  .mainTitle {
+    font-size: 28px;
+  }
+
+  .topStats {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
+  .pieChart {
+    width: 140px;
+    height: 140px;
+  }
+
+  .legend {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Hover effects */
+.widget:hover {
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  transform: translateY(-2px);
+  transition: all 0.3s ease;
+}
+
+/* Animation for charts */
+.lineChart path,
+.barChart rect {
+  animation: fadeInUp 0.8s ease-out;
+}
+
+.pieChart path {
+  animation: fadeIn 1s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}

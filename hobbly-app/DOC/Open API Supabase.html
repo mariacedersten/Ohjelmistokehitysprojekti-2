@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Supabase OpenAPI → Swagger UI (CORS‑safe, Downloadable)</title>
+  <link rel="stylesheet" href="https://unpkg.com/swagger-ui-dist@5/swagger-ui.css" />
+  <style>
+    :root { --bg: #0b1020; --card: #11182e; --text: #e8ecf1; --muted: #b9c2d0; --accent:#5aa1ff; --danger:#ff8b8b; }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--text); font: 14px/1.45 system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans"; }
+    header { padding: 18px 20px; border-bottom: 1px solid #1f2740; display:flex; align-items:center; gap:16px; flex-wrap: wrap; }
+    header h1 { margin: 0; font-size: 16px; font-weight: 700; letter-spacing: .2px; }
+    .controls { display:flex; flex-wrap: wrap; gap:12px; align-items:flex-end; }
+    .field { display:flex; flex-direction: column; gap:6px; }
+    .field label { font-size: 12px; color: var(--muted); }
+    .field input, .field textarea { width: 420px; padding: 10px 12px; border-radius: 10px; border: 1px solid #2a355a; background:#0f1730; color: var(--text); outline: none; }
+    .field input[type="password"] { letter-spacing: 0.05em; }
+    .row { display:flex; gap:10px; align-items:center; flex-wrap: wrap; }
+    button { cursor: pointer; padding: 10px 14px; border-radius: 10px; border: 1px solid #32406e; background: #1a2650; color: var(--text); font-weight:600; }
+    button:hover { background:#213062; }
+    .hint { color: var(--muted); font-size:12px; }
+    .error { color:var(--danger); font-weight:600; white-space:pre-wrap; }
+    .wrap { padding: 12px 20px; border-bottom:1px solid #1f2740; }
+    .banner { padding:10px 12px; border-radius:10px; background:#1a2144; border:1px dashed #3b4a80; margin-bottom:10px; }
+    .tabs { display:flex; gap:8px; margin: 12px 20px; }
+    .tab { padding:8px 12px; border-radius:10px; border:1px solid #2a355a; background:#0f1730; cursor:pointer; }
+    .tab[aria-selected="true"]{ background:#1a2650; border-color:#32406e; }
+    .panel { display:none; padding: 10px 20px; }
+    .panel[aria-hidden="false"]{ display:block; }
+    #swagger { background:#fff; min-height: 60vh; }
+    .kpi { display:flex; gap:12px; margin-top:8px; flex-wrap: wrap; }
+    .pill { padding:6px 10px; border-radius:999px; border:1px solid #2a355a; background:#0f1730; font-size:12px; }
+    .testlog { margin-top:8px; font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size:12px; white-space:pre-wrap; background:#0f1730; border:1px solid #2a355a; padding:10px; border-radius:10px; color:#d7e0ee; }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Supabase OpenAPI → Swagger UI</h1>
+    <div class="controls">
+      <div class="field">
+        <label for="projectUrl">Supabase Project URL</label>
+        <input id="projectUrl" placeholder="https://YOUR-PROJECT.supabase.co" />
+      </div>
+      <div class="field">
+        <label for="apiKey">API key (anon)</label>
+        <div class="row">
+          <input id="apiKey" type="password" placeholder="eyJhbGciOi..." />
+          <button type="button" id="toggleKey">Show</button>
+        </div>
+      </div>
+      <div class="field" style="min-width:120px">
+        <label>&nbsp;</label>
+        <div class="row">
+          <button id="loadBtn" type="button">Load via HTTP</button>
+          <button id="downloadHttpBtn" type="button" title="Fetch and download openapi.json from Supabase">Download JSON (HTTP)</button>
+          <button id="copyCurlBtn" type="button" title="Copy a ready curl command">curl</button>
+          <button id="resetBtn" type="button" title="Clear Swagger UI">Reset</button>
+        </div>
+      </div>
+      <div class="field" style="min-width:120px">
+        <label>&nbsp;</label>
+        <div class="row">
+          <button id="downloadLoadedBtn" type="button" title="Download the currently loaded spec as JSON">Download Loaded JSON</button>
+          <button id="exportYamlBtn" type="button" title="Export the currently loaded spec to YAML">Export YAML</button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <div class="wrap">
+    <div id="envBanner" class="banner" style="display:none"></div>
+    <div class="hint">
+      The "Load via HTTP" button requests OpenAPI from <code>/rest/v1/</code> and embeds it into Swagger UI.
+      If the environment blocks network requests (CORS/sandbox), use the tabs below: <b>Paste JSON</b> or <b>Upload File</b>.
+      When using <em>Try it out</em>, the <code>Authorization</code> and <code>apikey</code> headers are added automatically.
+      Use <b>anon</b> keys only in the browser. Keep <b>service_role</b> keys server‑side.
+    </div>
+    <div id="status" class="hint" style="margin-top:8px"></div>
+    <div id="error" class="error" style="margin-top:8px"></div>
+    <div class="kpi">
+      <div class="pill">Modes: HTTP / Paste / File / Demo</div>
+      <div class="pill">CORS‑safe fallbacks enabled</div>
+      <div class="pill" id="testSummary">Tests not run yet</div>
+    </div>
+  </div>
+
+  <nav class="tabs" role="tablist">
+    <button class="tab" id="tab-http" role="tab" aria-controls="panel-http" aria-selected="true">HTTP (Supabase)</button>
+    <button class="tab" id="tab-paste" role="tab" aria-controls="panel-paste" aria-selected="false">Paste JSON</button>
+    <button class="tab" id="tab-file" role="tab" aria-controls="panel-file" aria-selected="false">Upload File</button>
+    <button class="tab" id="tab-demo" role="tab" aria-controls="panel-demo" aria-selected="false">Demo Spec</button>
+  </nav>
+
+  <section id="panel-http" class="panel" role="tabpanel" aria-labelledby="tab-http" aria-hidden="false">
+    <div class="hint">A <code>GET</code> request is made to <code>&lt;projectUrl&gt;/rest/v1/</code> with headers <code>Accept: application/openapi+json</code>, <code>Authorization: Bearer &lt;KEY&gt;</code>, <code>apikey: &lt;KEY&gt;</code>.</div>
+  </section>
+  <section id="panel-paste" class="panel" role="tabpanel" aria-labelledby="tab-paste" aria-hidden="true">
+    <div class="field">
+      <label for="specText">Paste OpenAPI JSON</label>
+      <textarea id="specText" rows="10" placeholder='{"openapi":"3.0.3","info":{...}}'></textarea>
+    </div>
+    <div class="row" style="margin-top:8px">
+      <button id="loadFromText">Render in Swagger</button>
+      <button id="saveJson">Save as openapi.json</button>
+    </div>
+  </section>
+  <section id="panel-file" class="panel" role="tabpanel" aria-labelledby="tab-file" aria-hidden="true">
+    <div class="row">
+      <input type="file" id="fileInput" accept="application/json,.json" />
+      <button id="loadFromFile">Load file</button>
+    </div>
+  </section>
+  <section id="panel-demo" class="panel" role="tabpanel" aria-labelledby="tab-demo" aria-hidden="true">
+    <div class="row">
+      <button id="loadDemo">Load demo spec</button>
+      <span class="hint">Useful to confirm Swagger UI works without network access.</span>
+    </div>
+  </section>
+
+  <div id="swagger"></div>
+
+  <section class="panel" aria-hidden="false" style="padding-top:0">
+    <h3 class="hint" style="margin:12px 0 4px 0">Built‑in sanity tests</h3>
+    <div id="testLog" class="testlog" aria-live="polite"></div>
+  </section>
+
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-bundle.js"></script>
+  <script src="https://unpkg.com/swagger-ui-dist@5/swagger-ui-standalone-preset.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/js-yaml@4.1.0/dist/js-yaml.min.js"></script>
+  <script>
+    // ===== Defaults (pre-filled for convenience; override via ?url=&key=) =====
+    const DEFAULTS = {
+      projectUrl: "https://jourvbtxuyavamxvddwc.supabase.co",
+      apiKey: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImpvdXJ2YnR4dXlhdmFteHZkZHdjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTczNDcyNTQsImV4cCI6MjA3MjkyMzI1NH0.jKRuZUKOVFZzlLPoN-iuWcmSK-wVJwOQt1o_iz2Mr4g",
+    };
+
+    // ===== State =====
+    let lastSpec = null;  // holds the last successfully loaded spec object
+    let lastBaseUrl = null; // normalized base url (…/rest/v1)
+
+    // ===== Helpers =====
+    const $ = (id) => document.getElementById(id);
+    const qs = new URLSearchParams(location.search);
+
+    function normalizeBase(url) {
+      let u = (url || '').trim();
+      if (!u) return '';
+      u = u.replace(/\/$/, '');
+      if (u.endsWith('/rest/v1')) return u;
+      return u + '/rest/v1';
+    }
+    function openapiEndpoint(base) { return base.replace(/\/$/, '') + '/'; }
+    function setStatus(msg) { $("status").textContent = msg || ''; }
+    function setError(msg) { $("error").textContent = msg || ''; }
+
+    function loadDefaultsIntoInputs() {
+      const url = qs.get('url') || DEFAULTS.projectUrl;
+      const key = qs.get('key') || DEFAULTS.apiKey;
+      $("projectUrl").value = url;
+      $("apiKey").value = key;
+    }
+
+    function renderSwagger(spec, baseUrl, apiKey) {
+      spec.servers = [{ url: baseUrl }];
+      const mount = $("swagger");
+      mount.innerHTML = '';
+      window.ui = SwaggerUIBundle({
+        dom_id: '#swagger',
+        spec,
+        layout: 'StandaloneLayout',
+        deepLinking: true,
+        docExpansion: 'none',
+        defaultModelExpandDepth: 1,
+        defaultModelsExpandDepth: 0,
+        persistAuthorization: true,
+        presets: [SwaggerUIBundle.presets.apis, SwaggerUIStandalonePreset],
+        requestInterceptor: (req) => {
+          if (apiKey) {
+            req.headers = req.headers || {};
+            req.headers['Authorization'] = `Bearer ${apiKey}`;
+            req.headers['apikey'] = apiKey;
+          }
+          return req;
+        },
+      });
+    }
+
+    function setLastSpec(spec, baseUrl) {
+      lastSpec = spec || null;
+      lastBaseUrl = baseUrl || null;
+    }
+
+    async function fetchSpecHTTP(specUrl, apiKey) {
+      const res = await fetch(specUrl, {
+        mode: 'cors',
+        credentials: 'omit',
+        headers: {
+          'Accept': 'application/openapi+json',
+          'Authorization': `Bearer ${apiKey}`,
+          'apikey': apiKey,
+        },
+        referrerPolicy: 'no-referrer',
+      });
+      if (!res.ok) {
+        const text = await res.text().catch(() => '');
+        throw new Error('HTTP ' + res.status + ' ' + res.statusText + (text ? ('\n' + text) : ''));
+      }
+      return await res.json();
+    }
+
+    async function loadOpenAPI_HTTP() {
+      setError('');
+      const projectUrl = $("projectUrl").value.trim();
+      const apiKey = $("apiKey").value.trim();
+      if (!projectUrl || !/^https?:\/\//.test(projectUrl)) { setError('Enter a valid project URL, e.g. https://YOUR-PROJECT.supabase.co'); return; }
+      if (!apiKey) { setError('anon API key is required.'); return; }
+      const baseUrl = normalizeBase(projectUrl);
+      const specUrl = openapiEndpoint(baseUrl);
+      setStatus('Loading OpenAPI from ' + specUrl + ' …');
+      try {
+        const spec = await fetchSpecHTTP(specUrl, apiKey);
+        setLastSpec(spec, baseUrl);
+        setStatus('Spec loaded. Initializing Swagger UI…');
+        renderSwagger(spec, baseUrl, apiKey);
+        setStatus('Ready.');
+      } catch (e) {
+        console.error(e);
+        setError('Failed to fetch spec (CORS/sandbox likely). Use the "Paste JSON" or "Upload File" tabs.\n\nTip: run the curl command below locally to save openapi.json and then upload it here.');
+        showCurlSpec(specUrl, apiKey);
+        setStatus('');
+      }
+    }
+
+    async function downloadOpenAPI_HTTP() {
+      setError('');
+      const projectUrl = $("projectUrl").value.trim();
+      const apiKey = $("apiKey").value.trim();
+      if (!projectUrl || !/^https?:\/\//.test(projectUrl)) { setError('Enter a valid project URL, e.g. https://YOUR-PROJECT.supabase.co'); return; }
+      if (!apiKey) { setError('anon API key is required.'); return; }
+      const baseUrl = normalizeBase(projectUrl);
+      const specUrl = openapiEndpoint(baseUrl);
+      setStatus('Fetching spec for download from ' + specUrl + ' …');
+      try {
+        const spec = await fetchSpecHTTP(specUrl, apiKey);
+        setLastSpec(spec, baseUrl);
+        downloadBlob(JSON.stringify(spec, null, 2), 'application/json', 'openapi.json');
+        setStatus('Downloaded openapi.json.');
+      } catch (e) {
+        console.error(e);
+        setError('Failed to fetch for download (CORS/sandbox likely). Use the curl command below to download locally.');
+        showCurlSpec(specUrl, apiKey);
+      }
+    }
+
+    function downloadLoadedJSON() {
+      if (!lastSpec) { setError('No spec loaded yet. Load via HTTP or paste/upload first.'); return; }
+      downloadBlob(JSON.stringify(lastSpec, null, 2), 'application/json', 'openapi.json');
+      setStatus('Downloaded current spec as JSON.');
+    }
+
+    function exportYAML() {
+      if (!lastSpec) { setError('No spec loaded yet. Load via HTTP or paste/upload first.'); return; }
+      try {
+        const yaml = jsyaml.dump(lastSpec, { lineWidth: 120 });
+        downloadBlob(yaml, 'application/yaml', 'openapi.yaml');
+        setStatus('Exported current spec to YAML.');
+      } catch (e) {
+        setError('YAML export failed: ' + e.message);
+      }
+    }
+
+    function downloadBlob(content, mime, filename) {
+      const blob = new Blob([content], { type: mime });
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = filename;
+      a.click();
+      URL.revokeObjectURL(a.href);
+    }
+
+    function showCurlSpec(specUrl, apiKey) {
+      const c = `curl -sS \\\n  -H "Accept: application/openapi+json" \\\
+  -H "Authorization: Bearer ${apiKey}" \\\
+  -H "apikey: ${apiKey}" \\\
+  "${specUrl}" -o openapi.json`;
+      const pre = document.createElement('pre');
+      pre.className = 'testlog';
+      pre.textContent = c;
+      const log = $("testLog");
+      log.innerHTML = '<b>curl to fetch openapi.json:</b>\n';
+      log.appendChild(pre);
+      $("testSummary").textContent = 'curl ready';
+    }
+
+    function renderFromText() {
+      setError('');
+      const raw = $("specText").value;
+      if (!raw.trim()) { setError('Paste OpenAPI JSON first.'); return; }
+      try {
+        const spec = JSON.parse(raw);
+        const baseUrl = normalizeBase($("projectUrl").value.trim() || DEFAULTS.projectUrl);
+        setLastSpec(spec, baseUrl);
+        renderSwagger(spec, baseUrl, $("apiKey").value.trim());
+        setStatus('Spec loaded from text.');
+      } catch (e) { setError('JSON error: ' + e.message); }
+    }
+
+    function saveJSON() {
+      try {
+        const raw = $("specText").value || '';
+        JSON.parse(raw); // validate
+        downloadBlob(raw, 'application/json', 'openapi.json');
+      } catch (e) { setError('Invalid JSON: ' + e.message); }
+    }
+
+    async function renderFromFile() {
+      setError('');
+      const file = $("fileInput").files?.[0];
+      if (!file) { setError('Choose an openapi.json file'); return; }
+      try {
+        const text = await file.text();
+        const spec = JSON.parse(text);
+        const baseUrl = normalizeBase($("projectUrl").value.trim() || DEFAULTS.projectUrl);
+        setLastSpec(spec, baseUrl);
+        renderSwagger(spec, baseUrl, $("apiKey").value.trim());
+        setStatus('Spec loaded from file.');
+      } catch (e) { setError('File read error: ' + e.message); }
+    }
+
+    function loadDemoSpec() {
+      const spec = {
+        openapi: '3.0.3',
+        info: { title: 'Demo API (offline)', version: '1.0.0', description: 'Demo spec to verify Swagger UI without network.' },
+        servers: [{ url: 'https://example.com/rest/v1' }],
+        paths: {
+          '/example': {
+            get: {
+              summary: 'Ping',
+              responses: { '200': { description: 'ok' } },
+            },
+          },
+        },
+      };
+      const baseUrl = normalizeBase($("projectUrl").value.trim() || 'https://example.com');
+      setLastSpec(spec, baseUrl);
+      renderSwagger(spec, baseUrl, $("apiKey").value.trim());
+      setStatus('Demo spec loaded.');
+    }
+
+    function copyCurl() {
+      const baseUrl = normalizeBase($("projectUrl").value.trim() || DEFAULTS.projectUrl);
+      const specUrl = openapiEndpoint(baseUrl);
+      const key = $("apiKey").value.trim();
+      const cmd = `curl -sS -H "Accept: application/openapi+json" -H "Authorization: Bearer ${key}" -H "apikey: ${key}" "${specUrl}" -o openapi.json`;
+      navigator.clipboard?.writeText(cmd).then(() => setStatus('curl copied to clipboard')).catch(() => setStatus('Copy from the block below'));
+      showCurlSpec(specUrl, key);
+    }
+
+    // ===== Tabs =====
+    function selectTab(id) {
+      for (const el of document.querySelectorAll('.tab')) el.setAttribute('aria-selected', String(el.id === 'tab-' + id));
+      for (const el of document.querySelectorAll('.panel')) el.setAttribute('aria-hidden', String(el.id !== 'panel-' + id));
+    }
+
+    // ===== Tests (sanity) =====
+    function runTests() {
+      const out = [];
+      let pass = 0, fail = 0;
+      function t(name, fn) {
+        try { fn(); out.push('✓ ' + name); pass++; } catch (e) { out.push('✗ ' + name + ' → ' + e.message); fail++; }
+      }
+      function eq(a,b){ if(a!==b) throw new Error(`expected ${b}, got ${a}`); }
+
+      t('normalizeBase appends /rest/v1', () => eq(normalizeBase('https://x.supabase.co'), 'https://x.supabase.co/rest/v1'));
+      t('normalizeBase keeps /rest/v1', () => eq(normalizeBase('https://x.supabase.co/rest/v1'), 'https://x.supabase.co/rest/v1'));
+      t('openapiEndpoint adds trailing slash', () => eq(openapiEndpoint('https://x.supabase.co/rest/v1'), 'https://x.supabase.co/rest/v1/'));
+      t('defaults present', () => { if(!DEFAULTS.projectUrl || !DEFAULTS.apiKey) throw new Error('no defaults'); });
+
+      // New tests for download helpers
+      t('downloadBlob creates object URL and revokes it', () => {
+        const urlBefore = (window.__urlsCreated||0);
+        const a = document.createElement('a');
+        const old = URL.createObjectURL;
+        let created = 0, revoked = 0;
+        URL.createObjectURL = (b) => { created++; return 'blob:mock'; };
+        const oldRevoke = URL.revokeObjectURL;
+        URL.revokeObjectURL = (u) => { if(u==='blob:mock') revoked++; };
+        downloadBlob('test', 'text/plain', 't.txt');
+        URL.createObjectURL = old; URL.revokeObjectURL = oldRevoke;
+        if (created !== 1 || revoked !== 1) throw new Error('blob url not created/revoked exactly once');
+      });
+
+      $("testLog").textContent = out.join('\n');
+      $("testSummary").textContent = `Tests: ${pass} ✓ / ${fail} ✗`;
+    }
+
+    // ===== UI wiring =====
+    $("loadBtn").addEventListener('click', loadOpenAPI_HTTP);
+    $("downloadHttpBtn").addEventListener('click', downloadOpenAPI_HTTP);
+    $("resetBtn").addEventListener('click', () => { $("swagger").innerHTML = ''; setStatus('Swagger cleared.'); setError(''); });
+    $("toggleKey").addEventListener('click', () => { const inp = $("apiKey"); inp.type = inp.type === 'password' ? 'text' : 'password'; $("toggleKey").textContent = inp.type === 'password' ? 'Show' : 'Hide'; });
+    $("copyCurlBtn").addEventListener('click', copyCurl);
+
+    $("loadFromText").addEventListener('click', renderFromText);
+    $("saveJson").addEventListener('click', saveJSON);
+    $("loadFromFile").addEventListener('click', renderFromFile);
+    $("loadDemo").addEventListener('click', loadDemoSpec);
+
+    $("downloadLoadedBtn").addEventListener('click', downloadLoadedJSON);
+    $("exportYamlBtn").addEventListener('click', exportYAML);
+
+    for (const id of ['http','paste','file','demo']) {
+      $("tab-"+id).addEventListener('click', () => selectTab(id));
+    }
+
+    // ===== Boot =====
+    window.addEventListener('DOMContentLoaded', () => {
+      loadDefaultsIntoInputs();
+      runTests();
+      try {
+        if (window.top !== window.self) {
+          $("envBanner").style.display = '';
+          $("envBanner").innerHTML = 'Running inside an <b>embedded sandbox</b>. External HTTP requests may be blocked (CORS). If the HTTP flow fails, switch to "Paste JSON" or "Upload File" tabs, or open this file locally in a browser.';
+        }
+      } catch(_) {}
+      // Attempt an immediate HTTP load — if the environment allows it
+      loadOpenAPI_HTTP();
+    });
+  </script>
+</body>
+</html>

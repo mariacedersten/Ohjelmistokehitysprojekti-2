@@ -1,0 +1,71 @@
+/**
+ * Стили для стартовой страницы Cover
+ * Дизайн: темно-зеленый фон, белый логотип, кнопки с зеленой обводкой
+ */
+
+/* Cover.module.css */
+
+.cover {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center; /* Центрируем по вертикали */
+  align-items: center;
+  background: linear-gradient(to bottom, #073b3a 0%, #65ff81 47%, #073b3a 88%);
+  color: white;
+  margin: 0;
+  font-family: Arial, sans-serif;
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  padding-top: 300px;
+  padding-bottom: 80px;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 120px;
+}
+
+.logo {
+  height: 70px;
+  margin-right: 12px;
+}
+
+.buttonsContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.button {
+  display: inline-block;
+  text-align: center;
+  text-decoration: none;
+  width: 160px;
+  padding: 6px 0;
+  margin: 10px 0;
+  font-size: 18px;
+  background-color: #073b3a;
+  border: 3px solid #65ff81;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+.button:hover {
+  background-color: #7ba05b;
+}
+
+@media (min-width: 768px) {
+  .button {
+    width: 250px;
+  }
+}

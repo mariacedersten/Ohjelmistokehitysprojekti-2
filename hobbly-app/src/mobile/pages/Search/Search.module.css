@@ -1,0 +1,257 @@
+/**
+ * Стили для Search страницы
+ * Дизайн согласно макету
+ */
+
+.search {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #8b8b8b;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, #1a5f5a 0%, #0d3b36 100%);
+  padding: 15px 20px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+}
+
+.logoContainer {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.logo {
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.logoText {
+  font-size: 24px;
+  font-weight: 700;
+  color: white;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* Search Bar */
+.searchBarContainer {
+  padding: 20px 15px;
+  background-color: #8b8b8b;
+}
+
+.searchBar {
+  display: flex;
+  align-items: center;
+  background: white;
+  border-radius: 25px;
+  padding: 0 15px;
+  height: 50px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.searchInput {
+  flex: 1;
+  border: none;
+  outline: none;
+  font-size: 16px;
+  font-family: "Montserrat", sans-serif;
+  padding: 10px 5px;
+}
+
+.searchButton {
+  background: none;
+  border: none;
+  padding: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.searchIcon {
+  width: 24px;
+  height: 24px;
+  color: #666;
+}
+
+.resultsCount {
+  margin-top: 10px;
+  color: white;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+}
+
+/* ======================= */
+/* Фильтры в колонку       */
+/* ======================= */
+
+.filtersColumn {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 15px;
+}
+
+/* Универсальный стиль для select и input-блоков */
+.filterInput {
+  width: 100%;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  box-sizing: border-box;
+}
+
+/* Для блока с чекбоксом */
+.checkboxRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: white;
+  border-radius: 12px;
+  border: 1px solid #ddd;
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: "Montserrat", sans-serif;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+/* ======================= */
+/* Content - список        */
+/* ======================= */
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0 15px 80px;
+}
+
+.activitiesList {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.activityCard {
+  background: white;
+  border-radius: 20px;
+  border: 4px solid;
+  overflow: hidden;
+  cursor: pointer;
+  transition: transform 0.3s ease;
+}
+
+.activityCard:active {
+  transform: scale(0.98);
+}
+
+.imageContainer {
+  width: 100%;
+  height: 180px;
+  overflow: hidden;
+  background: #f0f0f0;
+}
+
+.activityImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.activityInfo {
+  padding: 15px;
+}
+
+.activityTitle {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0 0 10px 0;
+  color: #1a1a1a;
+  font-family: "Montserrat", sans-serif;
+}
+
+.activityDescription {
+  font-size: 14px;
+  color: #666;
+  margin: 0 0 15px 0;
+  line-height: 1.4;
+}
+
+.label {
+  font-weight: 600;
+  color: #333;
+}
+
+.activityMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #666;
+}
+
+.icon {
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+  color: #666;
+}
+
+.organizer {
+  font-weight: 500;
+  color: #333;
+}
+
+.arrow {
+  margin-left: auto;
+  font-size: 20px;
+  font-weight: 300;
+  color: #999;
+}
+
+/* ======================= */
+/* Loading States          */
+/* ======================= */
+
+.loadingContainer,
+.errorContainer,
+.emptyContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  gap: 20px;
+  color: white;
+  font-size: 16px;
+  font-family: "Montserrat", sans-serif;
+}
+
+.spinner {
+  width: 40px;
+  height: 40px;
+  border: 4px solid rgba(255, 255, 255, 0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
