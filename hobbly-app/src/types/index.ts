@@ -61,8 +61,6 @@ export interface User {
   organizationNumber?: string;
   /** URL аватара пользователя */
   photoUrl?: string;
-  /** URL фото профиля */
-  profilePhotoUrl?: string;
   /** Флаг подтверждения администратором (для организаторов) */
   isApproved: boolean;
   /** Дата создания аккаунта */

@@ -69,7 +69,6 @@ const transformUserProfile = (profile: any): User => {
     organizationAddress: profile.organization_address, // если есть в БД
     organizationNumber: profile.organization_number, // если есть в БД
     photoUrl: profile.avatar_url, // в БД называется avatar_url
-    profilePhotoUrl: profile.avatar_url, // дублируем для совместимости
     isApproved: profile.isApproved || false,
     createdAt: new Date(profile.created_at),
     updatedAt: new Date(profile.updated_at)
@@ -448,7 +447,6 @@ class AuthAPI {
           // Обновляем объект user с новым URL фото
           if (typeof user === 'object' && user !== null) {
             user.photoUrl = photoUrl; // В нашем интерфейсе User это поле называется photoUrl
-            user.profilePhotoUrl = photoUrl; // Дублируем для совместимости
           }
         } catch (uploadError: any) {
           console.error('❌ Photo upload failed:', uploadError);

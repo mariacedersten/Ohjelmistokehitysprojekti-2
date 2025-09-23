@@ -189,8 +189,8 @@ const Users: React.FC = () => {
    * Get user avatar placeholder
    */
   const getUserAvatar = (user: User): string => {
-    if (user.profilePhotoUrl) {
-      return user.profilePhotoUrl;
+    if (user.photoUrl) {
+      return user.photoUrl;
     }
     // Return reliable avatar placeholder based on user name initials
     const initials = user.fullName

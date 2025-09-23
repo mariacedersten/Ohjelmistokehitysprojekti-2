@@ -5,9 +5,10 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
-import { User } from '../../../types';
+import usersAPI from '../../../api/users.api';
+import { User, UserRole } from '../../../types';
 import styles from './Profile.module.css';
 
 interface ProfileFormData {
@@ -33,6 +34,8 @@ interface PasswordFormData {
 const Profile: React.FC = () => {
   const { user, updateProfile, changePassword, signOut } = useAuth();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const userId = searchParams.get('userId');
 
   const [profileData, setProfileData] = useState<ProfileFormData>({
     fullName: '',
@@ -61,21 +64,58 @@ const Profile: React.FC = () => {
   const [imageFile, setImageFile] = useState<File | null>(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
+  // Состояния для просмотра профиля другого пользователя
+  const [viewedUser, setViewedUser] = useState<User | null>(null);
+  const [loadingUser, setLoadingUser] = useState(false);
+  const [userError, setUserError] = useState<string | null>(null);
+
+  // Определяем, просматриваем ли мы профиль другого пользователя
+  const isViewingOtherUser = Boolean(userId && userId !== user?.id);
+  const isReadOnlyMode = isViewingOtherUser;
+  const currentUserProfile = isViewingOtherUser ? viewedUser : user;
+
+  // Load user data for viewing another user's profile
+  useEffect(() => {
+    const loadUserProfile = async () => {
+      if (userId && userId !== user?.id) {
+        // Загружаем профиль другого пользователя
+        setLoadingUser(true);
+        setUserError(null);
+        try {
+          const userData = await usersAPI.getUser(userId);
+          setViewedUser(userData);
+        } catch (err: any) {
+          console.error('Failed to load user profile:', err);
+          setUserError('Failed to load user profile. User may not exist or you may not have permission to view this profile.');
+        } finally {
+          setLoadingUser(false);
+        }
+      } else {
+        // Очищаем состояние при переходе к своему профилю
+        setViewedUser(null);
+        setUserError(null);
+      }
+    };
+
+    loadUserProfile();
+  }, [userId, user?.id]);
+
   // Load user data on mount
   useEffect(() => {
-    if (user) {
+    const activeUser = currentUserProfile;
+    if (activeUser) {
       setProfileData({
-        fullName: user.fullName || '',
-        email: user.email,
-        address: user.address || '',
-        phone: user.phone || '',
-        organizationName: user.organizationName || '',
-        organizationAddress: user.organizationAddress || '',
-        organizationNumber: user.organizationNumber || ''
+        fullName: activeUser.fullName || '',
+        email: activeUser.email,
+        address: activeUser.address || '',
+        phone: activeUser.phone || '',
+        organizationName: activeUser.organizationName || '',
+        organizationAddress: activeUser.organizationAddress || '',
+        organizationNumber: activeUser.organizationNumber || ''
       });
-      setProfileImage(user.profilePhotoUrl || '');
+      setProfileImage(activeUser.photoUrl || '');
     }
-  }, [user]);
+  }, [currentUserProfile]);
 
   /**
    * Handle profile form input changes
@@ -271,16 +311,73 @@ const Profile: React.FC = () => {
     }
   };
 
-  if (!user) {
+  // Loading states
+  if (!user || loadingUser) {
     return (
       <div className={styles.container}>
-        <div className={styles.loading}>Loading profile...</div>
+        <div className={styles.loading}>
+          {loadingUser ? 'Loading user profile...' : 'Loading profile...'}
+        </div>
+      </div>
+    );
+  }
+
+  // Check permission to view other user's profile
+  if (isViewingOtherUser && user?.role !== UserRole.ADMIN) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.error}>
+          <p>Access denied. Only administrators can view other users' profiles.</p>
+          <button
+            onClick={() => navigate('/admin/dashboard')}
+            className={styles.retryButton}
+          >
+            Back to Dashboard
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state for viewing other user
+  if (userError) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.error}>
+          <p>{userError}</p>
+          <button
+            onClick={() => navigate('/admin/users')}
+            className={styles.retryButton}
+          >
+            Back to Users
+          </button>
+        </div>
+      </div>
+    );
+  }
+
+  // If trying to view other user but no data loaded yet
+  if (isViewingOtherUser && !viewedUser) {
+    return (
+      <div className={styles.container}>
+        <div className={styles.loading}>Loading user profile...</div>
       </div>
     );
   }
 
   return (
     <div className={styles.container}>
+      {/* Profile Header */}
+      {isViewingOtherUser && currentUserProfile && (
+        <div className={styles.profileHeader}>
+          <h2>Profile of {currentUserProfile.fullName || currentUserProfile.email}</h2>
+          <p className={styles.profileSubtitle}>
+            Role: {currentUserProfile.role} |
+            Status: {currentUserProfile.isApproved ? 'Approved' : 'Pending'}
+          </p>
+        </div>
+      )}
+
       <div className={styles.formLayout}>
         {/* Left Column - Personal Info */}
         <div className={styles.leftColumn}>
@@ -303,6 +400,7 @@ const Profile: React.FC = () => {
                   onChange={handleProfileChange}
                   className={styles.input}
                   required
+                  readOnly={isReadOnlyMode}
                 />
               </div>
 
@@ -316,6 +414,7 @@ const Profile: React.FC = () => {
                   className={styles.input}
                   required
                   disabled // Email usually can't be changed
+                  readOnly={isReadOnlyMode}
                 />
               </div>
 
@@ -327,6 +426,7 @@ const Profile: React.FC = () => {
                   value={profileData.address}
                   onChange={handleProfileChange}
                   className={styles.input}
+                  readOnly={isReadOnlyMode}
                 />
               </div>
 
@@ -338,60 +438,65 @@ const Profile: React.FC = () => {
                   value={profileData.phone}
                   onChange={handleProfileChange}
                   className={styles.input}
+                  readOnly={isReadOnlyMode}
                 />
               </div>
             </div>
 
-            {/* Password Section */}
-            <div className={styles.section}>
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Create password</label>
-                <input
-                  type="password"
-                  name="newPassword"
-                  value={passwordData.newPassword}
-                  onChange={handlePasswordChange}
-                  className={styles.input}
-                  placeholder="Enter new password"
-                />
-              </div>
+            {/* Password Section - Only show for own profile */}
+            {!isReadOnlyMode && (
+              <div className={styles.section}>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Create password</label>
+                  <input
+                    type="password"
+                    name="newPassword"
+                    value={passwordData.newPassword}
+                    onChange={handlePasswordChange}
+                    className={styles.input}
+                    placeholder="Enter new password"
+                  />
+                </div>
 
-              <div className={styles.formGroup}>
-                <label className={styles.label}>Repeat password</label>
-                <input
-                  type="password"
-                  name="confirmPassword"
-                  value={passwordData.confirmPassword}
-                  onChange={handlePasswordChange}
-                  className={styles.input}
-                  placeholder="Confirm new password"
-                />
-              </div>
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Repeat password</label>
+                  <input
+                    type="password"
+                    name="confirmPassword"
+                    value={passwordData.confirmPassword}
+                    onChange={handlePasswordChange}
+                    className={styles.input}
+                    placeholder="Confirm new password"
+                  />
+                </div>
 
-              <div className={styles.passwordNote}>
-                The password must contain at least 8 characters,<br />
-                one number and special symbols.
+                <div className={styles.passwordNote}>
+                  The password must contain at least 8 characters,<br />
+                  one number and special symbols.
+                </div>
               </div>
-            </div>
+            )}
 
-            {/* Action Buttons */}
-            <div className={styles.actionButtons}>
-              <button
-                type="button"
-                onClick={() => setShowDeleteConfirm(true)}
-                className={styles.deleteButton}
-                disabled={deleteLoading}
-              >
-                Delete account
-              </button>
-              <button
-                type="submit"
-                className={styles.saveButton}
-                disabled={profileLoading}
-              >
-                {profileLoading ? 'Saving...' : 'Save'}
-              </button>
-            </div>
+            {/* Action Buttons - Only show for own profile */}
+            {!isReadOnlyMode && (
+              <div className={styles.actionButtons}>
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteConfirm(true)}
+                  className={styles.deleteButton}
+                  disabled={deleteLoading}
+                >
+                  Delete account
+                </button>
+                <button
+                  type="submit"
+                  className={styles.saveButton}
+                  disabled={profileLoading}
+                >
+                  {profileLoading ? 'Saving...' : 'Save'}
+                </button>
+              </div>
+            )}
           </form>
         </div>
 
@@ -400,22 +505,36 @@ const Profile: React.FC = () => {
           {/* Profile Image */}
           <div className={styles.profileImageSection}>
             <div className={styles.imageContainer}>
-              <label className={styles.imageLabel}>
-                {profileImage ? (
-                  <img src={profileImage} alt="Profile" className={styles.profileImage} />
-                ) : (
-                  <div className={styles.imagePlaceholder}>
-                    <span>👤</span>
-                  </div>
-                )}
-                <div className={styles.cameraIcon}>📷</div>
-                <input
-                  type="file"
-                  accept="image/jpeg,image/jpg,image/png,image/webp"
-                  onChange={handleImageChange}
-                  className={styles.imageInput}
-                />
-              </label>
+              {isReadOnlyMode ? (
+                // Read-only mode - just show the image without edit functionality
+                <div className={styles.imageViewOnly}>
+                  {profileImage ? (
+                    <img src={profileImage} alt="Profile" className={styles.profileImage} />
+                  ) : (
+                    <div className={styles.imagePlaceholder}>
+                      <span>👤</span>
+                    </div>
+                  )}
+                </div>
+              ) : (
+                // Edit mode - allow image upload
+                <label className={styles.imageLabel}>
+                  {profileImage ? (
+                    <img src={profileImage} alt="Profile" className={styles.profileImage} />
+                  ) : (
+                    <div className={styles.imagePlaceholder}>
+                      <span>👤</span>
+                    </div>
+                  )}
+                  <div className={styles.cameraIcon}>📷</div>
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/jpg,image/png,image/webp"
+                    onChange={handleImageChange}
+                    className={styles.imageInput}
+                  />
+                </label>
+              )}
             </div>
           </div>
 
@@ -429,6 +548,7 @@ const Profile: React.FC = () => {
                 value={profileData.organizationName}
                 onChange={handleProfileChange}
                 className={styles.input}
+                readOnly={isReadOnlyMode}
               />
             </div>
 
@@ -440,6 +560,7 @@ const Profile: React.FC = () => {
                 value={profileData.organizationAddress}
                 onChange={handleProfileChange}
                 className={styles.input}
+                readOnly={isReadOnlyMode}
               />
             </div>
 
@@ -451,14 +572,15 @@ const Profile: React.FC = () => {
                 value={profileData.organizationNumber}
                 onChange={handleProfileChange}
                 className={styles.input}
+                readOnly={isReadOnlyMode}
               />
             </div>
           </div>
         </div>
       </div>
 
-      {/* Separate Password Change Form */}
-      {passwordData.currentPassword || passwordData.newPassword || passwordData.confirmPassword ? (
+      {/* Separate Password Change Form - Only for own profile */}
+      {!isReadOnlyMode && (passwordData.currentPassword || passwordData.newPassword || passwordData.confirmPassword) ? (
         <div className={styles.passwordSection}>
           <form onSubmit={handlePasswordSubmit} className={styles.passwordForm}>
             {passwordError && (
@@ -491,8 +613,8 @@ const Profile: React.FC = () => {
         </div>
       ) : null}
 
-      {/* Delete Confirmation Modal */}
-      {showDeleteConfirm && (
+      {/* Delete Confirmation Modal - Only for own profile */}
+      {!isReadOnlyMode && showDeleteConfirm && (
         <div className={styles.modalOverlay}>
           <div className={styles.modal}>
             <h3>Confirm Account Deletion</h3>
