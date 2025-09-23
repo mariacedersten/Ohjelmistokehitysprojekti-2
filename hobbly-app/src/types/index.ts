@@ -259,7 +259,10 @@ export interface SignUpFormData {
   photo?: File;
   /** Согласие с условиями */
   agreeToTerms: boolean;
+   /** Роль пользователя (необязательное поле, по умолчанию для мобильного — user) */
+  role?: 'user' | 'admin' | 'organizer';
 }
+
 
 /**
  * Данные формы входа

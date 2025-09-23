@@ -1,0 +1,121 @@
+/**
+ * Стили для Login страницы
+ * Дизайн согласно современному макету Hobbly
+ */
+
+@import url("https://fonts.googleapis.com/css2?family=Kanit:wght@500&family=Montserrat:wght@400&display=swap");
+
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #8f8f8f;
+  color: #ffffff;
+  font-family: "Montserrat", sans-serif;
+  font-size: 18px; /* base mobile text */
+}
+
+.header {
+  background: #073b3a;
+  padding: 16px 20px;
+  text-align: center;
+}
+
+.logo {
+  height: 40px;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+}
+
+.center {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 24px 20px;
+}
+
+.pageTitle {
+  font-family: "Kanit", sans-serif;
+  font-weight: 600;
+  font-size: 40px;
+  margin-bottom: 24px;
+  color: #ffffff; /* белый текст */
+  text-align: left; /* слева */
+  width: 100%; /* чтобы растянуть по ширине контейнера */
+  max-width: 360px; /* совпадает с шириной формы */
+}
+
+.error {
+  background: #ffeded;
+  color: #ff6565;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin-bottom: 16px;
+  text-align: center;
+  width: 100%;
+  max-width: 360px;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 360px;
+}
+
+.input {
+  width: 100%;
+  padding: 14px 16px;
+  border: 1px solid #8f8f8f;
+  border-radius: 12px;
+  background: #ffffff;
+  color: #021919;
+  outline: none;
+  font-size: 18px;
+}
+
+.signUpBtn {
+  width: 160px;
+  margin: 0 auto;
+  padding: 6px 0;
+  border: none;
+  border-radius: 10px;
+  background: #0f3c35;
+  color: #fff;
+  font-size: 18px;
+  cursor: pointer;
+  display: block;
+}
+
+.signUpBtn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.requirements {
+  margin-top: 16px;
+  font-size: 14px;
+  color: #8f8f8f;
+  text-align: center;
+  max-width: 340px;
+}
+
+.backBtn {
+  margin-top: auto;
+  background: #073b3a;
+  color: #ffffff;
+  padding: 18px 0;
+  font-size: 20px;
+  width: 100%;
+  border: none;
+  cursor: pointer;
+}
+
+@media (min-width: 768px) {
+  .pageTitle {
+    font-size: 40px;
+  }
+}

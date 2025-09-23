@@ -70,9 +70,9 @@ h6,
   flex: 1;
   display: flex;
   flex-direction: column;
-  justify-content: center; /* вертикальное центрирование */
-  align-items: center; /* горизонтальное центрирование */
-  padding: 20px;
+  justify-content: flex-start; /* верхнее выравнивание */
+  align-items: center; /* форма по центру горизонтально */
+  padding: 60px 20px 20px 20px; /* верхний отступ для позиции */
 }
 
 /* Content */
@@ -84,13 +84,13 @@ h6,
 }
 
 .pageTitle {
-  font-size: 40px; /* крупнее чем у остальных */
-  font-weight: 600; /* более жирный */
-  text-align: left;
+  font-size: 40px;
+  font-weight: 600;
+  color: #ffffff;
+  text-align: left; /* заголовок слева */
+  width: 100%; /* растягиваем по ширине */
+  max-width: 360px; /* чтобы совпадало с формой */
   margin-bottom: 32px;
-  color: #ffffff; /* чисто белый для контраста */
-  letter-spacing: 0.5px; /* легкий акцент */
-  font-family: "Montserrat", sans-serif;
 }
 
 .error {

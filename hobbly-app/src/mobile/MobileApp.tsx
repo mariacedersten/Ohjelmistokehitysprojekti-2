@@ -15,64 +15,63 @@ import Search from './pages/Search/Search';
 import Map from './pages/Map/Map';
 import ActivityDetail from './pages/ActivityDetail/ActivityDetail';
 import Login from './pages/Login/Login';
-// TODO: Импортировать когда будут созданы
-// import SignUp from './pages/SignUp/SignUp';
+import SignUp from './pages/SignUp/SignUp';
+import { UserRole } from '../types';
 
 // Импорт компонентов
 import BottomNavigation from './components/BottomNavigation/BottomNavigation';
 
-/**
- * Главный компонент мобильного приложения
- * @component
- * @returns {JSX.Element} Мобильное приложение с маршрутизацией
- */
 const MobileApp: React.FC = () => {
   const location = useLocation();
-  
-  // Определяем, нужно ли показывать нижнюю навигацию
+
+  // Нужно ли показывать нижнюю навигацию
   const showBottomNav = ![
     '/mobile/cover',
     '/mobile/login',
     '/mobile/signup'
   ].includes(location.pathname);
 
-  // Пути, на которых не нужен футер и padding
   const hiddenPaths = ['/mobile/cover', '/mobile/login', '/mobile/signup'];
-
-      // Проверяем, нужно ли скрывать футер и padding
   const hideFooterAndPadding = hiddenPaths.includes(location.pathname);
 
+  const userRole: UserRole = UserRole.USER;
+
   return (
-    <div     className={styles.mobileApp}
+    <div
+      className={styles.mobileApp}
       style={{
-        // Если мы на Cover/Login/Signup — padding снизу 0
         paddingBottom: hideFooterAndPadding ? 0 : '60px',
       }}
     >
       <Routes>
         {/* Стартовая страница */}
         <Route path="/cover" element={<Cover />} />
-        
-        {/* Публичные маршруты (пока заглушки) */}
-        
-        <Route path="/signup" element={<div className={styles.placeholder}>SignUp Page (В разработке)</div>} />
-        
-        {/* Гостевой режим - доступно без авторизации */}
-        <Route path="/home" element={<Home />} /> 
-        <Route path="/search" element={<Search />} /> 
-        <Route path="/map" element={<Map />} /> 
-        <Route path="/activity/:id" element={<ActivityDetail />} /> 
-        
-        {/* Редирект с корня на стартовую страницу */}
-        <Route path="/" element={<Navigate to="/mobile/cover" replace />} />
-        {/* Редирект для неизвестных маршрутов */}
-        <Route path="*" element={<Navigate to="/mobile/cover" replace />} />
 
-        {/* Страницы авторизации */}
+        {/* Гостевой режим */}
+        <Route path="/home" element={<Home />} />
+        <Route path="/search" element={<Search />} />
+        <Route path="/map" element={<Map />} />
+        <Route path="/activity/:id" element={<ActivityDetail />} />
+
+        {/* Страница авторизации */}
         <Route path="/login" element={<Login />} />
+        <Route path="/signup" element={<SignUp />} />
+
+        {/* Маршруты для мобильного пользователя */}
+        {userRole === UserRole.USER && (
+          <>
+            <Route path="/sidemenu" element={<div className={styles.placeholder}>Side Menu (Page under development)</div>} />
+            <Route path="/personalinfo" element={<div className={styles.placeholder}>Personal Info (Page under development)</div>} />
+            <Route path="/myactivities" element={<div className={styles.placeholder}>My Activities (Page under development)</div>} />
+            <Route path="/settings" element={<div className={styles.placeholder}>Settings (Page under development)</div>} />
+          </>
+        )}
+
+        {/* Редиректы */}
+        <Route path="/" element={<Navigate to="/mobile/cover" replace />} />
+        <Route path="*" element={<Navigate to="/mobile/cover" replace />} />
       </Routes>
-      
-      {/* Нижняя навигация (показывается только на основных страницах) */}
+
       {showBottomNav && <BottomNavigation />}
     </div>
   );

@@ -34,8 +34,9 @@ const Cover: React.FC = () => {
    * Обработчик перехода к странице регистрации
    */
   const handleSignUp = () => {
-    navigate('/mobile/signup');
+    navigate('/mobile/signup'); 
   };
+
 
   return (
     <div className={styles.cover}>
