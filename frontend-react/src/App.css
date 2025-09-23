@@ -43,7 +43,7 @@ body{
 }
 .logo-icon{
   display:inline-block;
-  width:28px;
+  
   height:28px;
   border-radius:7px;
   background: rgba(255,255,255,0.08);
@@ -221,6 +221,9 @@ body{
   cursor:pointer;
   font-weight:600;
   margin-top:12px;
+
+  margin-left: auto;
+  display: block;
 }
 .btn:hover{ background: #00715e; }
 
@@ -284,3 +287,23 @@ body{
   .logo-text{ font-size:16px; }
   .about-text{ font-size:15px; line-height:1.7 }
 }
+
+
+
+.footer {
+  background-color: #000; /* Dark background for contrast */
+  color: white;
+  padding: 20px;
+}
+
+.footer a {
+  color: white;
+  text-decoration: none;
+  display: inline-block;
+  margin-bottom: 10px;
+}
+
+.footer a:hover {
+  text-decoration: underline;
+}
+

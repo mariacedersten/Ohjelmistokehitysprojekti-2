@@ -2,19 +2,68 @@ import React from "react";
 import "./App.css";
 
 const activities = [
-  { title: "Sea Expedition across the Caribbean", img: "/images/your-image1.jpg" },
-  { title: "Pirate Festival with Music & Dance", img: "/images/your-image2.jpg" },
-  { title: "Pirate Cooking Masterclass", img: "/images/your-image3.jpg" },
-  { title: "Navigation, Knots & Survival at Sea", img: "/images/your-image4.jpg" },
-  { title: "Deep-Sea Shipwreck Exploration", img: "/images/your-image5.jpg" },
-  { title: "Miniature Shipbuilding Workshop", img: "/images/your-image6.jpg" },
-  { title: "Mystical Quests & Maritime Legends", img: "/images/your-image7.jpg" },
-  { title: "Family & Crew Adventure Quests", img: "/images/your-image8.jpg" },
-  { title: "Explorer Club – Sea Adventures", img: "/images/your-image9.jpg" },
-  { title: "Pirate Duels & Naval Tactics", img: "/images/your-image10.jpg" },
-  { title: "Masterclass on Attack & Defense", img: "/images/your-image11.jpg" },
-  { title: "Knife & Musket Competition", img: "/images/your-image12.jpg" },
+  { 
+    title: "Sea Expedition across the Caribbean", 
+    img: "/images/1.1 Sea Expedition.jpg",
+    description: "A sea journey across the the Helsinki archipelago with adventures and stops at picturesque locations." 
+  },
+  { 
+    title: "Pirate Festival with Music & Dance", 
+    img: "/images/2 Pirate Festival.jpg", 
+    description: "A celebrating of pirate culture with live music,dancing,street perfomances." 
+  },
+  { 
+    title: "Pirate Cooking Masterclass", 
+    img: "/images/3.1 Cooking Masterclass.jpg", 
+    description: "A culinary masterclass on traditional piratecuisine." 
+  },
+  { 
+    title: "Navigation, Knots & Survival at Sea", 
+    img: "/images/4.1 Navigation Knots Survival.jpg", 
+    description: "Training in navigation, maritime knots, and basic survival skills at sea." 
+  },
+  { 
+    title: "Deep-Sea Shipwreck Exploration", 
+    img: "/images/5 Deep-Sea Shipwreck.jpg", 
+    description: "Exploration of underwater worlds and local shipwreck legends ." 
+  },
+  { 
+    title: "Miniature Shipbuilding Workshop", 
+    img: "/images/6.2 Ship Model.jpg", 
+    description: "A pratical workshop on building miniature ship models." 
+  },
+  { 
+    title: "Mystical Quests & Maritime Legends", 
+    img: "/images/7.1 Mystical Quests Legends.jpg", 
+    description: "Online quests about maritime legends and myths." 
+  },
+  { 
+    title: "Family & Crew Adventure Quests", 
+    img: "/images/8.1 Family Crew Events.jpg", 
+    description: "Games and quests for children and families with the crew." 
+  },
+  { 
+    title: "Explorer Club – Sea Adventures", 
+    img: "/images/9.1 Explorer Club.jpg", 
+    description: "A tournament in naval fencing and battle tactics." 
+  },
+  { 
+    title: "Pirate Duels & Naval Tactics", 
+    img: "/images/10.3 Pirate Duels.jpg", 
+    description: "Training in attack and defense strategies in naval battles." 
+  },
+  { 
+    title: "Masterclass on Attack & Defense", 
+    img: "/images/11 Masterclass on Attack.jpg", 
+    description: "Master the strategies of attack and defense in naval combat." 
+  },
+  { 
+    title: "Knife & Musket Competition", 
+    img: "/images/12 Knife Musket.jpg", 
+    description: "A tournament in knife and musket skills." 
+  }
 ];
+
 
 export default function App() {
   return (
@@ -24,10 +73,13 @@ export default function App() {
         <div className="nav-left">
           <div className="logo">
             {/* Swap logo here */}
-            <img src="/images/your-logo.png" alt="Hobbly logo" className="logo-icon" />
-            <span className="logo-text">Hobbly</span>
+
+             <img src="/images/logo_white@low-res.png" alt=" " className=" logo-icon " /> 
+            <span className=" "> </span>
+
           </div>
         </div>
+
 
         <ul className="nav-center">
           <li><a href="#about">About us</a></li>
@@ -44,7 +96,7 @@ export default function App() {
 
         <div className="about-hero">
           {/* Replace logo image here */}
-          <img className="about-logo" src="/images/your-logo.png" alt="Hobbly logo" />
+          <img className="about-logo" src="/images/symbol_secondary@low-res.png" alt="Hobbl logo" />
           <h3 className="about-heading">HOBBLY TECHNOLOGIES OY</h3>
           <p className="about-text">
             is a modern technology company, whose mission is to make people's everyday lives easier by making hobbies
@@ -54,21 +106,28 @@ export default function App() {
         </div>
       </section>
 
-      {/* ACTIVITIES */}
-      <section id="activities" className="section activities">
-        <h2 className="section-title">ACTIVITIES</h2>
 
-        <div className="cards-wrap">
-          {activities.map((item, i) => (
-            <article className="card" key={i}>
-              {/* Activity images go here */}
-              <img src={item.img} alt={item.title} />
-              <h4 className="card-title">{item.title}</h4>
-              <p className="card-sub">Short description about the event.</p>
-            </article>
-          ))}
-        </div>
-      </section>
+
+     <section id="activities" className="section activities">
+  <h2 className="section-title">ACTIVITIES</h2>
+
+  <div className="cards-wrap">
+    {activities.map((item, i) => (
+      <article className="card" key={i}>
+        {/* Activity images */}
+        <img src={item.img} alt={item.title} className="activity-image" />
+        
+        {/* Activity title */}
+        <h4 className="card-title">{item.title}</h4>
+        
+        {/* Dynamic description */}
+        <p className="card-sub">{item.description}</p>
+      </article>
+    ))}
+  </div>
+</section>
+
+
 
       {/* APPLICATION */}
       <section id="application" className="section application">
@@ -77,7 +136,7 @@ export default function App() {
         <div className="two-col">
           <div className="col image-col">
             {/* Replace phone mockup here */}
-            <img src="/images/your-phone.png" alt="app phone" className="phone-mockup" />
+            <img src="/images/screen.png" alt="app phone" className="phone-mockup" />
           </div>
 
           <div className="col text-col">
@@ -100,7 +159,7 @@ export default function App() {
         <div className="two-col">
           <div className="col image-col">
             {/* Replace laptop mockup here */}
-            <img src="/images/your-laptop.png" alt="app laptop" className="laptop-mockup" />
+            <img src="/images/1 Landing Page (1).jpg" className="laptop-mockup" />
           </div>
 
           <div className="col text-col">
@@ -137,28 +196,35 @@ export default function App() {
 
 
  {/* FOOTER */}
-      <footer className="footer">
-        <div className="footer-left">
-          <div>🏠 Rautatieläisenkatu 5</div>
-          <div>📍 00520 Helsinki</div>
+<footer className="footer">
+  <div className="footer-left">
+    {/* Address section */}
+    <a
+      href="https://www.google.com/maps/search/?api=1&query=Rautatieläisenkatu+5,+00520+Helsinki"
+      target="_blank"
+      rel="noopener noreferrer"
+    >
+      <div>🏠 Rautatieläisenkatu 5</div>
+      <div>📍 00520 Helsinki</div>
+    </a>
+  </div>
 
-        </div>
+  <div className="footer-center">
+    <a href="tel:+7405330530">📞 +7405330530</a>
+  </div>
 
-        <footer className="footer-center">
-          <div> &nbsp;  📞 +7405330530 &nbsp;  </div>
-        </footer>
+  <div className="footer-center1">
+    <a href="mailto:hobbly@gmail.com">✉️ hobbly@gmail.com</a>
+  </div>
 
-         <footer className="footer-center1">
-          <div> &nbsp;  ✉️ hobbly@gmail.com &nbsp; </div>
-        </footer>
+  <div className="footer-right">
+    <a href="https://facebook.com" target="_blank" rel="noopener noreferrer" aria-label="Facebook">f</a>
+    <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" aria-label="LinkedIn">in</a>
+    <a href="https://x.com/" target="_blank" rel="noopener noreferrer" aria-label="Website">X</a>
+  </div>
+</footer>
 
-
-        <div className="footer-right">
-          <a href="/#" aria-label="website">🌐</a>
-          <a href="/#" aria-label="facebook">f</a>
-          <a href="/#" aria-label="linkedin">in</a>
-        </div>
-      </footer>
     </div>
+
   );
 }
