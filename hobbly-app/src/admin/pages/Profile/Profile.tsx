@@ -509,7 +509,18 @@ const Profile: React.FC = () => {
                 // Read-only mode - just show the image without edit functionality
                 <div className={styles.imageViewOnly}>
                   {profileImage ? (
-                    <img src={profileImage} alt="Profile" className={styles.profileImage} />
+                    <img
+                      src={profileImage}
+                      alt="Profile"
+                      className={styles.profileImage}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        const initials = currentUserProfile?.fullName
+                          ? currentUserProfile.fullName.split(' ').map(n => n[0]).join('').toUpperCase()
+                          : currentUserProfile?.email[0].toUpperCase() || 'U';
+                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=200&background=f0f0f0&color=666&format=png`;
+                      }}
+                    />
                   ) : (
                     <div className={styles.imagePlaceholder}>
                       <span>👤</span>
@@ -520,7 +531,18 @@ const Profile: React.FC = () => {
                 // Edit mode - allow image upload
                 <label className={styles.imageLabel}>
                   {profileImage ? (
-                    <img src={profileImage} alt="Profile" className={styles.profileImage} />
+                    <img
+                      src={profileImage}
+                      alt="Profile"
+                      className={styles.profileImage}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        const initials = currentUserProfile?.fullName
+                          ? currentUserProfile.fullName.split(' ').map(n => n[0]).join('').toUpperCase()
+                          : currentUserProfile?.email[0].toUpperCase() || 'U';
+                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=200&background=f0f0f0&color=666&format=png`;
+                      }}
+                    />
                   ) : (
                     <div className={styles.imagePlaceholder}>
                       <span>👤</span>

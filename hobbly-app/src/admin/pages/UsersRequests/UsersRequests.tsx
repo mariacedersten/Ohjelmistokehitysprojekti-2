@@ -5,8 +5,10 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import usersAPI from '../../../api/users.api';
+import { UserRole } from '../../../types';
 import styles from './UsersRequests.module.css';
 
 interface UserRequest {
@@ -15,11 +17,12 @@ interface UserRequest {
   organisation: string;
   phoneNumber: string;
   email: string;
-  userAvatar?: string;
+  photoUrl?: string;
+  role: UserRole;
 }
 
 const UsersRequests: React.FC = () => {
-  const { user } = useAuth();
+  const navigate = useNavigate();
   const [items, setItems] = useState<UserRequest[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [searching, setSearching] = useState(false);
@@ -58,7 +61,9 @@ const UsersRequests: React.FC = () => {
           name: u.fullName || u.email,
           organisation: u.organizationName || '—',
           phoneNumber: u.phone || '—',
-          email: u.email
+          email: u.email,
+          photoUrl: u.photoUrl,
+          role: u.role
         }));
         setItems(mapped);
         setTotal(res.total || 0);
@@ -74,6 +79,28 @@ const UsersRequests: React.FC = () => {
   }, [currentPage, debouncedSearch]);
 
   const totalPages = useMemo(() => Math.max(1, Math.ceil(total / pageSize)), [total, pageSize]);
+
+  /**
+   * Get user avatar placeholder
+   */
+  const getUserAvatar = (userRequest: UserRequest): string => {
+    if (userRequest.photoUrl) {
+      return userRequest.photoUrl;
+    }
+    // Return reliable avatar placeholder based on user name initials
+    const initials = userRequest.name
+      ? userRequest.name.split(' ').map(n => n[0]).join('').toUpperCase()
+      : userRequest.email[0].toUpperCase();
+    // Use ui-avatars.com which is more reliable than via.placeholder.com
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=48&background=f0f0f0&color=666&format=png`;
+  };
+
+  /**
+   * Navigate to user profile page
+   */
+  const handleViewProfile = (userId: string) => {
+    navigate(`/admin/personal-info?userId=${userId}`);
+  };
 
   const approve = async (id: string) => {
     try {
@@ -142,10 +169,28 @@ const UsersRequests: React.FC = () => {
             items.map((req) => (
               <div key={req.id} className={styles.tableRow}>
                 <div className={styles.nameCell}>
-                  <div className={styles.userAvatar}>
-                    {req.userAvatar ? (<img src={req.userAvatar} alt={req.name} />) : (<div className={styles.avatarPlaceholder}>{req.name.charAt(0)}</div>)}
+                  <div
+                    className={`${styles.userAvatar} ${styles.clickableAvatar}`}
+                    onClick={() => handleViewProfile(req.id)}
+                    title="View profile"
+                  >
+                    <img
+                      src={getUserAvatar(req)}
+                      alt={req.name}
+                      onError={(e) => {
+                        const target = e.target as HTMLImageElement;
+                        const initials = req.name
+                          ? req.name.split(' ').map(n => n[0]).join('').toUpperCase()
+                          : req.email[0].toUpperCase();
+                        // Use ui-avatars.com which is more reliable than via.placeholder.com
+                        target.src = `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=48&background=f0f0f0&color=666&format=png`;
+                      }}
+                    />
                   </div>
-                  <span className={styles.userName}>{req.name}</span>
+                  <div className={styles.userDetails}>
+                    <span className={styles.userName}>{req.name}</span>
+                    <span className={styles.userRole}>{req.role}</span>
+                  </div>
                 </div>
                 <div className={styles.cell}>{req.organisation}</div>
                 <div className={styles.cell}>{req.phoneNumber}</div>

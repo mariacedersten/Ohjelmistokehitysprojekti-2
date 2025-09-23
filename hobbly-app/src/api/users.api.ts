@@ -220,6 +220,10 @@ export class UsersAPI {
       organizationName: user.organization_name,
       fullName: user.full_name,
       phone: user.phone,
+      address: user.address,
+      organizationAddress: user.organization_address,
+      organizationNumber: user.organization_number,
+      photoUrl: user.avatar_url, // Маппинг аватара из БД
       isApproved: user.isApproved || false,
       createdAt: new Date(user.created_at),
       updatedAt: new Date(user.updated_at)
