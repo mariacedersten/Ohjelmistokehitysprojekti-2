@@ -7,6 +7,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Home.module.css';
+import MobileHeader from '../../components/MobileHeader';
 import { Activity, ActivityFilters } from '../../../types';
 import activitiesAPI from '../../../api/activities.api';
 
@@ -88,15 +89,7 @@ const Home: React.FC = () => {
   return (
     <div className={styles.home}>
       {/* Header */}
-      <header className={styles.header}>
-        <div className={styles.logoContainer}>
-          <img
-            src="/assets/wireframes/Logo Hobbly/logo_white@low-res.png"
-            alt="Hobbly"
-            className={styles.logo}
-          />
-        </div>
-      </header>
+      <MobileHeader />
 
       {/* Content */}
       <div className={styles.content} onScroll={handleScroll}>

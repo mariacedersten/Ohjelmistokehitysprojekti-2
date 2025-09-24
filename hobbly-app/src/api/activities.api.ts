@@ -73,6 +73,9 @@ class ActivitiesAPI {
         isApproved: 'eq.true', // Показываем только подтвержденные активности
       };
 
+      // Дополнительные параметры, которые нельзя выразить одним ключом (повторяющиеся price, id=in.(...))
+      const extraParams: string[] = [];
+
       // Ограничиваем доступ для ORGANIZER - только свои активности
       if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
         queryParams.user_id = `eq.${currentUserId}`;
@@ -95,14 +98,32 @@ class ActivitiesAPI {
         queryParams.location = `ilike.*${filters.location}*`;
       }
 
+      // Фильтрация по цене (каждый оператор отдельным параметром)
       if (filters.freeOnly) {
-        queryParams.price = 'eq.0';
+        extraParams.push('price=eq.0');
       } else {
-        if (filters.minPrice !== undefined) {
-          queryParams.price = `gte.${filters.minPrice}`;
-        }
-        if (filters.maxPrice !== undefined) {
-          queryParams.price = `${queryParams.price ? queryParams.price + ',' : ''}lte.${filters.maxPrice}`;
+        if (filters.minPrice !== undefined) extraParams.push(`price=gte.${filters.minPrice}`);
+        if (filters.maxPrice !== undefined) extraParams.push(`price=lte.${filters.maxPrice}`);
+      }
+
+      // Фильтрация по тегам (tag_id из таблицы activity_tags)
+      if (filters.tags && filters.tags.length > 0) {
+        try {
+          const tagIds = filters.tags.join(',');
+          const tagFilterUrl = `/activity_tags?tag_id=in.(${tagIds})&select=activity_id`;
+          const tagResp: AxiosResponse<{ activity_id: string }[]> = await apiClient.get(tagFilterUrl);
+          const activityIds = Array.from(new Set((tagResp.data || []).map(r => r.activity_id))).filter(Boolean);
+          if (activityIds.length === 0) {
+            return {
+              data: [],
+              pagination: { page, limit, total: 0 },
+              total: 0
+            };
+          }
+          const inList = activityIds.join(',');
+          extraParams.push(`id=in.(${inList})`);
+        } catch (tagErr) {
+          console.warn('Failed to filter by tags, proceeding without tag filter:', tagErr);
         }
       }
 
@@ -113,8 +134,9 @@ class ActivitiesAPI {
 
       // Выполняем запрос к view `activities_full`
       // Use view `activities_full` which already exposes related fields
+      const extra = extraParams.length ? `&${extraParams.join('&')}` : '';
       const response: AxiosResponse<any[]> = await apiClient.get(
-        `${this.fullViewEndpoint}?${filterQuery}&order=${orderQuery}&select=*`,
+        `${this.fullViewEndpoint}?${filterQuery}${extra}&order=${orderQuery}&select=*`,
         paginationConfig
       );
 

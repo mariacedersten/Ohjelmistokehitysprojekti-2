@@ -7,6 +7,9 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import styles from './ActivityDetail.module.css';
+import MobileHeader from '../../components/MobileHeader';
+import { MapContainer, TileLayer, Marker } from 'react-leaflet';
+import 'leaflet/dist/leaflet.css';
 import { Activity } from '../../../types';
 import activitiesAPI from '../../../api/activities.api';
 
@@ -87,20 +90,7 @@ const ActivityDetail: React.FC = () => {
   return (
     <div className={styles.activityDetail}>
       {/* Header с кнопкой назад */}
-      <header className={styles.header}>
-        <button onClick={handleBack} className={styles.backButton}>
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none">
-            <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-          </svg>
-        </button>
-        <div className={styles.logoContainer}>
-          <img 
-            src="/assets/wireframes/Logo Hobbly/logo_white@low-res.png" 
-            alt="Hobbly" 
-            className={styles.logo}
-          />
-        </div>
-      </header>
+      <MobileHeader showBack onBack={handleBack} />
 
       {/* Content */}
       <div className={styles.content}>
@@ -195,6 +185,23 @@ const ActivityDetail: React.FC = () => {
                   </button>
                 )}
               </div>
+              {/* Embedded map for the single activity */}
+              {activity.coordinates && (
+                <div className={styles.mapContainer}>
+                  <MapContainer
+                    center={[activity.coordinates.lat, activity.coordinates.lng]}
+                    zoom={13}
+                    style={{ width: '100%', height: '100%' }}
+                    scrollWheelZoom={false}
+                  >
+                    <TileLayer
+                      attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+                      url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                    />
+                    <Marker position={[activity.coordinates.lat, activity.coordinates.lng]} />
+                  </MapContainer>
+                </div>
+              )}
             </div>
 
             {/* Организатор */}

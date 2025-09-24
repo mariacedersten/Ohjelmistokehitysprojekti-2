@@ -34,14 +34,15 @@
 
 .mapContainer {
   flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding-bottom: 80px;
 }
 
 .placeholder {
   color: white;
   font-size: 18px;
   font-family: 'Montserrat', sans-serif;
+}
+
+.leafletMap {
+  width: 100%;
+  height: calc(100vh - 60px - 60px); /* header (~60px) + bottom nav (60px) */
 }

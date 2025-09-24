@@ -17,6 +17,7 @@ import ActivityDetail from './pages/ActivityDetail/ActivityDetail';
 import Login from './pages/Login/Login';
 import SignUp from './pages/SignUp/SignUp';
 import { UserRole } from '../types';
+import PersonalInfo from './pages/PersonalInfo';
 
 // Импорт компонентов
 import BottomNavigation from './components/BottomNavigation/BottomNavigation';
@@ -43,6 +44,7 @@ const MobileApp: React.FC = () => {
         paddingBottom: hideFooterAndPadding ? 0 : '60px',
       }}
     >
+      {/* Account icon now rendered inside page headers (Map, Home, Search, ActivityDetail) */}
       <Routes>
         {/* Стартовая страница */}
         <Route path="/cover" element={<Cover />} />
@@ -52,6 +54,7 @@ const MobileApp: React.FC = () => {
         <Route path="/search" element={<Search />} />
         <Route path="/map" element={<Map />} />
         <Route path="/activity/:id" element={<ActivityDetail />} />
+        <Route path="/personalinfo" element={<PersonalInfo />} />
 
         {/* Страница авторизации */}
         <Route path="/login" element={<Login />} />
