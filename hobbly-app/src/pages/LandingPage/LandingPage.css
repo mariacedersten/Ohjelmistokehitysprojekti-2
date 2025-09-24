@@ -17,6 +17,7 @@
   box-sizing: border-box;
 }
 body {
+  font-size: 20px; /* базовый размер для всего сайта */
   margin: 0;
   font-family: "Montserrat", system-ui, -apple-system, "Segoe UI", Roboto,
     "Helvetica Neue", Arial;
@@ -43,7 +44,7 @@ body {
   gap: 0.55rem;
   color: #f3fff7;
   font-weight: 700;
-  font-size: 18px;
+  font-size: 20px;
 }
 .logo-icon {
   height: 28px;
@@ -52,7 +53,7 @@ body {
 }
 .nav-center {
   display: flex;
-  gap: 1.35rem;
+  gap: 5rem;
   list-style: none;
   margin: 0;
   padding: 0;
@@ -96,7 +97,7 @@ section {
 /* SECTION TITLE */
 .section-title {
   margin: 0;
-  padding: 32px 0;
+  padding: 20px 0;
   display: block;
   width: 100vw;
   position: relative;
@@ -119,13 +120,13 @@ section {
 .about {
   background: var(--yellow);
   padding-top: 0;
-  padding-bottom: 130px;
+  padding-bottom: 140px;
 }
 .about-hero {
   max-width: 880px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0);
-  padding: 50px 20px 50px;
+  padding: 100px 20px 50px;
   border-radius: 6px;
 }
 .about-logo {
@@ -148,8 +149,8 @@ section {
   font-weight: 300;
   max-width: 760px;
   margin: 0 auto;
-  font-size: 16px;
-  text-align: center;
+  font-size: 20px;
+  text-align: justify;
 }
 
 /* ACTIVITIES */
@@ -163,7 +164,7 @@ section {
   margin: 14px auto 0;
   display: grid;
   grid-template-columns: repeat(4, 1fr);
-  gap: 16px;
+  gap: 10px;
 }
 .card {
   background: white;
@@ -198,7 +199,7 @@ section {
   margin: 0;
 }
 
-/* APPLICATION / ORGANISATIONS */
+/* APPLICATION */
 .application {
   background: #d7d7d7;
 }
@@ -212,7 +213,7 @@ section {
   gap: 36px;
   max-width: 1100px;
   margin: 10px auto 0;
-  padding: 100px;
+  padding: 105px;
   flex-wrap: wrap;
 }
 .image-col {
@@ -222,7 +223,7 @@ section {
 }
 .text-col {
   flex: 1 1 420px;
-  text-align: left;
+  text-align: justify;
 }
 .phone-mockup {
   width: 220px;
@@ -230,15 +231,60 @@ section {
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
 }
 .laptop-mockup {
-  width: 420px;
+  width: 630px;
   border-radius: 12px;
   box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
 }
 .lead {
   color: #28322f;
   line-height: 1.8;
-  font-size: 16px;
+  font-size: 20px;
   font-weight: 300;
+}
+
+.org-container {
+  display: flex;
+  align-items: center; /* центрируем вертикально */
+  justify-content: center; /* центрируем по горизонтали */
+  gap: 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 165px 20px;
+}
+
+.org-image-col {
+  flex: 0 0 50%; /* половина ширины */
+  display: flex;
+  justify-content: center;
+}
+
+.org-laptop-mockup {
+  width: 100%;
+  max-width: 500px;
+  border-radius: 16px;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.25);
+}
+
+.org-text-col {
+  flex: 0 0 40%; /* текст занимает оставшуюся часть */
+  text-align: justify;
+  font-size: 1.25rem;
+  line-height: 1.6;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+  .org-container {
+    flex-direction: column;
+    text-align: center;
+  }
+  .org-image-col,
+  .org-text-col {
+    flex: 0 0 100%;
+  }
+  .org-text-col {
+    margin-top: 20px;
+  }
 }
 
 /* BUTTONS */
@@ -261,7 +307,7 @@ section {
 /* CONTACT */
 .contact {
   background: #fbf9c6;
-  padding-bottom: 72px;
+  padding-bottom: 266px;
 }
 .contact-grid {
   max-width: 1100px;
@@ -269,7 +315,7 @@ section {
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18px;
-  padding: 18px;
+  padding: 30px;
 }
 .left-col input,
 .right-col textarea {
@@ -300,13 +346,17 @@ section {
   flex-wrap: wrap;
 }
 .footer-left {
-  font-size: 14px;
+  font-size: 20px;
 }
 .footer-right a {
   color: #cfeee3;
   margin-left: 10px;
   text-decoration: none;
   font-weight: 700;
+}
+.footer,
+.footer a {
+  color: #ffffff;
 }
 
 /* BACKGROUND GRADIENT ELEMENTS */
@@ -382,10 +432,10 @@ section {
   }
   .nav-center {
     gap: 12px;
-    font-size: 14px;
+    font-size: 20px;
   }
   .about-text {
-    font-size: 15px;
+    font-size: 20px;
     line-height: 1.7;
   }
 }

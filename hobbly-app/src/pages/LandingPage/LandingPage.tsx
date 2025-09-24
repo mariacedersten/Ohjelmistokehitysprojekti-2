@@ -88,9 +88,7 @@ export default function LandingPage() {
             <img className="about-logo" src={symbolSecondary} alt="Hobbly logo" />
             <h3 className="about-heading">HOBBLY TECHNOLOGIES OY</h3>
             <p className="about-text">
-              is a modern technology company, whose mission is to make people's everyday lives easier by making hobbies
-              and leisure opportunities easy to find and accessible. The company aims to enhance people's well-being and
-              sense of community by providing digital solutions that connect users with hobbies and service providers.
+              is a modern technology company whose mission is to make people’s everyday lives easier by making hobbies and leisure opportunities easy to find and accessible. The company aims to enhance people’s well-being and sense of community by providing digital solutions that connect users with hobbies and service providers.
             </p>
           </div>
         </section>
@@ -129,24 +127,22 @@ export default function LandingPage() {
           </div>
         </section>
 
-        {/* ORGANISATIONS */}
-        <section id="organisations" className="section organisations">
-          <h2 className="section-title">ORGANISATIONS</h2>
-          <div className="two-col">
-            <div className="col image-col">
-              <img src={laptopMockup} alt="Organisation demo" className="laptop-mockup" />
-            </div>
-            <div className="col text-col">
-              <p className="lead">
-                We work with various service providers who can easily register on our website and offer their events.
-                Service providers can add their events to our application.
-              </p>
-              <div className="download-wrap">
-                <button className="btn" onClick={handleAdminClick}>Create PRO</button>
-              </div>
-            </div>
-          </div>
-        </section>
+     {/* ORGANISATIONS */}
+<section id="organisations" className="section organisations">
+  <h2 className="section-title">ORGANISATIONS</h2>
+  <div className="org-container">
+    <div className="org-image-col">
+      <img src={laptopMockup} alt="Organisation demo" className="org-laptop-mockup" />
+    </div>
+    <div className="org-text-col">
+      <p>
+        We work with various service providers who can easily register on our website and offer their events. <br /><br />
+        Service providers can add their events to our application.
+      </p>
+      <button className="btn" onClick={handleAdminClick}>Create PRO</button>
+    </div>
+  </div>
+</section>
 
         {/* CONTACT */}
         <section id="contact" className="section contact">
