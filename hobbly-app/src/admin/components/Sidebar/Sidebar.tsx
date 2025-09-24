@@ -10,6 +10,7 @@ import { useAuth } from '../../../shared/contexts/AuthContext';
 import { UserRole } from '../../../types';
 import styles from './Sidebar.module.css';
 const ADMIN_LOGO_URL = `${process.env.PUBLIC_URL}/Logo Hobbly/logo_white@high-res.png`;
+const ICONS_BASE_URL = `${process.env.PUBLIC_URL}/Icons`;
 
 /**
  * Admin Sidebar navigation componentяы
@@ -36,37 +37,37 @@ const Sidebar: React.FC = () => {
     {
       path: '/admin/dashboard',
       label: 'Dashboard',
-      icon: '📊',
+      iconSrc: `${ICONS_BASE_URL}/Dashbord.svg`,
       roles: [UserRole.ADMIN]
     },
     {
       path: '/admin/activities',
       label: 'Activities',
-      icon: '📋',
+      iconSrc: `${ICONS_BASE_URL}/activities.svg`,
       roles: [UserRole.ORGANIZER, UserRole.ADMIN]
     },
     {
       path: '/admin/activities/requests',
       label: 'Activities requests',
-      icon: '🔔',
+      iconSrc: `${ICONS_BASE_URL}/bell.svg`,
       roles: [UserRole.ADMIN]
     },
     {
       path: '/admin/users',
       label: 'Users',
-      icon: '👥',
+      iconSrc: `${ICONS_BASE_URL}/users.svg`,
       roles: [UserRole.ADMIN]
     },
     {
       path: '/admin/users/requests',
       label: 'Users\'s requests',
-      icon: '🔔',
+      iconSrc: `${ICONS_BASE_URL}/bell.svg`,
       roles: [UserRole.ADMIN]
     },
     {
       path: '/admin/personal-info',
       label: 'Profile',
-      icon: '⚙️',
+      iconSrc: `${ICONS_BASE_URL}/settings.svg`,
       roles: [UserRole.ORGANIZER, UserRole.ADMIN]
     }
   ];
@@ -75,8 +76,15 @@ const Sidebar: React.FC = () => {
     user && item.roles.includes(user.role)
   );
 
+  const sidebarBgStyle: React.CSSProperties = {
+    backgroundImage: `url(${process.env.PUBLIC_URL}/bg_pattern.png)`,
+    backgroundRepeat: 'repeat',
+    backgroundSize: '2000px auto',
+    backgroundPosition: 'top left'
+  };
+
   return (
-    <aside className={styles.sidebar}>
+    <aside className={styles.sidebar} style={sidebarBgStyle}>
       {/* Logo section */}
       <div className={styles.logoSection}>
         <div className={styles.logoContainer}>
@@ -93,7 +101,9 @@ const Sidebar: React.FC = () => {
                 to={item.path}
                 className={`${styles.menuLink} ${isActive(item.path) ? styles.active : ''}`}
               >
-                <span className={styles.menuIcon}>{item.icon}</span>
+                <span className={styles.menuIcon}>
+                  <img src={item.iconSrc} alt="" className={styles.menuIconImage} />
+                </span>
                 <span className={styles.menuLabel}>{item.label}</span>
               </Link>
             </li>
@@ -108,7 +118,9 @@ const Sidebar: React.FC = () => {
             to="/admin/activities/trash"
             className={`${styles.menuLink} ${isActive('/admin/activities/trash') ? styles.active : ''}`}
           >
-            <span className={styles.menuIcon}>🗑️</span>
+            <span className={styles.menuIcon}>
+              <img src={`${ICONS_BASE_URL}/trashbin.svg`} alt="" className={styles.menuIconImage} />
+            </span>
             <span className={styles.menuLabel}>Trash bin</span>
           </Link>
         </div>

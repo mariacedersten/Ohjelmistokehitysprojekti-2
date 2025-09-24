@@ -79,8 +79,10 @@ const Login: React.FC = () => {
         userFullData: user 
       });
       // Only redirect if user has admin/organizer role
-      if (user.role === UserRole.ADMIN || user.role === UserRole.ORGANIZER) {
+      if (user.role === UserRole.ADMIN){
         navigate('/admin/dashboard');
+      } if (user.role === UserRole.ORGANIZER) {
+        navigate('/admin/activities');
       } else {
         // User with 'user' role trying to access admin panel
         setError(`Access denied. Admin panel requires organizer or administrator privileges. Your role: ${user.role}. Please use the mobile app instead.`);

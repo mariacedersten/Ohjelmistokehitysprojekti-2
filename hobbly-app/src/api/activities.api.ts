@@ -394,7 +394,7 @@ class ActivitiesAPI {
       if (data.externalLink !== undefined) updateData.external_link = data.externalLink;
 
       // Обновляем активность
-      const response: AxiosResponse<Activity[]> = await apiClient.patch(
+      await apiClient.patch(
         `/activities?id=eq.${id}`,
         updateData
       );
@@ -630,8 +630,13 @@ class ActivitiesAPI {
       // Подготавливаем параметры запроса
       const queryParams: Record<string, any> = {
         is_deleted: 'is.false', // Исключаем только удаленные
-        // Не фильтруем по isApproved - показываем все
       };
+
+      // Требование: администраторы не видят pending (показываем только одобренные),
+      // организаторы видят свои активности, включая не одобренные
+      if (currentUserRole === UserRole.ADMIN) {
+        queryParams.isApproved = 'eq.true';
+      }
 
       // Ограничиваем доступ для ORGANIZER - только свои активности
       if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
@@ -897,7 +902,7 @@ class ActivitiesAPI {
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await storageClient.post(
+      await storageClient.post(
         `/object/${API_CONSTANTS.STORAGE_BUCKET}/${filePath}`,
         formData,
         {

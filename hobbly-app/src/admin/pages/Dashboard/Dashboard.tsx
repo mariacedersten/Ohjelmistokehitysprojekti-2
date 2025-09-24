@@ -4,11 +4,11 @@
  * @description Analytics dashboard with charts and statistics overview
  */
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import activitiesAPI from '../../../api/activities.api';
 import usersAPI from '../../../api/users.api';
-import { UserRole, Activity, ActivityType } from '../../../types';
+import { UserRole, Activity } from '../../../types';
 import styles from './Dashboard.module.css';
 
 interface DashboardStats {
@@ -44,16 +44,20 @@ const Dashboard: React.FC = () => {
   });
   const [loading, setLoading] = useState(true);
 
-  useEffect(() => {
-    loadDashboardData();
-  }, []);
-
- const loadDashboardData = async () => {
+  const loadDashboardData = useCallback(async () => {
   try {
     setLoading(true);
 
     // 1. Загружаем все активности
-    const activitiesResponse = await activitiesAPI.getActivities({}, 1, 100);
+    const activitiesResponse = await activitiesAPI.getAllActivitiesForAdmin(
+      {},
+      1,
+      100,
+      'created_at',
+      false,
+      user?.id,
+      user?.role
+    );
     const activities = activitiesResponse.data;
 
     // 2. Считаем посты
@@ -152,7 +156,11 @@ const Dashboard: React.FC = () => {
   } finally {
     setLoading(false);
   }
-};
+}, [user?.id, user?.role]);
+
+  useEffect(() => {
+    loadDashboardData();
+  }, [loadDashboardData]);
 
 
   if (loading) {

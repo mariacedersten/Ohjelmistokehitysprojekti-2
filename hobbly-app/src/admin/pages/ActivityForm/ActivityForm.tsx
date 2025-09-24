@@ -187,15 +187,21 @@ const ActivityForm: React.FC = () => {
       // Create or update activity
       if (isEditing && id) {
         await activitiesAPI.updateActivity(id, activityData, user?.id, user?.role);
+        // Navigate back to activities list without special notice
+        navigate('/admin/activities');
       } else {
         if (!user?.id) {
           throw new Error('User authentication required to create activity');
         }
         await activitiesAPI.createActivity(activityData, user.id);
-      }
 
-      // Navigate back to activities list
-      navigate('/admin/activities');
+        // Navigate with success notice about moderation requirement
+        navigate('/admin/activities', {
+          state: {
+            successMessage: 'Your activity has been submitted and is pending administrator approval.'
+          }
+        });
+      }
     } catch (err) {
       console.error('Failed to save activity:', err);
       if (err instanceof Error) {

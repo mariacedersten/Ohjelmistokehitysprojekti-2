@@ -83,7 +83,8 @@ const Users: React.FC = () => {
       const response = await usersAPI.getUsers({
         page: currentPage,
         limit: itemsPerPage,
-        search: debouncedSearch || undefined
+        search: debouncedSearch || undefined,
+        isApproved: true
       });
       setUsers(response.data);
       setTotalPages(Math.ceil(response.total / itemsPerPage));

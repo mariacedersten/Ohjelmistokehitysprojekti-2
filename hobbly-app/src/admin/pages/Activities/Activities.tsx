@@ -5,7 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import activitiesAPI from '../../../api/activities.api';
 import { Activity, UserRole } from '../../../types';
@@ -17,6 +17,7 @@ import styles from './Activities.module.css';
  */
 const Activities: React.FC = () => {
   const { user } = useAuth();
+  const location = useLocation() as { state?: { successMessage?: string } };
   const navigate = useNavigate();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -27,6 +28,9 @@ const Activities: React.FC = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [showInfoNotice, setShowInfoNotice] = useState(true);
 
   const itemsPerPage = 10;
 
@@ -54,6 +58,19 @@ const Activities: React.FC = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentPage, debouncedSearch]);
 
+  // Show one-time toast after successful creation (message comes from navigation state)
+  useEffect(() => {
+    if (location?.state?.successMessage) {
+      setToastMessage(location.state.successMessage);
+      setShowToast(true);
+      // Clear navigation state so it won't reappear on refresh/back
+      navigate('/admin/activities', { replace: true, state: {} });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // No persistence for banner visibility; it depends only on current data
+
   /**
    * Load activities from API
    */
@@ -61,12 +78,14 @@ const Activities: React.FC = () => {
     try {
       setError(null);
 
-      const response = await activitiesAPI.getActivities(
+      const response = await activitiesAPI.getAllActivitiesForAdmin(
         { search: debouncedSearch },
         currentPage,
         itemsPerPage,
         'created_at',
         false, // newest first
+        user?.id,
+        user?.role
       );
 
       setActivities(response.data);
@@ -168,6 +187,44 @@ const Activities: React.FC = () => {
         </div>
       </div>
 
+      {/* Pending approval notice for organizers */}
+      {user?.role === UserRole.ORGANIZER && activities.some(a => a.isApproved === false) && showInfoNotice && (
+        <div className={styles.infoWrapper}>
+          <div className={styles.infoNotice} role="status" aria-live="polite">
+            <span>
+              Activities created by you appear after administrator approval. Pending items are marked as "Pending approval".
+            </span>
+            <button
+              type="button"
+              className={styles.infoClose}
+              aria-label="Dismiss this message"
+              onClick={() => {
+                setShowInfoNotice(false);
+              }}
+            >
+              ×
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Toast Notification */}
+      {showToast && toastMessage && (
+        <div className={styles.toast} role="status" aria-live="polite">
+          <div className={styles.toastContent}>
+            {toastMessage}
+          </div>
+          <button
+            type="button"
+            className={styles.toastClose}
+            aria-label="Close notification"
+            onClick={() => setShowToast(false)}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
       {/* Activities Table */}
       <div className={styles.tableContainer}>
         <table className={styles.table}>
@@ -182,7 +239,7 @@ const Activities: React.FC = () => {
             </tr>
           </thead>
           <tbody>
-            {activities.length > 0 ? (
+              {activities.length > 0 ? (
               activities.map((activity) => (
                 <tr key={activity.id} className={styles.tableRow}>
                   <td className={styles.tableCell}>
@@ -202,6 +259,19 @@ const Activities: React.FC = () => {
                         <span className={styles.activityCategory}>
                           {activity.category?.name || activity.type}
                         </span>
+                        {user?.role === UserRole.ORGANIZER && activity.isApproved === false && (
+                          <span style={{
+                            marginTop: 6,
+                            display: 'inline-block',
+                            padding: '2px 8px',
+                            borderRadius: 12,
+                            background: '#FFF1F0',
+                            color: '#D4380D',
+                            border: '1px solid #FFA39E',
+                            fontSize: 12,
+                            fontWeight: 600
+                          }}>Pending approval</span>
+                        )}
                       </div>
                     </div>
                   </td>

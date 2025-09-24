@@ -405,6 +405,71 @@
   background: #ff5252;
 }
 
+/* Dismissible info notice */
+.infoWrapper {
+  margin-bottom: 16px;
+}
+
+.infoNotice {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #FFF9E6;
+  border: 1px solid #FFE08A;
+  color: #7A5E00;
+  border-radius: 8px;
+  padding: 12px 16px;
+}
+
+.infoClose {
+  background: transparent;
+  border: none;
+  color: #7A5E00;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+/* Toast notification */
+.toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 2000;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  background: #073B3A;
+  color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  padding: 14px 16px 14px 16px;
+  max-width: 380px;
+}
+
+.toastContent {
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+.toastClose {
+  background: transparent;
+  color: #fff;
+  border: none;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@media (max-width: 768px) {
+  .toast {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    max-width: unset;
+  }
+}
+
 /* Responsive Design */
 @media (max-width: 1200px) {
   .container {
