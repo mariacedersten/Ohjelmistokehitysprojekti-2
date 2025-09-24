@@ -240,6 +240,14 @@
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
 }
 
+.viewButton {
+  background: #e8f4f3;
+}
+
+.viewButton:hover {
+  background: #d4ebe9;
+}
+
 .restoreButton {
   background: #d1edff;
 }

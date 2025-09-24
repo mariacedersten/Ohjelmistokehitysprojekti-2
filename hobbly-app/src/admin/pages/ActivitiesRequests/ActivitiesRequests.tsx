@@ -5,6 +5,7 @@
  */
 
 import React, { useEffect, useMemo, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import activitiesAPI from '../../../api/activities.api';
 import { Activity } from '../../../types';
@@ -20,6 +21,7 @@ interface ActivityRequestView {
 }
 
 const ActivitiesRequests: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [items, setItems] = useState<ActivityRequestView[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -95,6 +97,10 @@ const ActivitiesRequests: React.FC = () => {
     }
   };
 
+  const view = (id: string) => {
+    navigate(`/admin/activities/edit/${id}`);
+  };
+
   if (initialLoading) {
     return (
       <div className={styles.container}><div className={styles.loading}>Loading activity requests...</div></div>
@@ -153,6 +159,9 @@ const ActivitiesRequests: React.FC = () => {
                 <div className={styles.cell}>{request.location}</div>
                 <div className={styles.cell}>{request.price}</div>
                 <div className={styles.actionsCell}>
+                  <button onClick={() => view(request.id)} className={`${styles.actionButton} ${styles.viewButton}`} title="View">
+                    👁️
+                  </button>
                   <button onClick={() => approve(request.id)} className={`${styles.actionButton} ${styles.approveButton}`} title="Approve">✅</button>
                   <button onClick={() => reject(request.id)} className={`${styles.actionButton} ${styles.rejectButton}`} title="Reject">🗑️</button>
                 </div>

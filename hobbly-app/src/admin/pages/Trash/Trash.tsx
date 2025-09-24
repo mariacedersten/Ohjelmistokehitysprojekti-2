@@ -5,6 +5,7 @@
  */
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import activitiesAPI from '../../../api/activities.api';
 import { Activity, UserRole } from '../../../types';
@@ -15,6 +16,7 @@ import styles from './Trash.module.css';
  * @returns JSX element
  */
 const Trash: React.FC = () => {
+  const navigate = useNavigate();
   const { user } = useAuth();
   const [activities, setActivities] = useState<Activity[]>([]);
   const [initialLoading, setInitialLoading] = useState(true);
@@ -210,6 +212,13 @@ const Trash: React.FC = () => {
                   {formatDate(activity.startDate)}
                 </div>
                 <div className={styles.actionsCell}>
+                  <button
+                    onClick={() => navigate(`/admin/activities/edit/${activity.id}`)}
+                    className={`${styles.actionButton} ${styles.viewButton}`}
+                    title="View activity"
+                  >
+                    👁️
+                  </button>
                   <button
                     onClick={() => setActionConfirm({
                       id: activity.id,

@@ -60,12 +60,15 @@
   display: flex;
   flex-direction: column;
   gap: 24px;
+  overflow: hidden; /* Prevent content overflow */
 }
 
 .rightColumn {
   display: flex;
   flex-direction: column;
   gap: 24px;
+  overflow: hidden; /* Prevent content overflow */
+  min-width: 0; /* Allow flex items to shrink below content size */
 }
 
 /* Form Groups */
@@ -97,6 +100,9 @@
   color: #2D2D2D;
   background: white;
   transition: border-color 0.3s ease;
+  box-sizing: border-box; /* Include padding and border in width */
+  width: 100%; /* Ensure inputs don't overflow container */
+  max-width: 100%; /* Prevent horizontal overflow */
 }
 
 .input:focus, .select:focus, .textarea:focus {
@@ -116,7 +122,11 @@
 .textarea {
   resize: vertical;
   min-height: 120px;
+  max-height: 200px; /* Prevent overflow */
   font-family: inherit;
+  overflow-y: auto; /* Add scrollbar if needed */
+  word-wrap: break-word; /* Prevent horizontal overflow */
+  white-space: pre-wrap; /* Preserve formatting but wrap text */
 }
 
 /* Price Input */
@@ -171,7 +181,8 @@
 /* Image Upload */
 .imageUpload {
   width: 100%;
-  height: 400px;
+  height: 200px; /* Changed from 400px to maintain 2:1 ratio */
+  aspect-ratio: 2 / 1; /* Enforce 2:1 aspect ratio */
 }
 
 .imageLabel {
@@ -193,6 +204,7 @@
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: center;
 }
 
 .imagePlaceholder {
@@ -298,7 +310,8 @@
   }
 
   .imageUpload {
-    height: 250px;
+    height: 175px; /* Maintain 2:1 ratio for mobile */
+    aspect-ratio: 2 / 1;
   }
 
   .formRow {
@@ -341,7 +354,8 @@
   }
 
   .imageUpload {
-    height: 200px;
+    height: 150px; /* Maintain 2:1 ratio for small screens */
+    aspect-ratio: 2 / 1;
   }
 
   .input, .select, .textarea {
