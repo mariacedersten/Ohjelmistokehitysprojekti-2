@@ -88,7 +88,7 @@ export default function LandingPage() {
             <img className="about-logo" src={symbolSecondary} alt="Hobbly logo" />
             <h3 className="about-heading">HOBBLY TECHNOLOGIES OY</h3>
             <p className="about-text">
-              is a modern technology company whose mission is to make people’s everyday lives easier by making hobbies and leisure opportunities easy to find and accessible. The company aims to enhance people’s well-being and sense of community by providing digital solutions that connect users with hobbies and service providers.
+              is a modern technology company whose mission is to make people’s everyday lives easier by making hobbies and leisure opportunities easy to find and accessible. The company strives to improve people’s well-being and foster a stronger sense of community by offering digital solutions that seamlessly connect users with hobbies, events, and service providers. Through its innovative platform, Hobbly enables everyone to discover, participate in, and enjoy activities that enrich their daily lives.
             </p>
           </div>
         </section>
@@ -118,7 +118,7 @@ export default function LandingPage() {
               <p className="lead">
                 We have a mobile application that helps you find any leisure activities in the Uusimaa region. The mobile
                 application allows users to easily find suitable options and obtain reliable information about service
-                providers. The app serves a wide range of target groups, including children, youth, adults, families, and seniors.
+                providers. The app serves a wide range of target groups, including children, youth, adults, families, and seniors, offering personalized recommendations and convenient booking options. With our application, enjoying hobbies and local events has never been easier.
               </p>
               <div className="download-wrap">
                 <button className="btn" onClick={handleMobileClick}>Download the APP</button>
@@ -136,8 +136,11 @@ export default function LandingPage() {
     </div>
     <div className="org-text-col">
       <p>
-        We work with various service providers who can easily register on our website and offer their events. <br /><br />
-        Service providers can add their events to our application.
+        We work with various service providers who can easily register on our website and offer their events. </p>
+        <p>
+        Service providers can add their events to our application.</p>
+        <p>
+        Our goal is to make it simple for organizations of any size—whether local businesses, community groups, or large venues—to share their activities and connect with participants.
       </p>
       <button className="btn" onClick={handleAdminClick}>Create PRO</button>
     </div>
