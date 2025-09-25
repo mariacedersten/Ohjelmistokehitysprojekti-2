@@ -123,14 +123,7 @@
 }
 
 .tableHeaderCell {
-  text-align: left;
-  padding: 20px 24px;
-  font-family: var(--font-heading);
-  font-weight: 600;
   font-size: 14px;
-  color: #2D2D2D;
-  text-transform: uppercase;
-  letter-spacing: 0.5px;
 }
 
 /* Table Rows */
@@ -145,7 +138,7 @@
 
 .tableCell {
   padding: 20px 24px;
-  font-size: 14px;
+  font-size: 16px;
   color: #2D2D2D;
   vertical-align: middle;
 }

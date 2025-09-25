@@ -203,7 +203,7 @@ const Users: React.FC = () => {
               <th className={styles.tableHeaderCell}>Date of adding</th>
               <th className={styles.tableHeaderCell}>Phone number</th>
               <th className={styles.tableHeaderCell}>E-mail</th>
-              <th className={styles.tableHeaderCell}></th>
+              <th className={styles.tableHeaderCell}>Edit/Delete</th>
             </tr>
           </thead>
           <tbody>
