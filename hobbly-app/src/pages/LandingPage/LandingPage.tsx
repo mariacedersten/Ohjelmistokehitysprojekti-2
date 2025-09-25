@@ -1,63 +1,43 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../shared/components/Button';
 import "./LandingPage.css";
 import { ContactForm } from "./ContactForm";
 
-// ==== Импорты изображений ====
-import img1 from "./images/1.1 Sea Expedition.jpg";
-import img2 from "./images/2 Pirate Festival.jpg";
-import img3 from "./images/3.1 Cooking Masterclass.jpg";
-import img4 from "./images/4.1 Navigation Knots Survival.jpg";
-import img5 from "./images/5 Deep-Sea Shipwreck.jpg";
-import img6 from "./images/6.2 Ship Model.jpg";
-import img7 from "./images/7.1 Mystical Quests Legends.jpg";
-import img8 from "./images/8.1 Family Crew Events.jpg";
-import img9 from "./images/9.1 Explorer Club.jpg";
-import img10 from "./images/10.3 Pirate Duels.jpg";
-import img11 from "./images/11 Masterclass on Attack.jpg";
-import img12 from "./images/12 Knife Musket.jpg";
+// ==== Импорты изображений для других частей страницы ====
 import logoWhite from "./images/logo_white@low-res.png";
 import symbolSecondary from "./images/symbol_secondary@low-res.png";
 import screenMockup from "./images/screen.png";
 import laptopMockup from "./images/1 Landing Page (1).jpg";
 
-const activities = [
-  { title: "Caribbean Sea Expedition", img: img1,
-    description: "A sea journey across the Helsinki archipelago with adventures and stops at picturesque locations." },
-  { title: "Pirate Festival with Music & Dance", img: img2,
-    description: "A celebrating of pirate culture with live music, dancing, street performances." },
-  { title: "Pirate Cooking Masterclass", img: img3,
-    description: "A culinary masterclass on traditional pirate cuisine." },
-  { title: "Navigation, Knots & Survival at Sea", img: img4,
-    description: "Training in navigation, maritime knots, and basic survival skills at sea." },
-  { title: "Deep-Sea Shipwreck Exploration", img: img5,
-    description: "Exploration of underwater worlds and local shipwreck legends." },
-  { title: "Miniature Shipbuilding Workshop", img: img6,
-    description: "A practical workshop on building miniature ship models." },
-  { title: "Mystical Quests & Maritime Legends", img: img7,
-    description: "Online quests about maritime legends and myths." },
-  { title: "Family & Crew Adventure Quests", img: img8,
-    description: "Games and quests for children and families with the crew." },
-  { title: "Explorer Club – Sea Adventures", img: img9,
-    description: "A tournament in naval fencing and battle tactics." },
-  { title: "Pirate Duels & Naval Tactics", img: img10,
-    description: "Training in attack and defense strategies in naval battles." },
-  { title: "Masterclass on Attack & Defense", img: img11,
-    description: "Master the strategies of attack and defense in naval combat." },
-  { title: "Knife & Musket Competition", img: img12,
-    description: "A tournament in knife and musket skills." }
-];
+// API
+import activitiesAPI from "../../api/activities.api";
+import { Activity } from "../../types";
 
 export default function LandingPage() {
   const navigate = useNavigate();
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [loading, setLoading] = useState(true);
 
-  // Переход на мобильную версию
+  useEffect(() => {
+    // Загружаем первые 12 подтвержденных активностей
+    const fetchActivities = async () => {
+      try {
+        const response = await activitiesAPI.getActivities({}, 1, 12, 'created_at', false);
+        setActivities(response.data);
+      } catch (err) {
+        console.error("Ошибка загрузки активностей:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchActivities();
+  }, []);
+
   const handleMobileClick = () => {
     navigate('/mobile');
   };
 
-  // Переход на админ-панель
   const handleAdminClick = () => {
     navigate('/admin');
   };
@@ -98,13 +78,17 @@ export default function LandingPage() {
         <section id="activities" className="section activities">
           <h2 className="section-title">ACTIVITIES</h2>
           <div className="cards-wrap">
-            {activities.map((item, i) => (
-              <article className="card" key={i}>
-                <img src={item.img} alt={item.title} className="activity-image" />
-                <h4 className="card-title">{item.title}</h4>
-                <p className="card-sub">{item.description}</p>
-              </article>
-            ))}
+            {loading ? (
+              <p>Loading activities...</p>
+            ) : (
+              activities.map((item, i) => (
+                <article className="card" key={i}>
+                  {item.imageUrl && <img src={item.imageUrl} alt={item.title} className="activity-image" />}
+                  <h4 className="card-title">{item.title}</h4>
+                  <p className="card-sub">{item.description}</p>
+                </article>
+              ))
+            )}
           </div>
         </section>
 
@@ -117,9 +101,7 @@ export default function LandingPage() {
             </div>
             <div className="col text-col">
               <p className="lead">
-                We have a mobile application that helps you find any leisure activities in the Uusimaa region. The mobile
-                application allows users to easily find suitable options and obtain reliable information about service
-                providers. The app serves a wide range of target groups, including children, youth, adults, families, and seniors, offering personalized recommendations and convenient booking options. With our application, enjoying hobbies and local events has never been easier.
+               We have a mobile app that helps you find any leisure activities in the Uusimaa region. The app allows users to easily find suitable options and obtain reliable information about service providers and upcoming community events. It serves a wide range of target groups, including children, youth, adults, families, and seniors, offering personalized recommendations and convenient booking options for every schedule and preference. With our app, enjoying hobbies and local events has never been easier.
               </p>
               <div className="download-wrap">
                 <button className="btn" onClick={handleMobileClick}>Download the APP</button>
@@ -128,31 +110,33 @@ export default function LandingPage() {
           </div>
         </section>
 
-     {/* ORGANISATIONS */}
-<section id="organisations" className="section organisations">
-  <h2 className="section-title">ORGANISATIONS</h2>
-  <div className="org-container">
-    <div className="org-image-col">
-      <img src={laptopMockup} alt="Organisation demo" className="org-laptop-mockup" />
-    </div>
-    <div className="org-text-col">
-      <p>
-        We work with various service providers who can easily register on our website and offer their events. </p>
-        <p>
-        Service providers can add their events to our application.</p>
-        <p>
-        Our goal is to make it simple for organizations of any size—whether local businesses, community groups, or large venues—to share their activities and connect with participants.
-      </p>
-      <button className="btn" onClick={handleAdminClick}>Create PRO</button>
-    </div>
-  </div>
-</section>
+        {/* ORGANISATIONS */}
+        <section id="organisations" className="section organisations">
+          <h2 className="section-title">ORGANISATIONS</h2>
+          <div className="org-container">
+            <div className="org-image-col">
+              <img src={laptopMockup} alt="Organisation demo" className="org-laptop-mockup" />
+            </div>
+            <div className="org-text-col">
+              <p>
+                We work with various service providers who can easily register on our website and offer their events.
+              </p>
+              <p>
+                Service providers can easily add and manage their events, activities, and detailed information to our application.
+              </p>
+              <p>
+                Our goal is to make it simple for organizations of any size to share their activities and connect with participants.
+              </p>
+              <button className="btn" onClick={handleAdminClick}>Create PRO</button>
+            </div>
+          </div>
+        </section>
 
         {/* CONTACT */}
-       <section id="contact" className="section contact">
-  <h2 className="section-title">CONTACT US</h2>
-  <ContactForm />
-</section>
+        <section id="contact" className="section contact">
+          <h2 className="section-title">CONTACT US</h2>
+          <ContactForm />
+        </section>
 
         {/* FOOTER */}
         <footer className="footer">
@@ -162,8 +146,7 @@ export default function LandingPage() {
               target="_blank"
               rel="noopener noreferrer"
             >
-              <div>🏠 Rautatieläisenkatu 5</div>
-              <div>📍 00520 Helsinki</div>
+              <div>🏠 Rautatieläisenkatu 5, 00520 Helsinki</div>
             </a>
           </div>
           <div className="footer-center">
@@ -183,5 +166,6 @@ export default function LandingPage() {
     </div>
   );
 }
+
 
 
