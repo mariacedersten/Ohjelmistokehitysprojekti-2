@@ -14,6 +14,8 @@ figma: https://www.figma.com/design/39ZB8toax36wqw4mdC1FBq/Hobbly?t=LZ6GUfZ2rkYm
 
 supabase: https://supabase.com/dashboard/project/jourvbtxuyavamxvddwc/sql/66baaae4-1dd0-45d6-8f04-f59fa367e221
 
+Formspree: (https://formspree.io/) https://formspree.io/forms/xanpnodz/integration
+
 ## Projektin kuvaus
 
 Tämä projekti toteutetaan osana ohjelmistoprojektikurssia.  
