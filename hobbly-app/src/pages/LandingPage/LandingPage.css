@@ -120,13 +120,12 @@ section {
 .about {
   background: var(--yellow);
   padding-top: 0;
-  padding-bottom: 70px;
 }
 .about-hero {
   max-width: 880px;
   margin: 0 auto;
   background: rgba(255, 255, 255, 0);
-  padding: 100px 20px 50px;
+  padding: 50px 20px 50px;
   border-radius: 6px;
 }
 .about-logo {
@@ -306,11 +305,11 @@ section {
 /* CONTACT */
 .contact {
   background: #fbf9c6;
-  padding-bottom: 266px;
+  min-height: 650px; /* задаём высоту контейнера */
 }
 .contact-grid {
   max-width: 1100px;
-  margin: 8px auto 0;
+  margin: 0px auto 0;
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 18px;
@@ -332,7 +331,17 @@ section {
   justify-content: flex-end;
   margin-top: 8px;
 }
-
+/* thank-you-message */
+.thank-you-message {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, +100%);
+  color: #064e3b; /* темно-зеленый */
+  font-weight: 600; /* пожирнее */
+  font-size: 2rem; /* можно увеличить по желанию */
+  text-align: center;
+}
 /* FOOTER */
 .footer {
   background: linear-gradient(180deg, #003d33, #023b32);

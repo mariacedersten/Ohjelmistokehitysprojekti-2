@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from 'react-router-dom';
 import { Button } from '../../shared/components/Button';
 import "./LandingPage.css";
+import { ContactForm } from "./ContactForm";
 
 // ==== Импорты изображений ====
 import img1 from "./images/1.1 Sea Expedition.jpg";
@@ -88,7 +89,7 @@ export default function LandingPage() {
             <img className="about-logo" src={symbolSecondary} alt="Hobbly logo" />
             <h3 className="about-heading">HOBBLY TECHNOLOGIES OY</h3>
             <p className="about-text">
-              is a modern technology company whose mission is to make people’s everyday lives easier by making hobbies and leisure opportunities easy to find and accessible. The company strives to improve people’s well-being and foster a stronger sense of community by offering digital solutions that seamlessly connect users with hobbies, events, and service providers. Through its innovative platform, Hobbly enables everyone to discover, participate in, and enjoy activities that enrich their daily lives.
+              is a modern technology company whose mission is to make people’s everyday lives easier by making hobbies and leisure opportunities easy to find and accessible. The company aims to enhance people’s well-being and sense of community by providing digital solutions that connect users with hobbies and service providers.is a modern technology company whose mission is to make people’s everyday lives easier by making hobbies and leisure opportunities easy to find and accessible. The company strives to improve people’s well-being and foster a stronger sense of community by offering digital solutions that seamlessly connect users with hobbies, events, and service providers.
             </p>
           </div>
         </section>
@@ -148,22 +149,10 @@ export default function LandingPage() {
 </section>
 
         {/* CONTACT */}
-        <section id="contact" className="section contact">
-          <h2 className="section-title">CONTACT US</h2>
-          <form className="contact-grid" onSubmit={(e) => e.preventDefault()}>
-            <div className="left-col">
-              <input placeholder="Full name" />
-              <input placeholder="E-mail address" />
-              <input placeholder="Phone number" />
-            </div>
-            <div className="right-col">
-              <textarea placeholder="Your message" />
-              <div className="send-area">
-                <button className="btn">Send message</button>
-              </div>
-            </div>
-          </form>
-        </section>
+       <section id="contact" className="section contact">
+  <h2 className="section-title">CONTACT US</h2>
+  <ContactForm />
+</section>
 
         {/* FOOTER */}
         <footer className="footer">
