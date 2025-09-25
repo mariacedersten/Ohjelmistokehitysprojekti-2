@@ -86,3 +86,25 @@ supabase: https://supabase.com/dashboard/project/jourvbtxuyavamxvddwc/sql/66baaa
 ## Lisenssi
 
 Tämä projekti on tarkoitettu opetuskäyttöön (ei tuotantokäyttöön).
+
+
+
+Download the project to your computer using the computer's terminal with the command:
+
+git clone https://github.com/mariacedersten/Ohjelmistokehitysprojekti-2.git
+
+Open the project in VS Code.
+In the folder *"hobbly-app", find the file **package.json*.
+Right-click on it and select *Open in Integrated Terminal*.
+
+In this terminal in VS Code, run the command:
+
+npm install
+
+npm install @formspree/react
+
+npm start
+
+A browser window will open with our application and desktop.
+You need to test everything.
+Create your own account!
