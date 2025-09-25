@@ -19,6 +19,7 @@ interface ProfileFormData {
   organizationName: string;
   organizationAddress: string;
   organizationNumber: string;
+  role: UserRole;
 }
 
 interface PasswordFormData {
@@ -44,7 +45,8 @@ const Profile: React.FC = () => {
     phone: '',
     organizationName: '',
     organizationAddress: '',
-    organizationNumber: ''
+    organizationNumber: '',
+    role: UserRole.USER
   });
 
   const [passwordData, setPasswordData] = useState<PasswordFormData>({
@@ -71,7 +73,7 @@ const Profile: React.FC = () => {
 
   // Определяем, просматриваем ли мы профиль другого пользователя
   const isViewingOtherUser = Boolean(userId && userId !== user?.id);
-  const isReadOnlyMode = isViewingOtherUser;
+  const isReadOnlyMode = isViewingOtherUser && user?.role !== UserRole.ADMIN;
   const currentUserProfile = isViewingOtherUser ? viewedUser : user;
 
   // Load user data for viewing another user's profile
@@ -111,7 +113,8 @@ const Profile: React.FC = () => {
         phone: activeUser.phone || '',
         organizationName: activeUser.organizationName || '',
         organizationAddress: activeUser.organizationAddress || '',
-        organizationNumber: activeUser.organizationNumber || ''
+        organizationNumber: activeUser.organizationNumber || '',
+        role: activeUser.role
       });
       setProfileImage(activeUser.photoUrl || '');
     }
@@ -120,7 +123,7 @@ const Profile: React.FC = () => {
   /**
    * Handle profile form input changes
    */
-  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfileChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
     setProfileData(prev => ({
       ...prev,
@@ -215,12 +218,24 @@ const Profile: React.FC = () => {
         }
       }
 
-      await updateProfile({
-        ...profileData,
-        ...(imageFile ? { photo: imageFile } : {})
-      });
+      if (isViewingOtherUser && userId) {
+        // Редактирование чужого профиля админом
+        await usersAPI.updateUser(userId, {
+          ...profileData,
+          ...(imageFile ? { photo: imageFile } : {})
+        });
+        setProfileSuccess('User profile updated successfully!');
+        // Опционально можно перенаправить обратно к списку пользователей
+        // setTimeout(() => navigate('/admin/users'), 2000);
+      } else {
+        // Редактирование своего профиля
+        await updateProfile({
+          ...profileData,
+          ...(imageFile ? { photo: imageFile } : {})
+        });
+        setProfileSuccess('Profile updated successfully!');
+      }
 
-      setProfileSuccess('Profile updated successfully!');
       setImageFile(null); // Clear the pending image file
     } catch (err: any) {
       console.error('Failed to update profile:', err);
@@ -441,6 +456,24 @@ const Profile: React.FC = () => {
                   readOnly={isReadOnlyMode}
                 />
               </div>
+
+              {/* Role Selection - Only show for admin editing other users */}
+              {(user?.role === UserRole.ADMIN) && (
+                <div className={styles.formGroup}>
+                  <label className={styles.label}>Role</label>
+                  <select
+                    name="role"
+                    value={profileData.role}
+                    onChange={handleProfileChange}
+                    className={styles.input}
+                    disabled={isReadOnlyMode}
+                  >
+                    <option value={UserRole.USER}>User</option>
+                    <option value={UserRole.ORGANIZER}>Organizer</option>
+                    <option value={UserRole.ADMIN}>Admin</option>
+                  </select>
+                </div>
+              )}
             </div>
 
             {/* Password Section - Only show for own profile */}

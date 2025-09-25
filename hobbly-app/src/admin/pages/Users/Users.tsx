@@ -27,20 +27,6 @@ const Users: React.FC = () => {
   const [search, setSearch] = useState('');
   const [debouncedSearch, setDebouncedSearch] = useState('');
   const [deleteConfirm, setDeleteConfirm] = useState<string | null>(null);
-  const [editUser, setEditUser] = useState<User | null>(null);
-  const [editFormData, setEditFormData] = useState<{
-    fullName: string;
-    organizationName: string;
-    phone: string;
-    role: UserRole;
-    isApproved: boolean;
-  }>({
-    fullName: '',
-    organizationName: '',
-    phone: '',
-    role: UserRole.USER,
-    isApproved: false
-  });
 
   const itemsPerPage = 10;
 
@@ -112,51 +98,12 @@ const Users: React.FC = () => {
   };
 
   /**
-   * Open edit modal for user
+   * Navigate to user profile page for editing
    */
-  const handleEditUser = (userData: User) => {
-    setEditUser(userData);
-    setEditFormData({
-      fullName: userData.fullName || '',
-      organizationName: userData.organizationName || '',
-      phone: userData.phone || '',
-      role: userData.role,
-      isApproved: userData.isApproved || false
-    });
+  const handleEditUser = (userId: string) => {
+    navigate(`/admin/personal-info?userId=${userId}`);
   };
 
-  /**
-   * Handle edit form input changes
-   */
-  const handleEditFormChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value, type } = e.target;
-    setEditFormData(prev => ({
-      ...prev,
-      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value
-    }));
-  };
-
-  /**
-   * Save user changes
-   */
-  const handleSaveUser = async () => {
-    if (!editUser) return;
-
-    try {
-      await usersAPI.updateUser(editUser.id, {
-        fullName: editFormData.fullName,
-        organizationName: editFormData.organizationName,
-        phone: editFormData.phone,
-        role: editFormData.role,
-        isApproved: editFormData.isApproved
-      });
-      setEditUser(null);
-      await loadUsers(); // Reload the list
-    } catch (err) {
-      console.error('Failed to update user:', err);
-      setError('Failed to update user. Please try again.');
-    }
-  };
 
   /**
    * Navigate to user profile page
@@ -306,7 +253,7 @@ const Users: React.FC = () => {
                   <td className={styles.tableCell}>
                     <div className={styles.actionButtons}>
                       <button
-                        onClick={() => handleEditUser(userData)}
+                        onClick={() => handleEditUser(userData.id)}
                         className={styles.editButton}
                         title="Edit user"
                         disabled={userData.id === user?.id} // Prevent self-modification
@@ -395,94 +342,6 @@ const Users: React.FC = () => {
         </div>
       )}
 
-      {/* Edit User Modal */}
-      {editUser && (
-        <div className={styles.modalOverlay}>
-          <div className={styles.modal}>
-            <h3>Edit User</h3>
-            <div className={styles.editForm}>
-              <div className={styles.formGroup}>
-                <label>Full Name:</label>
-                <input
-                  type="text"
-                  name="fullName"
-                  value={editFormData.fullName}
-                  onChange={handleEditFormChange}
-                  className={styles.formInput}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Organization Name:</label>
-                <input
-                  type="text"
-                  name="organizationName"
-                  value={editFormData.organizationName}
-                  onChange={handleEditFormChange}
-                  className={styles.formInput}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Phone:</label>
-                <input
-                  type="text"
-                  name="phone"
-                  value={editFormData.phone}
-                  onChange={handleEditFormChange}
-                  className={styles.formInput}
-                />
-              </div>
-
-              <div className={styles.formGroup}>
-                <label>Role:</label>
-                <select
-                  name="role"
-                  value={editFormData.role}
-                  onChange={handleEditFormChange}
-                  className={styles.formInput}
-                >
-                  <option value={UserRole.USER}>User</option>
-                  <option value={UserRole.ORGANIZER}>Organizer</option>
-                  <option value={UserRole.ADMIN}>Admin</option>
-                </select>
-              </div>
-
-              <div className={styles.formGroup}>
-                <label className={styles.checkboxLabel}>
-                  <input
-                    type="checkbox"
-                    name="isApproved"
-                    checked={editFormData.isApproved}
-                    onChange={handleEditFormChange}
-                  />
-                  Approved
-                </label>
-              </div>
-
-              <div className={styles.userInfo}>
-                <p><strong>Email:</strong> {editUser.email}</p>
-                <p><strong>Created:</strong> {formatDate(editUser.createdAt)}</p>
-              </div>
-            </div>
-
-            <div className={styles.modalActions}>
-              <button
-                onClick={() => setEditUser(null)}
-                className={styles.cancelButton}
-              >
-                Cancel
-              </button>
-              <button
-                onClick={handleSaveUser}
-                className={styles.saveButton}
-              >
-                Save Changes
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 };
