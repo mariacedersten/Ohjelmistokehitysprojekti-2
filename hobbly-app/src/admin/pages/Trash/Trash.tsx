@@ -167,27 +167,29 @@ const Trash: React.FC = () => {
   ];
 
   return (
-    <DataTable
-      data={activities}
-      totalItems={total}
-      loading={loading}
-      error={error}
-      columns={columns}
-      actions={actions}
-      rowKey="id"
-      searchable
-      searchPlaceholder="Search deleted..."
-      onSearch={loadDeletedActivities}
-      currentPage={currentPage}
-      itemsPerPage={itemsPerPage}
-      onPageChange={setCurrentPage}
-      actionsHeader="Restore/Delete"
-      emptyMessage="Trash is empty"
-      emptyContent={
-        <div className={styles.emptyIcon}>🗑️</div>
-      }
-      onRetry={loadDeletedActivities}
-    />
+    <div className={styles.container}>
+      <DataTable
+        data={activities}
+        totalItems={total}
+        loading={loading}
+        error={error}
+        columns={columns}
+        actions={actions}
+        rowKey="id"
+        searchable
+        searchPlaceholder="Search deleted..."
+        onSearch={loadDeletedActivities}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        actionsHeader="Restore/Delete"
+        emptyMessage="Trash is empty"
+        emptyContent={
+          <div className={styles.emptyIcon}>🗑️</div>
+        }
+        onRetry={loadDeletedActivities}
+      />
+    </div>
   );
 };
 

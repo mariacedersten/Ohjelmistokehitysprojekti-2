@@ -9,7 +9,7 @@ import { Link, useNavigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import activitiesAPI from '../../../api/activities.api';
 import { Activity, UserRole } from '../../../types';
-import DataTable, { ColumnConfig, ActionConfig } from '../../components/DataTable';
+import DataTable, { ColumnConfig, ActionConfig, dataTableStyles } from '../../components/DataTable';
 import styles from './Activities.module.css';
 
 /**
@@ -190,14 +190,14 @@ const Activities: React.FC = () => {
     <div className={styles.container}>
       {/* Pending approval notice for organizers */}
       {user?.role === UserRole.ORGANIZER && activities.some(a => a.isApproved === false) && showInfoNotice && (
-        <div className={styles.infoWrapper}>
-          <div className={styles.infoNotice} role="status" aria-live="polite">
+        <div className={dataTableStyles.infoWrapper}>
+          <div className={dataTableStyles.infoNotice} role="status" aria-live="polite">
             <span>
               Activities created by you appear after administrator approval. Pending items are marked as "Pending approval".
             </span>
             <button
               type="button"
-              className={styles.infoClose}
+              className={dataTableStyles.infoClose}
               aria-label="Dismiss this message"
               onClick={() => setShowInfoNotice(false)}
             >
@@ -209,13 +209,13 @@ const Activities: React.FC = () => {
 
       {/* Toast Notification */}
       {showToast && toastMessage && (
-        <div className={styles.toast} role="status" aria-live="polite">
-          <div className={styles.toastContent}>
+        <div className={dataTableStyles.toast} role="status" aria-live="polite">
+          <div className={dataTableStyles.toastContent}>
             {toastMessage}
           </div>
           <button
             type="button"
-            className={styles.toastClose}
+            className={dataTableStyles.toastClose}
             aria-label="Close notification"
             onClick={() => setShowToast(false)}
           >
@@ -240,13 +240,13 @@ const Activities: React.FC = () => {
         itemsPerPage={itemsPerPage}
         onPageChange={setCurrentPage}
         headerActions={
-          <Link to="/admin/activities/new" className={styles.addButton}>
+          <Link to="/admin/activities/new" className={dataTableStyles.headerActionButton}>
             Add activity
           </Link>
         }
         emptyMessage="No activities found"
         emptyContent={
-          <Link to="/admin/activities/new" className={styles.createButton}>
+          <Link to="/admin/activities/new" className={dataTableStyles.emptyActionButton}>
             Create your first activity
           </Link>
         }

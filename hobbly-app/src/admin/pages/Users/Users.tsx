@@ -171,23 +171,25 @@ const Users: React.FC = () => {
   ];
 
   return (
-    <DataTable
-      data={users}
-      totalItems={total}
-      loading={loading}
-      error={error}
-      columns={columns}
-      actions={actions}
-      rowKey="id"
-      searchable
-      searchPlaceholder="Search users..."
-      onSearch={loadUsers}
-      currentPage={currentPage}
-      itemsPerPage={itemsPerPage}
-      onPageChange={setCurrentPage}
-      emptyMessage="No users found"
-      onRetry={loadUsers}
-    />
+    <div className={styles.container}>
+      <DataTable
+        data={users}
+        totalItems={total}
+        loading={loading}
+        error={error}
+        columns={columns}
+        actions={actions}
+        rowKey="id"
+        searchable
+        searchPlaceholder="Search users..."
+        onSearch={loadUsers}
+        currentPage={currentPage}
+        itemsPerPage={itemsPerPage}
+        onPageChange={setCurrentPage}
+        emptyMessage="No users found"
+        onRetry={loadUsers}
+      />
+    </div>
   );
 };
 

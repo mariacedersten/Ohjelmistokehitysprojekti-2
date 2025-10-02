@@ -10,28 +10,6 @@
   padding: 40px;
 }
 
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 32px;
-}
-
-.title {
-  font-family: var(--font-heading);
-  font-weight: 700;
-  font-size: 36px;
-  color: #2D2D2D;
-  margin: 0;
-  letter-spacing: 2px;
-}
-
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
 /* User-specific cell content */
 .nameCell {
   display: flex;
@@ -100,17 +78,6 @@
 @media (max-width: 768px) {
   .container {
     padding: 16px;
-  }
-
-  .header {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
-  }
-
-  .title {
-    font-size: 28px;
-    text-align: center;
   }
 
   .userAvatar {

@@ -126,24 +126,26 @@ const ActivitiesRequests: React.FC = () => {
   ];
 
   return (
-    <DataTable
-      data={activities}
-      totalItems={total}
-      loading={loading}
-      error={error}
-      columns={columns}
-      actions={actions}
-      rowKey="id"
-      searchable
-      searchPlaceholder="Search requests..."
-      onSearch={loadRequests}
-      currentPage={currentPage}
-      itemsPerPage={pageSize}
-      onPageChange={setCurrentPage}
-      actionsHeader="Actions"
-      emptyMessage="No activity requests found."
-      onRetry={loadRequests}
-    />
+    <div className={styles.container}>
+      <DataTable
+        data={activities}
+        totalItems={total}
+        loading={loading}
+        error={error}
+        columns={columns}
+        actions={actions}
+        rowKey="id"
+        searchable
+        searchPlaceholder="Search requests..."
+        onSearch={loadRequests}
+        currentPage={currentPage}
+        itemsPerPage={pageSize}
+        onPageChange={setCurrentPage}
+        actionsHeader="Actions"
+        emptyMessage="No activity requests found."
+        onRetry={loadRequests}
+      />
+    </div>
   );
 };
 

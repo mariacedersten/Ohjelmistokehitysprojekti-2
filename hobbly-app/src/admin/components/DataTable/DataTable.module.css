@@ -45,7 +45,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 32px;
+  margin-bottom: 40px;
   gap: 16px;
 }
 
@@ -111,7 +111,7 @@
 .tableContainer {
   background: white;
   border-radius: 12px;
-  overflow: hidden;
+  overflow: hidden;      /* Keep rounded corners, manage overflow per cell */
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
   margin-bottom: 32px;
 }
@@ -120,6 +120,7 @@
 .table {
   width: 100%;
   border-collapse: collapse;
+  table-layout: fixed;   /* Distribute columns and enable ellipsis */
 }
 
 .tableHeaderRow {
@@ -135,6 +136,20 @@
   text-align: left;
   text-transform: uppercase;
   letter-spacing: 0.5px;
+  white-space: nowrap;       /* Prevent wrapping in headers */
+  overflow: hidden;          /* Hide overflow */
+  text-overflow: ellipsis;   /* Ellipsis for long headers */
+}
+
+/* First header column - keep visible */
+.tableHeaderCell:first-child {
+  width: 25%;
+  min-width: 200px;
+}
+
+/* Last header column - actions */
+.tableHeaderCell:last-child {
+  min-width: 140px;
 }
 
 .tableRow {
@@ -155,6 +170,27 @@
   font-size: 14px;
   color: #495057;
   vertical-align: middle;
+  white-space: nowrap;       /* Single line */
+  overflow: hidden;          /* Clip overflow */
+  text-overflow: ellipsis;   /* Show ellipsis */
+  max-width: 0;              /* Required for ellipsis with table-layout: fixed */
+}
+
+/* First content column - allow wrapping and full content */
+.tableCell:first-child {
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
+  width: 25%;
+  min-width: 200px;
+}
+
+/* Last content column - actions visible */
+.tableCell:last-child {
+  white-space: nowrap;
+  overflow: visible;
+  text-overflow: clip;
+  min-width: 140px;
 }
 
 /* Action Buttons */
@@ -392,6 +428,164 @@
   background: #5568d3;
 }
 
+/* Header Action Buttons (for headerActions prop) */
+.headerActionButton {
+  background: #FFD93D;
+  color: #2D2D2D;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 24px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+}
+
+.headerActionButton:hover {
+  background: #ffd226;
+  color: #2D2D2D;
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 217, 61, 0.3);
+}
+
+.headerActionButton:focus {
+  outline: 2px solid #FFD93D;
+  outline-offset: 2px;
+}
+
+/* Empty State Action Button (for emptyContent prop) */
+.emptyActionButton {
+  background: #FFD93D;
+  color: #2D2D2D;
+  border: none;
+  border-radius: 8px;
+  padding: 12px 32px;
+  font-size: 16px;
+  font-weight: 600;
+  text-decoration: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-top: 8px;
+}
+
+.emptyActionButton:hover {
+  background: #ffd226;
+  color: #2D2D2D;
+  text-decoration: none;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 217, 61, 0.3);
+}
+
+.emptyActionButton:focus {
+  outline: 2px solid #FFD93D;
+  outline-offset: 2px;
+}
+
+/* Toast Notifications */
+.toast {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  background: white;
+  border-left: 4px solid #6BCF7C;
+  border-radius: 8px;
+  padding: 16px 20px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  min-width: 300px;
+  max-width: 500px;
+  z-index: 1100;
+  animation: slideInRight 0.3s ease-out;
+}
+
+.toastContent {
+  flex: 1;
+  font-size: 14px;
+  color: #2D2D2D;
+  line-height: 1.5;
+}
+
+.toastClose {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+}
+
+.toastClose:hover {
+  color: #666;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+/* Info Notice */
+.infoWrapper {
+  margin-bottom: 24px;
+}
+
+.infoNotice {
+  background: #E6F7FF;
+  border: 1px solid #91D5FF;
+  border-left: 4px solid #1890FF;
+  border-radius: 8px;
+  padding: 16px 20px;
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  font-size: 14px;
+  color: #2D2D2D;
+  line-height: 1.6;
+}
+
+.infoNotice span {
+  flex: 1;
+}
+
+.infoClose {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #1890FF;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+  flex-shrink: 0;
+  line-height: 1;
+}
+
+.infoClose:hover {
+  color: #096DD9;
+}
+
 /* Accessibility - Focus states */
 .actionButton:focus,
 .paginationButton:focus,
@@ -431,6 +625,7 @@
   .header {
     flex-direction: column;
     align-items: stretch;
+    margin-bottom: 24px;
   }
 
   .headerActions {
@@ -442,19 +637,30 @@
     max-width: 100%;
   }
 
-  /* Make table scrollable on mobile */
+  /* Mobile: allow horizontal scroll for better usability */
   .tableContainer {
     overflow-x: auto;
   }
 
   .table {
     min-width: 700px;
+    table-layout: auto;
   }
 
   .tableHeaderCell,
   .tableCell {
     padding: 12px 16px;
     font-size: 13px;
+    white-space: nowrap;
+  }
+
+  /* Reset fixed widths on mobile */
+  .tableHeaderCell:first-child,
+  .tableHeaderCell:last-child,
+  .tableCell:first-child,
+  .tableCell:last-child {
+    width: auto;
+    min-width: auto;
   }
 
   .actionButtons {
@@ -484,5 +690,24 @@
   .paginationButton {
     padding: 8px 12px;
     min-width: 36px;
+  }
+
+  /* Responsive notifications */
+  .toast {
+    top: 16px;
+    right: 16px;
+    left: 16px;
+    min-width: auto;
+    max-width: none;
+  }
+
+  .infoWrapper {
+    margin-bottom: 16px;
+  }
+
+  .headerActionButton,
+  .emptyActionButton {
+    width: 100%;
+    text-align: center;
   }
 }

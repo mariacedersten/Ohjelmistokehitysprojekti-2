@@ -5,3 +5,4 @@
 
 export { default } from './DataTable';
 export type { DataTableProps, ColumnConfig, ActionConfig, ConfirmConfig } from './DataTable';
+export { default as dataTableStyles } from './DataTable.module.css';
