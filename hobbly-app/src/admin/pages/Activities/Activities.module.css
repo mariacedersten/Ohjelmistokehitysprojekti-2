@@ -1,96 +1,20 @@
 /**
- * Activities Management page styles - according to wireframe design
- * Implements table layout with activity cards and action buttons
+ * Activities page custom styles
+ * All table styles are in DataTable component
  */
 
+/* Page Layout */
 .container {
   min-height: 100vh;
   background: #f5f5f5;
   padding: 40px;
 }
 
-.loading, .error {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 50vh;
-  font-size: 18px;
-  color: var(--color-primary-dark);
-}
-
-.error {
-  flex-direction: column;
-  gap: 16px;
-}
-
-.retryButton {
-  background: var(--color-primary-dark);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 16px;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.retryButton:hover {
-  background: #1a4f4d;
-}
-
-/* Header */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 32px;
-}
-
-.headerActions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.searchContainer {
-  position: relative;
-  display: inline-block;
-}
-
-.search {
-  min-width: 280px;
-  padding: 10px 12px;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  font-size: 14px;
-  padding-right: 40px; /* Space for search indicator */
-}
-
-.search.searching {
-  border-color: var(--color-primary-dark);
-  background-color: #f8f9ff;
-}
-
-.searchIndicator {
-  position: absolute;
-  right: 12px;
-  top: 50%;
-  transform: translateY(-50%);
-  pointer-events: none;
-}
-
-.spinner {
-  display: inline-block;
-  animation: pulse 1.5s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.5;
-  }
 }
 
 .title {
@@ -100,6 +24,12 @@
   color: #2D2D2D;
   margin: 0;
   letter-spacing: 2px;
+}
+
+.headerActions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
 .addButton {
@@ -123,48 +53,7 @@
   box-shadow: 0 4px 12px rgba(255, 217, 61, 0.3);
 }
 
-/* Table Container */
-.tableContainer {
-  background: white;
-  border-radius: 12px;
-  overflow: hidden;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-  margin-bottom: 32px;
-}
-
-.table {
-  width: 100%;
-  border-collapse: collapse;
-}
-
-/* Table Header */
-.tableHeader {
-  background: #f8f9fa;
-  border-bottom: 2px solid #e9ecef;
-}
-
-.tableHeaderCell {
-  font-size: 14px;
-}
-
-/* Table Rows */
-.tableRow {
-  border-bottom: 1px solid #f1f3f4;
-  transition: background-color 0.2s ease;
-}
-
-.tableRow:hover {
-  background: #f8f9fa;
-}
-
-.tableCell {
-  padding: 20px 24px;
-  font-size: 16px;
-  color: #2D2D2D;
-  vertical-align: middle;
-}
-
-/* Activity Info Cell */
+/* Activity-specific cell content */
 .activityInfo {
   display: flex;
   align-items: center;
@@ -204,266 +93,7 @@
   text-transform: capitalize;
 }
 
-/* Action Buttons */
-.actionButtons {
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-.editButton, .deleteButton {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  font-size: 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-}
-
-.editButton {
-  background: #6BCF7C;
-  color: white;
-}
-
-.editButton:hover {
-  background: #5cbf6e;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(107, 207, 124, 0.3);
-}
-
-.deleteButton {
-  background: #ff6b6b;
-  color: white;
-}
-
-.deleteButton:hover {
-  background: #ff5252;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(255, 107, 107, 0.3);
-}
-
-/* Empty State */
-.emptyState {
-  text-align: center;
-  padding: 60px 20px;
-}
-
-.emptyContent {
-  display: flex;
-  flex-direction: column;
-  gap: 16px;
-  align-items: center;
-}
-
-.emptyContent p {
-  font-size: 18px;
-  color: #666;
-  margin: 0;
-}
-
-.createButton {
-  background: var(--color-primary-dark);
-  color: white;
-  border: none;
-  border-radius: 8px;
-  padding: 12px 24px;
-  font-size: 16px;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.createButton:hover {
-  background: #1a4f4d;
-  color: white;
-  text-decoration: none;
-  transform: translateY(-2px);
-}
-
-/* Pagination */
-.pagination {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  align-items: center;
-}
-
-.paginationButton {
-  background: white;
-  border: 1px solid #dee2e6;
-  border-radius: 8px;
-  padding: 12px 16px;
-  font-size: 14px;
-  color: #2D2D2D;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  min-width: 44px;
-}
-
-.paginationButton:hover:not(:disabled) {
-  background: #f8f9fa;
-  border-color: #adb5bd;
-}
-
-.paginationButton:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.activePage {
-  background: #FFD93D;
-  border-color: #FFD93D;
-  color: #2D2D2D;
-  font-weight: 600;
-}
-
-.activePage:hover {
-  background: #ffd226;
-  border-color: #ffd226;
-}
-
-/* Modal Styles */
-.modalOverlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.modal {
-  background: white;
-  border-radius: 12px;
-  padding: 32px;
-  max-width: 400px;
-  width: 90%;
-  text-align: center;
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-}
-
-.modal h3 {
-  font-size: 20px;
-  color: #2D2D2D;
-  margin: 0 0 16px 0;
-}
-
-.modal p {
-  font-size: 16px;
-  color: #666;
-  margin: 0 0 24px 0;
-  line-height: 1.5;
-}
-
-.modalActions {
-  display: flex;
-  gap: 12px;
-  justify-content: center;
-}
-
-.cancelButton, .confirmDeleteButton {
-  padding: 12px 24px;
-  border: none;
-  border-radius: 8px;
-  font-size: 16px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.cancelButton {
-  background: #f8f9fa;
-  color: #2D2D2D;
-}
-
-.cancelButton:hover {
-  background: #e9ecef;
-}
-
-.confirmDeleteButton {
-  background: #ff6b6b;
-  color: white;
-}
-
-.confirmDeleteButton:hover {
-  background: #ff5252;
-}
-
-/* Dismissible info notice */
-.infoWrapper {
-  margin-bottom: 16px;
-}
-
-.infoNotice {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  background: #FFF9E6;
-  border: 1px solid #FFE08A;
-  color: #7A5E00;
-  border-radius: 8px;
-  padding: 12px 16px;
-}
-
-.infoClose {
-  background: transparent;
-  border: none;
-  color: #7A5E00;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-/* Toast notification */
-.toast {
-  position: fixed;
-  right: 24px;
-  bottom: 24px;
-  z-index: 2000;
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  background: #073B3A;
-  color: #fff;
-  border-radius: 10px;
-  box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-  padding: 14px 16px 14px 16px;
-  max-width: 380px;
-}
-
-.toastContent {
-  font-size: 14px;
-  line-height: 1.4;
-}
-
-.toastClose {
-  background: transparent;
-  color: #fff;
-  border: none;
-  font-size: 20px;
-  line-height: 1;
-  cursor: pointer;
-}
-
-@media (max-width: 768px) {
-  .toast {
-    left: 16px;
-    right: 16px;
-    bottom: 16px;
-    max-width: unset;
-  }
-}
-
-/* Responsive Design */
+/* Responsive adjustments */
 @media (max-width: 1200px) {
   .container {
     padding: 24px;
@@ -471,11 +101,6 @@
 
   .title {
     font-size: 32px;
-  }
-
-  .tableHeaderCell,
-  .tableCell {
-    padding: 16px 20px;
   }
 }
 
@@ -499,21 +124,6 @@
     text-align: center;
   }
 
-  /* Make table scrollable on mobile */
-  .tableContainer {
-    overflow-x: auto;
-  }
-
-  .table {
-    min-width: 700px;
-  }
-
-  .tableHeaderCell,
-  .tableCell {
-    padding: 12px 16px;
-    font-size: 13px;
-  }
-
   .activityImage {
     width: 40px;
     height: 40px;
@@ -521,24 +131,5 @@
 
   .activityInfo {
     gap: 12px;
-  }
-
-  .actionButtons {
-    gap: 6px;
-  }
-
-  .editButton, .deleteButton {
-    width: 32px;
-    height: 32px;
-    font-size: 14px;
-  }
-
-  .modal {
-    padding: 24px;
-    margin: 16px;
-  }
-
-  .modalActions {
-    flex-direction: column;
   }
 }
