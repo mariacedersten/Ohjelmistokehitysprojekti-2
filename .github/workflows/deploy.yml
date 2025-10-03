@@ -38,12 +38,14 @@ jobs:
           REACT_APP_SUPABASE_ANON_KEY: ${{ secrets.REACT_APP_SUPABASE_ANON_KEY }}
           CI: false
 
-      - name: Rewrite absolute /assets paths for subpath
+      - name: Rewrite absolute root paths for subpath
         run: |
           REPO_PATH="/Ohjelmistokehitysprojekti-2"
           cd hobbly-app/build
-          find . -type f \( -name '*.html' -o -name '*.js' -o -name '*.css' \) -exec sed -i "s|\"/assets/|\"${REPO_PATH}/assets/|g" {} +
-          find . -type f \( -name '*.html' -o -name '*.js' -o -name '*.css' \) -exec sed -i "s|'\\/assets\\/|'${REPO_PATH}/assets/|g" {} +
+          # 1) src="/..." и href="/..."
+          find . -type f \( -name '*.html' -o -name '*.js' -o -name '*.css' \) -print0 | xargs -0 sed -i -E "s#(src|href)=[\"']/+#\\1=\"${REPO_PATH}/#g"
+          # 2) url(/...) в CSS/JS/HTML
+          find . -type f \( -name '*.html' -o -name '*.js' -o -name '*.css' \) -print0 | xargs -0 sed -i -E "s#url\\((['\"])*/+#url(\\1${REPO_PATH}/#g"
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
