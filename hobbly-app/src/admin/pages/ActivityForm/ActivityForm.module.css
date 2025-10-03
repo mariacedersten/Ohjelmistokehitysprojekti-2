@@ -21,10 +21,33 @@
 .error {
   background: #f8d7da;
   color: #721c24;
-  padding: 16px;
+  padding: 16px 20px;
   border-radius: 8px;
   margin-bottom: 24px;
   border: 1px solid #f5c6cb;
+  font-size: 15px;
+  font-weight: 500;
+  box-shadow: 0 2px 8px rgba(220, 53, 69, 0.15);
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Field validation error - compact inline message */
+.fieldError {
+  color: #dc3545;
+  font-size: 13px;
+  margin-top: 4px;
+  display: block;
 }
 
 /* Header */

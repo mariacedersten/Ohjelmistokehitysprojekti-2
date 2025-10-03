@@ -123,6 +123,12 @@ const UsersRequests: React.FC = () => {
   // Actions configuration
   const actions: ActionConfig<User>[] = [
     {
+      icon: '👁️',
+      title: 'View',
+      variant: 'view',
+      onClick: (userData) => navigate(`/admin/personal-info?userId=${userData.id}`)
+    },
+    {
       icon: '✅',
       title: 'Approve',
       variant: 'approve',

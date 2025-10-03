@@ -69,7 +69,7 @@
 /* Image Container */
 .imageContainer {
   width: 100%;
-  height: 180px;
+  aspect-ratio: 2 / 1;
   overflow: hidden;
   background: #f0f0f0;
 }

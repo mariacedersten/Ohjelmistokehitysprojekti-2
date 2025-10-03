@@ -294,6 +294,8 @@ export interface ActivityFormData {
   location: string;
   /** Адрес */
   address?: string;
+  /** Координаты местоположения */
+  coordinates?: { lat: number; lng: number };
   /** Цена */
   price?: number;
   /** Изображение */

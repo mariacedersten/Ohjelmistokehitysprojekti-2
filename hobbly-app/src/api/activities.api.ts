@@ -263,6 +263,10 @@ class ActivitiesAPI {
         category_id: data.categoryId,
         location: data.location.trim(),
         address: data.address?.trim() || null,
+        // coordinates stored as JSONB {lat, lng}
+        coordinates: data.coordinates && typeof data.coordinates.lat === 'number' && typeof data.coordinates.lng === 'number'
+          ? { lat: data.coordinates.lat, lng: data.coordinates.lng }
+          : null,
         price: data.price || null,
         currency: data.currency || 'EUR',
         image_url: imageUrl,
@@ -404,6 +408,20 @@ class ActivitiesAPI {
       if (data.categoryId !== undefined) updateData.category_id = data.categoryId;
       if (data.location !== undefined) updateData.location = data.location;
       if (data.address !== undefined) updateData.address = data.address;
+      if (data.coordinates !== undefined) {
+        if (
+          data.coordinates &&
+          typeof (data.coordinates as any).lat === 'number' &&
+          typeof (data.coordinates as any).lng === 'number'
+        ) {
+          updateData.coordinates = {
+            lat: (data.coordinates as any).lat,
+            lng: (data.coordinates as any).lng
+          };
+        } else {
+          updateData.coordinates = null;
+        }
+      }
       if (data.price !== undefined) updateData.price = data.price;
       if (imageUrl !== undefined) updateData.image_url = imageUrl;
       if (data.startDate !== undefined) updateData.start_date = data.startDate;
