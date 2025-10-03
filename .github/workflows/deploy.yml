@@ -1,11 +1,21 @@
-name: Deploy to USER site
+name: Deploy to GitHub Pages (Project Pages)
+
 on:
   push:
     branches: [ main, master ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
 jobs:
-  build-and-publish:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -28,11 +38,28 @@ jobs:
           REACT_APP_SUPABASE_ANON_KEY: ${{ secrets.REACT_APP_SUPABASE_ANON_KEY }}
           CI: false
 
-      - name: Publish to USERNAME.github.io
-        uses: peaceiris/actions-gh-pages@v3
+      - name: Rewrite absolute /assets paths for subpath
+        run: |
+          REPO_PATH="/Ohjelmistokehitysprojekti-2"
+          cd hobbly-app/build
+          find . -type f \( -name '*.html' -o -name '*.js' -o -name '*.css' \) -exec sed -i "s|\"/assets/|\"${REPO_PATH}/assets/|g" {} +
+          find . -type f \( -name '*.html' -o -name '*.js' -o -name '*.css' \) -exec sed -i "s|'\\/assets\\/|'${REPO_PATH}/assets/|g" {} +
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          personal_token: ${{ secrets.PERSONAL_TOKEN }}
-          external_repository: USERNAME/USERNAME.github.io
-          publish_dir: hobbly-app/build
-          publish_branch: main
-          commit_message: Deploy
+          path: hobbly-app/build
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy
+        id: deployment
+        uses: actions/deploy-pages@v4
