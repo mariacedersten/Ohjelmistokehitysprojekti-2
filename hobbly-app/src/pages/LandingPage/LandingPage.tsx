@@ -98,7 +98,7 @@ export default function LandingPage() {
             {/* Правая колонка */}
             <div className="column right">
               <img
-                src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Photos%20(1)/Organizations/1_Landing_Page.jpg"
+                src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Webside/1_Landing_Page.jpg"
                 alt="Organisation demo"
                 className="org-laptop-mockup-about"
               />
@@ -153,7 +153,7 @@ export default function LandingPage() {
           <div className="org-container">
             <div className="org-image-col">
              <img
-              src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Photos%20(1)/Organizations/1_Landing_Page.jpg"
+              src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Webside/1_Landing_Page.jpg"
               alt="Organisation demo"
               className="org-laptop-mockup"
             />
