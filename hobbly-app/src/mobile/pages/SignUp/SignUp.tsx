@@ -59,7 +59,7 @@ const SignUp: React.FC = () => {
     <div className={styles.page}>
       <header className={styles.header}>
         <img
-          src="/assets/wireframes/Logo Hobbly/logo_white@low-res.png"
+          src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Logo%20Hobbly/logo_white@low-res.png"
           alt="Hobbly"
           className={styles.logo}
         />

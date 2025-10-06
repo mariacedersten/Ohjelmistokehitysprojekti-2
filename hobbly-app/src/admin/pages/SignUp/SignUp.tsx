@@ -11,7 +11,7 @@ import { SignUpFormData } from '../../../types';
 
 import styles from './SignUp.module.css';
 
-const logo = process.env.PUBLIC_URL + '/Logo Hobbly/logo_primary_1@high-res.png';
+const logo = "https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Logo%20Hobbly/logo_white@high-res.png";
 const googleIcon = process.env.PUBLIC_URL + '/Icons/google.svg';
 const appleIcon = process.env.PUBLIC_URL + '/Icons/apple.svg';
 const photoIcon = process.env.PUBLIC_URL + '/Icons/photo.svg';

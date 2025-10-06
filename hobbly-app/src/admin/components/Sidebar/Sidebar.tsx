@@ -9,7 +9,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import { UserRole } from '../../../types';
 import styles from './Sidebar.module.css';
-const ADMIN_LOGO_URL = `${process.env.PUBLIC_URL}/Logo Hobbly/logo_white@high-res.png`;
+const ADMIN_LOGO_URL = "https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Logo%20Hobbly/logo_white@high-res.png";
 const ICONS_BASE_URL = `${process.env.PUBLIC_URL}/Icons`;
 
 /**
@@ -77,7 +77,7 @@ const Sidebar: React.FC = () => {
   );
 
   const sidebarBgStyle: React.CSSProperties = {
-    backgroundImage: `url(${process.env.PUBLIC_URL}/bg_pattern.png)`,
+    backgroundImage: "https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Desktop/bg_pattern.png",
     backgroundRepeat: 'repeat',
     backgroundSize: '2000px auto',
     backgroundPosition: 'top left'
