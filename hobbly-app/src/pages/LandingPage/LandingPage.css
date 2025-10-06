@@ -397,7 +397,7 @@ section {
   grid-template-columns: 1fr 1fr; /* форма слева, картинка справа */
   gap: 40px;
   align-items: center;
-  padding: 0 30px;
+  padding: 20px 30px 0 30px;
 }
 
 /* Левая колонка — форма */
@@ -424,7 +424,7 @@ section {
 }
 
 .contact-form textarea {
-  height: 160px;
+  height: 200px;
   resize: none;
 }
 
@@ -449,6 +449,7 @@ section {
   max-height: 500px;
   object-fit: contain;
   border-radius: 12px;
+  padding-top: 20px;
 }
 
 /* thank-you-message */
@@ -509,20 +510,14 @@ section {
   overflow: hidden;
   padding-top: 0;
 }
-.LandingPage::before,
+
 .LandingPage::after {
   content: "";
   position: absolute;
   border-radius: 50%;
   filter: blur(60px);
 }
-.LandingPage::before {
-  top: -10%;
-  right: -10%;
-  width: 40%;
-  height: 40%;
-  animation: float 6s ease-in-out infinite;
-}
+
 .LandingPage::after {
   bottom: -10%;
   left: -10%;

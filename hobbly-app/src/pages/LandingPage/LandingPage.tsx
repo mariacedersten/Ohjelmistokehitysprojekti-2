@@ -47,8 +47,12 @@ export default function LandingPage() {
       {/* NAVBAR */}
       <nav className="navbar fixed-header">
         <div className="nav-left">
-          <div className="logo">
-            <img src={logoWhite} alt="Hobbly logo" className="logo-icon" />
+         <div className="logo">
+            <img 
+              src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Webside/logo_white@high-res.png" 
+              alt="Hobbly logo" 
+              className="logo-icon" 
+            />
           </div>
         </div>
         <ul className="nav-center">
