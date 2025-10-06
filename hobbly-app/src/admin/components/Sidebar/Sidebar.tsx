@@ -77,11 +77,11 @@ const Sidebar: React.FC = () => {
   );
 
   const sidebarBgStyle: React.CSSProperties = {
-    backgroundImage: "https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Desktop/bg_pattern.png",
-    backgroundRepeat: 'repeat',
-    backgroundSize: '2000px auto',
-    backgroundPosition: 'top left'
-  };
+  backgroundImage: "url('https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Desktop/bg_pattern.png')",
+  backgroundRepeat: 'repeat',
+  backgroundSize: '2000px auto',
+  backgroundPosition: 'top left'
+};
 
   return (
     <aside className={styles.sidebar} style={sidebarBgStyle}>
