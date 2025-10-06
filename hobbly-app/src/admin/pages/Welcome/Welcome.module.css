@@ -6,10 +6,10 @@
 .pageRoot {
   min-height: 100vh;
   display: grid;
-  grid-template-columns: 1fr 520px;
-  gap: 40px;
+  grid-template-columns: 2fr 1fr;
+  gap: 50px;
   align-items: center;
-  padding: 40px clamp(24px, 5vw, 64px);
+  padding: 40px clamp(0px, 5vw, 0px);
   background-color: var(--color-primary-dark);
   color: var(--color-white);
 }
@@ -31,7 +31,7 @@
   margin: 0 0 32px 0;
   letter-spacing: -0.02em;
   color: var(--color-white);
-  text-shadow: 0 2px 4px rgba(0,0,0,.35);
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.35);
 }
 
 .logoRow {
@@ -51,7 +51,7 @@
 }
 
 .symbol::before {
-  content: '';
+  content: "";
   position: absolute;
   top: 50%;
   left: 50%;
@@ -113,21 +113,26 @@
   padding: 12px 22px;
   border-radius: 12px;
   background: var(--color-accent-green);
-  color: #083A2F;
+  color: #083a2f;
   transition: transform 60ms ease, box-shadow 200ms ease;
-  box-shadow: 0 8px 24px rgba(101, 255, 129, .35);
+  box-shadow: 0 8px 24px rgba(101, 255, 129, 0.35);
 }
 
-.ctaButton:hover { transform: translateY(-1px); }
-.ctaButton:active { transform: translateY(0); }
+.ctaButton:hover {
+  transform: translateY(-1px);
+}
+.ctaButton:active {
+  transform: translateY(0);
+}
 
 .sideImageWrap {
   height: 80vh;
+  aspect-ratio: 1.1 / 2;
   border-radius: 24px;
   overflow: hidden;
-  box-shadow: 0 24px 64px rgba(0,0,0,.22), 0 2px 8px rgba(0,0,0,.08);
-  border: 1px solid rgba(255,255,255,.15);
-  background: rgba(0,0,0,.2);
+  box-shadow: 0 24px 64px rgba(0, 0, 0, 0.22), 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  background: rgba(0, 0, 0, 0.2);
 }
 
 .sideImage {
@@ -152,7 +157,7 @@
     gap: 20px;
     justify-items: center;
   }
-  .sideImageWrap { height: 46vh; }
+  .sideImageWrap {
+    height: 46vh;
+  }
 }
-
-

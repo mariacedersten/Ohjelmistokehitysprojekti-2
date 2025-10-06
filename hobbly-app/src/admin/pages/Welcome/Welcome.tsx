@@ -9,12 +9,12 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import { UserRole } from '../../../types';
 import styles from './Welcome.module.css';
-const ADMIN_LOGO_URL = `${process.env.PUBLIC_URL}/Logo Hobbly/logo_white@high-res.png`;
+const ADMIN_LOGO_URL = "https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Logo%20Hobbly/logo_white@high-res.png";
 
 /**
  * Right-side illustration from public folder
  */
-const ILLUSTRATION_URL = `${process.env.PUBLIC_URL}/Landing%20Page.jpeg`;
+const ILLUSTRATION_URL = "https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Desktop/Landing%20Page.jpeg";
 
 const Welcome: React.FC = () => {
   const navigate = useNavigate();
