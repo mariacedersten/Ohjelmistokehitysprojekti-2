@@ -62,15 +62,44 @@ export default function LandingPage() {
 
       <div className="page-offset">
 
-        {/* ABOUT */}
+     {/* ABOUT */}
         <section id="about" className="section about">
           <h2 className="section-title">ABOUT US</h2>
+
           <div className="about-hero">
-            <img className="about-logo" src={symbolSecondary} alt="Hobbly logo" />
-            <h3 className="about-heading">HOBBLY TECHNOLOGIES OY</h3>
-            <p className="about-text">
-              is a modern technology company whose mission is to make people’s everyday lives easier by making hobbies and leisure opportunities easy to find and accessible. The company aims to enhance people’s well-being and sense of community by providing digital solutions that connect users with hobbies and service providers.is a modern technology company whose mission is to make people’s everyday lives easier by making hobbies and leisure opportunities easy to find and accessible. The company strives to improve people’s well-being and foster a stronger sense of community by offering digital solutions that seamlessly connect users with hobbies, events, and service providers.
-            </p>
+            {/* Левая колонка */}
+            <div className="column left">
+              <img
+                src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Webside/screen.png"
+                alt="app phone"
+                className="phone-mockup-about"
+              />
+              <button className="btn_about" onClick={handleMobileClick}>Mobile</button>
+            </div>
+
+            {/* Средняя колонка */}
+            <div className="column middle">
+              <img className="about-logo" src={symbolSecondary} alt="Hobbly logo" />
+              <h3 className="about-heading">HOBBLY TECHNOLOGIES OY</h3>
+              <p className="about-text">
+                is a modern technology company whose mission is to make people’s everyday lives easier by making hobbies and leisure opportunities easy to find and accessible. 
+                The company aims to enhance people’s well-being and sense of community by providing digital solutions that connect users with hobbies and service providers. 
+                It strives to foster a stronger sense of community by offering digital solutions that seamlessly connect users with hobbies, events, and service providers.
+              </p>
+              <p className="about-text">
+                This student project was completed by Maria Shatylovich, Maria Cedersten and Dieudonne Ngororano.
+              </p>
+            </div>
+
+            {/* Правая колонка */}
+            <div className="column right">
+              <img
+                src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Photos%20(1)/Organizations/1_Landing_Page.jpg"
+                alt="Organisation demo"
+                className="org-laptop-mockup-about"
+              />
+              <button className="btn_about" onClick={handleAdminClick}>Desktop</button>
+            </div>
           </div>
         </section>
 
@@ -97,14 +126,18 @@ export default function LandingPage() {
           <h2 className="section-title">APPLICATION</h2>
           <div className="two-col">
             <div className="col image-col">
-              <img src={screenMockup} alt="app phone" className="phone-mockup" />
+             <img
+                src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Webside/screen.png"
+                alt="app phone"
+                className="phone-mockup"
+              />
             </div>
             <div className="col text-col">
               <p className="lead">
                We have a mobile app that helps you find any leisure activities in the Uusimaa region. The app allows users to easily find suitable options and obtain reliable information about service providers and upcoming community events. It serves a wide range of target groups, including children, youth, adults, families, and seniors, offering personalized recommendations and convenient booking options for every schedule and preference. With our app, enjoying hobbies and local events has never been easier.
               </p>
               <div className="download-wrap">
-                <button className="btn" onClick={handleMobileClick}>Download the APP</button>
+                <button className="btn" onClick={handleMobileClick}>Mobile</button>
               </div>
             </div>
           </div>
@@ -115,7 +148,12 @@ export default function LandingPage() {
           <h2 className="section-title">ORGANISATIONS</h2>
           <div className="org-container">
             <div className="org-image-col">
-              <img src={laptopMockup} alt="Organisation demo" className="org-laptop-mockup" />
+             <img
+              src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Photos%20(1)/Organizations/1_Landing_Page.jpg"
+              alt="Organisation demo"
+              className="org-laptop-mockup"
+            />
+
             </div>
             <div className="org-text-col">
               <p>
@@ -127,7 +165,7 @@ export default function LandingPage() {
               <p>
                 Our goal is to make it simple for organizations of any size to share their activities and connect with participants.
               </p>
-              <button className="btn" onClick={handleAdminClick}>Create PRO</button>
+              <button className="btn" onClick={handleAdminClick}>Desktop</button>
             </div>
           </div>
         </section>
@@ -135,7 +173,26 @@ export default function LandingPage() {
         {/* CONTACT */}
         <section id="contact" className="section contact">
           <h2 className="section-title">CONTACT US</h2>
-          <ContactForm />
+          <div className="contact-grid">
+            {/* Левая колонка — форма */}
+            <div className="contact-left">
+              <form className="contact-form">
+                <input type="text" placeholder="Full name" required />
+                <input type="email" placeholder="E-mail address" required />
+                <input type="tel" placeholder="Phone number" required />
+                <textarea placeholder="Your message" required></textarea>
+                <button type="submit" className="btn">Send message</button>
+              </form>
+            </div>
+
+            {/* Правая колонка — картинка */}
+            <div className="contact-right">
+              <img
+                src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Webside/a6277d48-cbd2-47b0-952e-47c6d2258a0c.png"
+                alt="Contact illustration"
+              />
+            </div>
+          </div>
         </section>
 
         {/* FOOTER */}
