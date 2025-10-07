@@ -346,26 +346,47 @@ const SignUp: React.FC = () => {
               )}
               <p className={styles.socialLoginText}>Or log in with</p>
               <div className={styles.socialButtons}>
-                <button type="button" className={styles.socialButton}><img src={googleIcon} alt="Google" /></button>
-                <button type="button" className={styles.socialButton}><img src={appleIcon} alt="Apple" /></button>
+                    <button type="button" className={styles.socialButton}>
+                    <img
+                      src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/google.svg"
+                      alt="Google"
+                    />
+                  </button>
+                  <button type="button" className={styles.socialButton}>
+                  <img
+                    src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/apple.svg"
+                    alt="Apple"
+                  />
+                </button>
               </div>
             </div>
           </div>
 
           {/* Right Column - Photo Upload */}
-          <div className={styles.rightSection}>
-            <h1 className={styles.pageTitle}>SIGN UP</h1>
-            <div className={styles.photoUpload}>
-              <p>Add photo</p>
-              <div className={styles.avatarContainer}>
-                <img src={photoPreview} alt="Avatar preview" className={styles.avatarPreview} />
-                <label htmlFor="photo-upload" className={styles.photoUploadButton}>
-                  <img src={photoIcon} alt="Upload" />
-                </label>
-                <input id="photo-upload" type="file" accept="image/*" onChange={handlePhotoChange} style={{ display: 'none' }} />
-              </div>
-            </div>
-          </div>
+         <div className={styles.photoUpload}>
+  <p>Add photo</p>
+  <div className={styles.avatarContainer}>
+    <img
+      src={photoPreview}
+      alt="Avatar preview"
+      className={styles.avatarPreview}
+    />
+    <label htmlFor="photo-upload" className={styles.photoUploadButton}>
+      <img
+        src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/photo.svg"
+        alt="Upload"
+      />
+    </label>
+    <input
+      id="photo-upload"
+      type="file"
+      accept="image/*"
+      onChange={handlePhotoChange}
+      style={{ display: 'none' }}
+    />
+  </div>
+</div>
+
         </form>
         {passwordError && <p className={styles.passwordRequirement} style={{color: '#ff4444'}}>{passwordError}</p>}
         {!passwordError && <p className={styles.passwordRequirement}>The password must contain at least 8 characters, one number and special symbols (@$!%*#?&).</p>}
