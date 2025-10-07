@@ -23,7 +23,6 @@ body {
     "Helvetica Neue", Arial;
   -webkit-font-smoothing: antialiased;
 }
-
 /* NAVBAR */
 .navbar {
   background: #004d40;
@@ -119,17 +118,28 @@ section {
     display: block;
   }
 
+  .section.about .section-title {
+    margin-top: 0; /* Убираем margin-top у заголовка About */
+  }
+
   /* чтобы секции не перекрывались хедером */
+  .fixed-header {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+  }
+
+  /* Для всех секций, чтобы при скролле якорями текст не перекрывался фиксированным Header */
   section {
     scroll-margin-top: 300px; /* высота фиксированного Header */
   }
 
-  .section.about .section-title {
-    margin-top: 0; /* Убираем margin-top у заголовка About */
-    padding-top: 0; /* гарантирует, что текст и заголовок всегда начинается ниже хедера, независимо от экрана */
+  /* Убираем лишний отступ сверху у page-offset, если нужно */
+  .page-offset {
+    padding-top: 450px;
   }
 }
-
 /* SECTION TITLE */
 .section-title {
   margin: 0;
@@ -151,7 +161,6 @@ section {
 .section.about .section-title {
   margin-top: 70px; /* высота фиксированного Header */
 }
-
 /* ABOUT */
 
 .about-hero {
