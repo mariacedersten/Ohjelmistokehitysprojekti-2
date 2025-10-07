@@ -367,7 +367,7 @@ const SignUp: React.FC = () => {
   <p>Add photo</p>
   <div className={styles.avatarContainer}>
     <img
-      src={photoPreview}
+      src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/Kamera.svg"
       alt="Avatar preview"
       className={styles.avatarPreview}
     />
