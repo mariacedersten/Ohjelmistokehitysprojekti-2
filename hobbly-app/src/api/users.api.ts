@@ -155,7 +155,7 @@ export class UsersAPI {
   }
 
   /**
-   * Удаление пользователя
+   * Удаление пользователя (мягкое удаление)
    * @param {string} id - ID пользователя
    * @returns {Promise<void>}
    */
@@ -169,6 +169,20 @@ export class UsersAPI {
       );
     } catch (error) {
       console.error('Error deleting user:', error);
+      throw error;
+    }
+  }
+
+  /**
+   * Полное удаление пользователя из базы данных
+   * @param {string} id - ID пользователя
+   * @returns {Promise<void>}
+   */
+  async permanentDeleteUser(id: string): Promise<void> {
+    try {
+      await apiClient.delete(`${this.endpoint}?id=eq.${id}`);
+    } catch (error) {
+      console.error('Error permanently deleting user:', error);
       throw error;
     }
   }

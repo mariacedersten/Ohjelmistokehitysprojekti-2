@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import usersAPI from '../../../api/users.api';
 import { User } from '../../../types';
-import DataTable, { ColumnConfig, ActionConfig } from '../../components/DataTable';
+import DataTable, { ColumnConfig, ActionConfig, dataTableStyles } from '../../components/DataTable';
 import styles from './UsersRequests.module.css';
 
 const UsersRequests: React.FC = () => {
@@ -18,6 +18,15 @@ const UsersRequests: React.FC = () => {
   const [total, setTotal] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    title: string;
+    message: string;
+    confirmText: string;
+    cancelText: string;
+    onConfirm: () => void;
+  } | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
 
@@ -59,20 +68,38 @@ const UsersRequests: React.FC = () => {
 
   const approve = async (id: string) => {
     try {
+      setError(null);
       await usersAPI.approveUser(id, true);
+      setToastMessage('User approved successfully');
+      setShowToast(true);
       await loadRequests();
     } catch (e) {
       console.error('Approve failed:', e);
+      setError('Failed to approve user');
     }
   };
 
   const reject = async (id: string) => {
-    try {
-      await usersAPI.updateUser(id, { isApproved: false });
-      await loadRequests();
-    } catch (e) {
-      console.error('Reject failed:', e);
-    }
+    setConfirmModal({
+      title: 'Delete User?',
+      message: 'Are you sure you want to permanently delete this user? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        try {
+          setError(null);
+          setConfirmModal(null);
+
+          await usersAPI.permanentDeleteUser(id);
+          setToastMessage('User deleted successfully');
+          setShowToast(true);
+          await loadRequests();
+        } catch (e) {
+          console.error('Delete failed:', e);
+          setError('Failed to delete user');
+        }
+      }
+    });
   };
 
   // Columns configuration
@@ -144,6 +171,47 @@ const UsersRequests: React.FC = () => {
 
   return (
     <div className={styles.container}>
+      {/* Toast Notification */}
+      {showToast && toastMessage && (
+        <div className={dataTableStyles.toast} role="status" aria-live="polite">
+          <div className={dataTableStyles.toastContent}>
+            {toastMessage}
+          </div>
+          <button
+            type="button"
+            className={dataTableStyles.toastClose}
+            aria-label="Close notification"
+            onClick={() => setShowToast(false)}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {confirmModal && (
+        <div className={dataTableStyles.modalOverlay}>
+          <div className={dataTableStyles.modal}>
+            <h3>{confirmModal.title}</h3>
+            <p>{confirmModal.message}</p>
+            <div className={dataTableStyles.modalActions}>
+              <button
+                onClick={() => setConfirmModal(null)}
+                className={dataTableStyles.cancelButton}
+              >
+                {confirmModal.cancelText}
+              </button>
+              <button
+                onClick={confirmModal.onConfirm}
+                className={dataTableStyles.confirmButton}
+              >
+                {confirmModal.confirmText}
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       <DataTable
         data={users}
         totalItems={total}
