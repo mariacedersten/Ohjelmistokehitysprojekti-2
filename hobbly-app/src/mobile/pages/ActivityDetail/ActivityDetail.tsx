@@ -142,19 +142,21 @@ const ActivityDetail: React.FC = () => {
               </div>
             )}
 
-            {/* Тип события и категория */}
-              <div className={styles.typeCategoryContent}>
-                {activity.type && (
-                  <span className={styles.typeItem}>
-                    <strong>Type:</strong> {typeof activity.type === 'string' ? activity.type : (activity.type as NamedObject).name}
-                  </span>
-                )}
-                {activity.category && (
-                  <span className={styles.categoryItem}>
-                    <strong>Category:</strong> {typeof activity.category === 'string' ? activity.category : (activity.category as NamedObject).name}
-                  </span>
-                )}
-              </div>
+          {/* Тип события и категория */}
+            <div className={styles.typeCategoryContent}>
+              {activity.type && (
+                <span className={styles.typeItem}>
+                  <span className={styles.typeLabel}>Type:</span>{' '}
+                  {typeof activity.type === 'string' ? activity.type : (activity.type as NamedObject).name}
+                </span>
+              )}
+              {activity.category && (
+                <span className={styles.categoryItem}>
+                  <span className={styles.typeLabel}>Category:</span>{' '}
+                  {typeof activity.category === 'string' ? activity.category : (activity.category as NamedObject).name}
+                </span>
+              )}
+            </div>
 
             {/* Описание */}
             <div className={styles.descriptionSection}>

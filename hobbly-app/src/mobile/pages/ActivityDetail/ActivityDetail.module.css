@@ -2,6 +2,9 @@
  * Стили для ActivityDetail страницы
  * Дизайн согласно макету Announcement
  */
+body {
+  font-family: "Montserrat", sans-serif;
+}
 
 .activityDetail {
   min-height: 100vh;
@@ -92,8 +95,8 @@
 }
 
 .date {
-  font-size: 16px;
-  color: #666;
+  font-size: 18px;
+  color: black;
   margin: 0;
 }
 
@@ -124,27 +127,35 @@
 .tagsLabel {
   font-weight: 600;
   color: #000000;
-  font-size: 14px;
+  font-size: 18px;
 }
 
 .tags {
-  font-size: 14px;
+  font-size: 18px;
   color: #000000;
 }
 
+/* Type & Category section */
 .typeCategoryContent {
-  padding: 0px 20px 15px; /* top 0, left/right 20, bottom 10 */
-  font-size: 14px;
-  color: #000000;
+  padding: 0px 20px 10px;
+  font-size: 18px;
+  color: black;
   display: flex;
   gap: 20px;
   flex-wrap: wrap;
-  border-bottom: 1px solid #e0e0e0;
+  font-family: "Montserrat", sans-serif;
 }
 
 .typeItem,
 .categoryItem {
-  /* font-weight убран, жирными будут только <strong> */
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.typeLabel {
+  font-weight: 600;
+  color: #000; /* можешь поменять при необходимости */
 }
 
 .typeItem {
@@ -164,20 +175,19 @@
 .locationSection,
 .organizerSection,
 .contactSection {
-  padding: 20px;
-  border-bottom: 1px solid #e0e0e0;
+  padding: 10px 20px;
 }
 
 .sectionTitle {
   font-size: 18px;
-  font-weight: 700;
-  color: #1a1a1a;
+  font-weight: 600;
+  color: black;
   margin: 0 0 10px 0;
   font-family: "Montserrat", sans-serif;
 }
 
 .description {
-  font-size: 14px;
+  font-size: 18px;
   line-height: 1.6;
   color: #333;
   margin: 0;
@@ -195,28 +205,28 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  font-size: 14px;
-  color: #666;
+  font-size: 18px;
+  color: black;
 }
 
 .locationIcon {
-  width: 20px;
-  height: 20px;
-  color: #666;
+  width: 18px;
+  height: 18px;
+  color: black;
   flex-shrink: 0;
 }
 
 .address {
-  color: #999;
-  font-size: 13px;
+  color: black;
+  font-size: 18px;
 }
 
 .checkMapButton {
   align-self: flex-start;
   background: none;
   border: none;
-  color: #d32f2f;
-  font-size: 14px;
+  color: #073b3a;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   padding: 5px 0;
@@ -224,14 +234,13 @@
 }
 
 .checkMapButton:hover {
-  color: #b71c1c;
+  color: #073b3a;
 }
 
 /* Organizer */
 .organizerName {
-  font-size: 16px;
-  font-weight: 600;
-  color: #333;
+  font-size: 18px;
+  color: black;
 }
 
 /* Contact Section */
@@ -239,8 +248,6 @@
   display: flex;
   align-items: center;
   gap: 15px;
-  padding: 10px;
-  background: #f8f8f8;
   border-radius: 10px;
 }
 
@@ -257,15 +264,14 @@
 }
 
 .contactName {
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
   color: #1a1a1a;
   margin: 0 0 5px 0;
 }
 
 .contactPhone,
 .contactEmail {
-  font-size: 14px;
+  font-size: 18px;
   margin: 2px 0;
 }
 
@@ -282,16 +288,13 @@
 
 /* Additional Info */
 .additionalInfo {
-  padding: 20px;
-  background: #f8f8f8;
+  padding: 10px 20px 20px 20px;
 }
 
 .infoItem {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 8px 0;
-  border-bottom: 1px solid #e0e0e0;
 }
 
 .infoItem:last-child {
@@ -299,15 +302,14 @@
 }
 
 .infoLabel {
-  font-size: 14px;
-  color: #666;
-  font-weight: 500;
+  font-size: 18px;
+  color: black;
+  font-weight: 600;
 }
 
 .infoValue {
-  font-size: 14px;
+  font-size: 18px;
   color: #333;
-  font-weight: 600;
 }
 
 .externalLink {
@@ -364,7 +366,7 @@
   color: #1a5f5a;
   border: none;
   border-radius: 25px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   cursor: pointer;
   transition: background 0.3s ease;
@@ -374,6 +376,13 @@
   background: #f0f0f0;
 }
 
+.activityCard {
+  background: white;
+  border-radius: 20px;
+  overflow: hidden;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35); /* добавили мягкую тень */
+}
+
 /* Мобильная адаптация */
 @media (max-width: 375px) {
   .title {
@@ -381,7 +390,7 @@
   }
 
   .sectionTitle {
-    font-size: 16px;
+    font-size: 18px;
   }
 
   .contactPhoto {
