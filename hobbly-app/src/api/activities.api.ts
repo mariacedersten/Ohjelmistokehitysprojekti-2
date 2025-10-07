@@ -23,6 +23,7 @@ import {
   UserRole
 } from '../types';
 import { AxiosResponse } from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Класс для работы с активностями
@@ -936,7 +937,8 @@ class ActivitiesAPI {
    */
   private async uploadImage(file: File): Promise<string> {
     try {
-      const fileName = `${Date.now()}-${file.name}`;
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const fileName = `${uuidv4()}.${ext}`;
       const filePath = `activities/${fileName}`;
 
       const formData = new FormData();

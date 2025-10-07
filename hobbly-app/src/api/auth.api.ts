@@ -8,6 +8,7 @@
 import { authClient, apiClient, setAuthToken, removeAuthToken, storageClient } from './config';
 import { User, SignInFormData, SignUpFormData, UserRole } from '../types';
 import { AxiosResponse } from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Интерфейс ответа при успешной аутентификации
@@ -154,9 +155,10 @@ class AuthAPI {
         });
       }
       
-      const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const fileName = `${uuidv4()}.${ext}`;
       const filePath = `${fileName}`;
-      
+
       console.log('📂 Alternative upload path:', `avatars/${filePath}`);
       
       const { data, error } = await supabase.storage
@@ -502,7 +504,8 @@ class AuthAPI {
         // Продолжаем с оригинальным методом через REST API
       }
 
-      const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const fileName = `${uuidv4()}.${ext}`;
       const bucket = 'avatars';
       const filePath = `${fileName}`;
 
