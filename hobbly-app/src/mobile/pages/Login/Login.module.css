@@ -190,7 +190,7 @@ h6,
 /* Кнопка BACK прижимается вниз */
 .backBtn {
   margin-top: auto; /* 👈 вместо фиксированного отступа */
-  background: #0d3b36;
+  background: linear-gradient(135deg, #1a5f5a 0%, #0d3b36 100%);
   color: #fff;
   padding: 20px 24px;
   font-size: 20px;

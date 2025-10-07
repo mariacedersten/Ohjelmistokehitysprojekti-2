@@ -16,7 +16,7 @@
 }
 
 .header {
-  background: #073b3a;
+  background: linear-gradient(135deg, #1a5f5a 0%, #0d3b36 100%);
   padding: 16px 20px;
   text-align: center;
 }
@@ -105,7 +105,7 @@
 
 .backBtn {
   margin-top: auto;
-  background: #073b3a;
+  background: linear-gradient(135deg, #1a5f5a 0%, #0d3b36 100%);
   color: #ffffff;
   padding: 18px 0;
   font-size: 20px;
