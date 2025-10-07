@@ -6,14 +6,14 @@
 }
 
 .content {
-  padding: 20px 15px 80px;
+  padding: 30px 30px 80px;
 }
 
 .card {
   background: white;
   border-radius: 16px;
   padding: 16px;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* 💪 тень мощнее */
 }
 
 .row {
@@ -21,7 +21,6 @@
   grid-template-columns: 140px 1fr;
   gap: 12px;
   padding: 10px 0;
-  border-bottom: 1px solid #eee;
 }
 
 .row:last-child {
@@ -48,15 +47,20 @@
 }
 
 .logoutButton {
-  margin-top: 16px;
-  width: 100%;
+  display: block;
+  margin: 20px auto 0; /* центрирует кнопку */
+  width: 60%; /* например, 60% ширины контейнера */
+  max-width: 160px; /* чтобы не становилась слишком широкой на больших экранах */
   background: #0d3b36;
   color: #ffffff;
   border: none;
   border-radius: 10px;
   font-size: 18px;
-  padding: 12px 0;
+  padding: 6px 0;
   cursor: pointer;
+  transition: background 0.2s ease;
 }
 
-
+.logoutButton:hover {
+  background: #146b61; /* чуть светлее при наведении */
+}
