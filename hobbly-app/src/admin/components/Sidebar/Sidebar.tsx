@@ -34,7 +34,7 @@ const Sidebar: React.FC = () => {
     {
       path: '/admin/dashboard',
       label: 'Dashboard',
-      iconSrc: 'https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/activities.svg',
+      iconSrc: 'https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/Dashbord.svg',
       roles: [UserRole.ADMIN]
     },
     {
@@ -115,7 +115,7 @@ const Sidebar: React.FC = () => {
           >
             <span className={styles.menuIcon}>
               <img
-                src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/activities.svg"
+                src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/trashbin.svg"
                 alt=""
                 className={styles.menuIconImage}
               />
