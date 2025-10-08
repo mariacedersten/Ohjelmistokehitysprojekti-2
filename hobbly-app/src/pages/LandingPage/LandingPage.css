@@ -221,7 +221,7 @@ section {
 }
 
 .about-text {
-  font-size: 1rem;
+  font-size: 20px;
   line-height: 1.6;
   max-width: 600px;
   text-align: justify;
