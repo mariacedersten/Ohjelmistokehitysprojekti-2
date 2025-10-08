@@ -16,6 +16,8 @@ supabase: https://supabase.com/dashboard/project/jourvbtxuyavamxvddwc/sql/66baaa
 
 Formspree: (https://formspree.io/) https://formspree.io/forms/xanpnodz/integration
 
+https://app.netlify.com/projects/hobbly/overview:  https://hobbly.netlify.app/
+
 ## Projektin kuvaus
 
 Tämä projekti toteutetaan osana ohjelmistoprojektikurssia.  
