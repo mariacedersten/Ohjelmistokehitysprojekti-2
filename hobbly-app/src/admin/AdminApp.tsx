@@ -77,7 +77,7 @@ const AdminApp: React.FC = () => {
           <Route 
             path="/dashboard" 
             element={
-              <ProtectedRoute allowedRoles={[UserRole.ORGANIZER, UserRole.ADMIN]} redirectTo="/admin/login">
+              <ProtectedRoute allowedRoles={[UserRole.ADMIN]} redirectTo="/admin/login">
                 <Dashboard />
               </ProtectedRoute>
             } 
@@ -148,7 +148,7 @@ const AdminApp: React.FC = () => {
           />
           
           {/* Редирект для неизвестных маршрутов */}
-          <Route path="*" element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="*" element={<Navigate to="/admin/activities" replace />} />
         </Routes>
       </div>
     </div>

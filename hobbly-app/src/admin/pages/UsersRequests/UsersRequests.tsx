@@ -4,169 +4,232 @@
  * @description Management page for pending user registration requests
  */
 
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import usersAPI from '../../../api/users.api';
+import { User } from '../../../types';
+import DataTable, { ColumnConfig, ActionConfig, dataTableStyles } from '../../components/DataTable';
 import styles from './UsersRequests.module.css';
 
-interface UserRequest {
-  id: string;
-  name: string;
-  organisation: string;
-  phoneNumber: string;
-  email: string;
-  userAvatar?: string;
-}
-
 const UsersRequests: React.FC = () => {
-  const { user } = useAuth();
-  const [items, setItems] = useState<UserRequest[]>([]);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [searching, setSearching] = useState(false);
-  const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const navigate = useNavigate();
+  const [users, setUsers] = useState<User[]>([]);
   const [total, setTotal] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [toastMessage, setToastMessage] = useState<string | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const [confirmModal, setConfirmModal] = useState<{
+    title: string;
+    message: string;
+    confirmText: string;
+    cancelText: string;
+    onConfirm: () => void;
+  } | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const pageSize = 10;
-  const [search, setSearch] = useState('');
-  const [debouncedSearch, setDebouncedSearch] = useState('');
 
-  // Debounce search input (wait 500ms after user stops typing)
   useEffect(() => {
-    // Show searching indicator when user is typing
-    if (search !== debouncedSearch) {
-      setSearching(true);
+    loadRequests();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentPage]);
+
+  const loadRequests = async (searchQuery = '') => {
+    try {
+      setLoading(true);
+      setError(null);
+      const res = await usersAPI.getUsers({
+        page: currentPage,
+        limit: pageSize,
+        isApproved: false,
+        search: searchQuery
+      });
+      setUsers(res.data);
+      setTotal(res.total || 0);
+    } catch (e) {
+      console.error('Failed to load user requests:', e);
+      setError('Failed to load user requests.');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    const timer = setTimeout(() => {
-      setDebouncedSearch(search);
-      // Reset to first page when search changes
-      if (search !== debouncedSearch) {
-        setCurrentPage(1);
-      }
-    }, 500);
-
-    return () => clearTimeout(timer);
-  }, [search, debouncedSearch]);
-
-  useEffect(() => {
-    const load = async () => {
-      try {
-        setError(null);
-        const res = await usersAPI.getUsers({ page: currentPage, limit: pageSize, isApproved: false, search: debouncedSearch });
-        const mapped: UserRequest[] = res.data.map(u => ({
-          id: u.id,
-          name: u.fullName || u.email,
-          organisation: u.organizationName || '—',
-          phoneNumber: u.phone || '—',
-          email: u.email
-        }));
-        setItems(mapped);
-        setTotal(res.total || 0);
-      } catch (e) {
-        console.error('Failed to load user requests:', e);
-        setError('Failed to load user requests.');
-      } finally {
-        setInitialLoading(false);
-        setSearching(false);
-      }
-    };
-    load();
-  }, [currentPage, debouncedSearch]);
-
-  const totalPages = useMemo(() => Math.max(1, Math.ceil(total / pageSize)), [total, pageSize]);
+  /**
+   * Get user avatar placeholder
+   */
+  const getUserAvatar = (userData: User): string => {
+    if (userData.photoUrl) return userData.photoUrl;
+    const initials = userData.fullName
+      ? userData.fullName.split(' ').map(n => n[0]).join('').toUpperCase()
+      : userData.email[0].toUpperCase();
+    return `https://ui-avatars.com/api/?name=${encodeURIComponent(initials)}&size=48&background=f0f0f0&color=666&format=png`;
+  };
 
   const approve = async (id: string) => {
     try {
+      setError(null);
       await usersAPI.approveUser(id, true);
-      setItems(prev => prev.filter(it => it.id !== id));
+      setToastMessage('User approved successfully');
+      setShowToast(true);
+      await loadRequests();
     } catch (e) {
       console.error('Approve failed:', e);
+      setError('Failed to approve user');
     }
   };
 
   const reject = async (id: string) => {
-    try {
-      await usersAPI.updateUser(id, { isApproved: false });
-      setItems(prev => prev.filter(it => it.id !== id));
-    } catch (e) {
-      console.error('Reject failed:', e);
-    }
+    setConfirmModal({
+      title: 'Delete User?',
+      message: 'Are you sure you want to permanently delete this user? This action cannot be undone.',
+      confirmText: 'Delete',
+      cancelText: 'Cancel',
+      onConfirm: async () => {
+        try {
+          setError(null);
+          setConfirmModal(null);
+
+          await usersAPI.permanentDeleteUser(id);
+          setToastMessage('User deleted successfully');
+          setShowToast(true);
+          await loadRequests();
+        } catch (e) {
+          console.error('Delete failed:', e);
+          setError('Failed to delete user');
+        }
+      }
+    });
   };
 
-  if (initialLoading) {
-    return (
-      <div className={styles.container}><div className={styles.loading}>Loading user requests...</div></div>
-    );
-  }
+  // Columns configuration
+  const columns: ColumnConfig<User>[] = [
+    {
+      key: 'name',
+      header: 'Name',
+      render: (userData) => (
+        <div className={styles.nameCell}>
+          <div
+            className={`${styles.userAvatar} ${styles.clickableAvatar}`}
+            onClick={() => navigate(`/admin/personal-info?userId=${userData.id}`)}
+            title="View profile"
+          >
+            <img
+              src={getUserAvatar(userData)}
+              alt={userData.fullName || userData.email}
+              onError={(e) => {
+                const target = e.target as HTMLImageElement;
+                target.src = getUserAvatar(userData);
+              }}
+            />
+          </div>
+          <div className={styles.userDetails}>
+            <span className={styles.userName}>{userData.fullName || userData.email}</span>
+            <span className={styles.userRole}>{userData.role}</span>
+          </div>
+        </div>
+      )
+    },
+    {
+      key: 'organisation',
+      header: 'Organisation',
+      render: (userData) => userData.organizationName || '—'
+    },
+    {
+      key: 'phone',
+      header: 'Phone number',
+      render: (userData) => userData.phone || '—'
+    },
+    {
+      key: 'email',
+      header: 'E-mail',
+      render: (userData) => userData.email
+    }
+  ];
 
-  if (error) {
-    return (
-      <div className={styles.container}><div className={styles.error}>{error}</div></div>
-    );
-  }
+  // Actions configuration
+  const actions: ActionConfig<User>[] = [
+    {
+      icon: '👁️',
+      title: 'View',
+      variant: 'view',
+      onClick: (userData) => navigate(`/admin/personal-info?userId=${userData.id}`)
+    },
+    {
+      icon: '✅',
+      title: 'Approve',
+      variant: 'approve',
+      onClick: (userData) => approve(userData.id)
+    },
+    {
+      icon: '🗑️',
+      title: 'Reject',
+      variant: 'reject',
+      onClick: (userData) => reject(userData.id)
+    }
+  ];
 
   return (
     <div className={styles.container}>
-      <div className={styles.header}>
-        <div className={styles.headerActions}>
-          <div className={styles.searchContainer}>
-            <input
-              type="search"
-              placeholder="Search users..."
-              value={search}
-              onChange={(e) => { setSearch(e.target.value); setCurrentPage(1); }}
-              className={`${styles.search} ${searching ? styles.searching : ''}`}
-            />
-            {searching && (
-              <div className={styles.searchIndicator}>
-                <span className={styles.spinner}>🔍</span>
-              </div>
-            )}
+      {/* Toast Notification */}
+      {showToast && toastMessage && (
+        <div className={dataTableStyles.toast} role="status" aria-live="polite">
+          <div className={dataTableStyles.toastContent}>
+            {toastMessage}
+          </div>
+          <button
+            type="button"
+            className={dataTableStyles.toastClose}
+            aria-label="Close notification"
+            onClick={() => setShowToast(false)}
+          >
+            ×
+          </button>
+        </div>
+      )}
+
+      {/* Confirmation Modal */}
+      {confirmModal && (
+        <div className={dataTableStyles.modalOverlay}>
+          <div className={dataTableStyles.modal}>
+            <h3>{confirmModal.title}</h3>
+            <p>{confirmModal.message}</p>
+            <div className={dataTableStyles.modalActions}>
+              <button
+                onClick={() => setConfirmModal(null)}
+                className={dataTableStyles.cancelButton}
+              >
+                {confirmModal.cancelText}
+              </button>
+              <button
+                onClick={confirmModal.onConfirm}
+                className={dataTableStyles.confirmButton}
+              >
+                {confirmModal.confirmText}
+              </button>
+            </div>
           </div>
         </div>
-      </div>
+      )}
 
-      <div className={styles.tableContainer}>
-        <div className={styles.tableHeader}>
-          <div className={styles.headerCell}>Name</div>
-          <div className={styles.headerCell}>Organisation</div>
-          <div className={styles.headerCell}>Phone number</div>
-          <div className={styles.headerCell}>E-mail</div>
-          <div className={styles.headerCell}>Actions</div>
-        </div>
-
-        <div className={styles.tableBody}>
-          {items.length === 0 ? (
-            <div className={styles.emptyState}>No user requests found.</div>
-          ) : (
-            items.map((req) => (
-              <div key={req.id} className={styles.tableRow}>
-                <div className={styles.nameCell}>
-                  <div className={styles.userAvatar}>
-                    {req.userAvatar ? (<img src={req.userAvatar} alt={req.name} />) : (<div className={styles.avatarPlaceholder}>{req.name.charAt(0)}</div>)}
-                  </div>
-                  <span className={styles.userName}>{req.name}</span>
-                </div>
-                <div className={styles.cell}>{req.organisation}</div>
-                <div className={styles.cell}>{req.phoneNumber}</div>
-                <div className={styles.cell}>{req.email}</div>
-                <div className={styles.actionsCell}>
-                  <button onClick={() => approve(req.id)} className={`${styles.actionButton} ${styles.approveButton}`} title="Approve">✅</button>
-                  <button onClick={() => reject(req.id)} className={`${styles.actionButton} ${styles.rejectButton}`} title="Reject">🗑️</button>
-                </div>
-              </div>
-            ))
-          )}
-        </div>
-      </div>
-
-      <div className={styles.pagination}>
-        <button onClick={() => setCurrentPage((p) => Math.max(1, p - 1))} disabled={currentPage === 1} className={styles.paginationButton}>Previous</button>
-        {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-          <button key={p} onClick={() => setCurrentPage(p)} className={`${styles.paginationButton} ${p === currentPage ? styles.paginationButtonActive : ''}`}>{p}</button>
-        ))}
-        <button onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))} disabled={currentPage === totalPages} className={styles.paginationButton}>Next</button>
-      </div>
+      <DataTable
+        data={users}
+        totalItems={total}
+        loading={loading}
+        error={error}
+        columns={columns}
+        actions={actions}
+        rowKey="id"
+        searchable
+        searchPlaceholder="Search users..."
+        onSearch={loadRequests}
+        currentPage={currentPage}
+        itemsPerPage={pageSize}
+        onPageChange={setCurrentPage}
+        actionsHeader="Actions"
+        emptyMessage="No user requests found."
+        onRetry={loadRequests}
+      />
     </div>
   );
 };

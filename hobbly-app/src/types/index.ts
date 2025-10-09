@@ -61,8 +61,6 @@ export interface User {
   organizationNumber?: string;
   /** URL аватара пользователя */
   photoUrl?: string;
-  /** URL фото профиля */
-  profilePhotoUrl?: string;
   /** Флаг подтверждения администратором (для организаторов) */
   isApproved: boolean;
   /** Дата создания аккаунта */
@@ -259,7 +257,10 @@ export interface SignUpFormData {
   photo?: File;
   /** Согласие с условиями */
   agreeToTerms: boolean;
+   /** Роль пользователя (необязательное поле, по умолчанию для мобильного — user) */
+  role?: 'user' | 'admin' | 'organizer';
 }
+
 
 /**
  * Данные формы входа
@@ -293,6 +294,8 @@ export interface ActivityFormData {
   location: string;
   /** Адрес */
   address?: string;
+  /** Координаты местоположения */
+  coordinates?: { lat: number; lng: number };
   /** Цена */
   price?: number;
   /** Изображение */

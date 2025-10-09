@@ -9,20 +9,18 @@ import { Link, useLocation } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import { UserRole } from '../../../types';
 import styles from './Sidebar.module.css';
-const ADMIN_LOGO_URL = `${process.env.PUBLIC_URL}/Logo Hobbly/logo_white@high-res.png`;
+
+const ADMIN_LOGO_URL = "https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Logo%20Hobbly/logo_white@high-res.png";
 
 /**
- * Admin Sidebar navigation componentяы
+ * Admin Sidebar navigation component
  * @returns JSX element
  */
 const Sidebar: React.FC = () => {
   const location = useLocation();
   const { user, signOut } = useAuth();
   
-  const isActive = (path: string) => {
-    // Exact match for all paths to avoid conflicts
-    return location.pathname === path;
-  };
+  const isActive = (path: string) => location.pathname === path;
 
   const handleSignOut = async () => {
     try {
@@ -36,47 +34,52 @@ const Sidebar: React.FC = () => {
     {
       path: '/admin/dashboard',
       label: 'Dashboard',
-      icon: '📊',
+      iconSrc: 'https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/Dashbord.svg',
       roles: [UserRole.ADMIN]
     },
     {
       path: '/admin/activities',
       label: 'Activities',
-      icon: '📋',
+      iconSrc: 'https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/activities.svg',
       roles: [UserRole.ORGANIZER, UserRole.ADMIN]
     },
     {
       path: '/admin/activities/requests',
       label: 'Activities requests',
-      icon: '🔔',
+      iconSrc: 'https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/bell.svg',
       roles: [UserRole.ADMIN]
     },
     {
       path: '/admin/users',
       label: 'Users',
-      icon: '👥',
+      iconSrc: 'https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/users.svg',
       roles: [UserRole.ADMIN]
     },
     {
       path: '/admin/users/requests',
-      label: 'Users\'s requests',
-      icon: '🔔',
+      label: "Users's requests",
+      iconSrc: 'https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/bell.svg',
       roles: [UserRole.ADMIN]
     },
     {
       path: '/admin/personal-info',
       label: 'Profile',
-      icon: '⚙️',
+      iconSrc: 'https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/settings.svg',
       roles: [UserRole.ORGANIZER, UserRole.ADMIN]
     }
   ];
 
-  const filteredMenuItems = menuItems.filter(item => 
-    user && item.roles.includes(user.role)
-  );
+  const filteredMenuItems = menuItems.filter(item => user && item.roles.includes(user.role));
+
+  const sidebarBgStyle: React.CSSProperties = {
+    backgroundImage: "url('https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Desktop/bg_pattern.png')",
+    backgroundRepeat: 'repeat',
+    backgroundSize: '2000px auto',
+    backgroundPosition: 'top left'
+  };
 
   return (
-    <aside className={styles.sidebar}>
+    <aside className={styles.sidebar} style={sidebarBgStyle}>
       {/* Logo section */}
       <div className={styles.logoSection}>
         <div className={styles.logoContainer}>
@@ -93,7 +96,9 @@ const Sidebar: React.FC = () => {
                 to={item.path}
                 className={`${styles.menuLink} ${isActive(item.path) ? styles.active : ''}`}
               >
-                <span className={styles.menuIcon}>{item.icon}</span>
+                <span className={styles.menuIcon}>
+                  <img src={item.iconSrc} alt="" className={styles.menuIconImage} />
+                </span>
                 <span className={styles.menuLabel}>{item.label}</span>
               </Link>
             </li>
@@ -101,14 +106,20 @@ const Sidebar: React.FC = () => {
         </ul>
       </nav>
 
-      {/* Bottom navigation (Trash bin) to match design */}
+      {/* Bottom navigation (Trash bin) */}
       {user && (user.role === UserRole.ADMIN || user.role === UserRole.ORGANIZER) && (
         <div className={styles.bottomNav}>
           <Link
             to="/admin/activities/trash"
             className={`${styles.menuLink} ${isActive('/admin/activities/trash') ? styles.active : ''}`}
           >
-            <span className={styles.menuIcon}>🗑️</span>
+            <span className={styles.menuIcon}>
+              <img
+                src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Icons/trashbin.svg"
+                alt=""
+                className={styles.menuIconImage}
+              />
+            </span>
             <span className={styles.menuLabel}>Trash bin</span>
           </Link>
         </div>

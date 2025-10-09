@@ -6,13 +6,13 @@
   flex-direction: column;
   min-height: 100vh;
   background-color: #fff;
-  font-family: 'Montserrat', sans-serif;
+  font-family: "Montserrat", sans-serif;
 }
 
 .header {
   width: 100%;
   padding: 20px 40px;
-  background-color: var(--color-primary-dark, #073B3A);
+  background-color: var(--color-primary-dark, #073b3a);
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%2367C38A' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' opacity='0.35'%3E%3Cpath d='M10 11l2.3 4.7 5.2.7-3.7 3.6.9 5.1-4.7-2.5-4.7 2.5.9-5.1L3 16.4l5.2-.7z'/%3E%3Cpath d='M43 9c2.1-2.1 5.6-2.1 7.7 0 2.1 2.1 2.1 5.6 0 7.7L50 18.4l-7-7c-1.9-1.9-1.9-5 0-6.9z'/%3E%3Cpath d='M36 44h-8M25 41v6M39 41v6M22 41h6M36 41h6'/%3E%3Cpath d='M9 46c0-4 3.2-7.2 7.2-7.2h6.6c4 0 7.2 3.2 7.2 7.2s-3.2 7.2-7.2 7.2H19l-4.6 3.5.9-3.5C11.1 53.2 9 49.9 9 46z'/%3E%3Cpath d='M48 31c-3 0-5.5-2.5-5.5-5.5V19h11v6.5C53.5 28.5 51 31 48 31zM43 19v-3h10v3M48 31v4M44 35h8'/%3E%3C/g%3E%3C/svg%3E");
 }
 
@@ -28,19 +28,19 @@
 }
 
 .pageTitle {
-  font-family: 'Kanit', sans-serif;
+  font-family: "Kanit", sans-serif;
   font-size: 3rem;
   font-weight: 600;
-  color: var(--color-primary-dark, #073B3A);
+  color: var(--color-primary-dark, #073b3a);
   margin-bottom: 30px;
   text-align: left;
 }
 
 .title {
-  font-family: 'Kanit', sans-serif;
+  font-family: "Kanit", sans-serif;
   font-size: 3rem;
   font-weight: 600;
-  color: var(--color-primary-dark, #073B3A);
+  color: var(--color-primary-dark, #073b3a);
   margin-bottom: 30px;
 }
 
@@ -64,16 +64,16 @@
 .input {
   width: 100%;
   padding: 15px;
-  border: 1px solid var(--field-border, #E5EEEA);
+  border: 1px solid var(--field-border, #e5eeea);
   border-radius: 8px;
   font-size: 1rem;
-  background-color: var(--field, #F6F8F7);
+  background-color: var(--field, #f6f8f7);
   transition: border-color 0.2s ease;
 }
 
 .input:focus {
   outline: none;
-  border-color: var(--color-primary-dark, #073B3A);
+  border-color: var(--color-primary-dark, #073b3a);
 }
 
 .inputError {
@@ -110,7 +110,7 @@
   height: 100%;
   border-radius: 50%;
   object-fit: cover;
-  border: 3px solid var(--field-border, #E5EEEA);
+  border: 3px solid var(--field-border, #e5eeea);
 }
 
 .photoUploadButton {
@@ -125,7 +125,7 @@
   align-items: center;
   justify-content: center;
   cursor: pointer;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .actions {
@@ -133,9 +133,9 @@
 }
 
 .signUpButton {
-  width: 100%;
+  width: 50%;
   padding: 15px;
-  background-color: var(--color-primary-dark, #073B3A);
+  background-color: var(--color-primary-dark, #073b3a);
   color: #fff;
   border: none;
   border-radius: 8px;
@@ -143,6 +143,8 @@
   font-weight: 600;
   cursor: pointer;
   transition: background-color 0.2s;
+  display: block; /* делаем блочным */
+  margin: 0 auto; /* центрируем по горизонтали */
 }
 
 .signUpButton:hover:not(:disabled) {
@@ -185,15 +187,16 @@
 }
 
 .error {
-    color: var(--error, #dc3545);
-    margin-top: 15px;
-    font-weight: 500;
+  color: var(--error, #dc3545);
+  margin-top: 15px;
+  font-weight: 500;
 }
 
 .footer {
   text-align: center;
   padding: 20px;
-  background-color: var(--color-primary-dark, #073B3A);
+  background-color: var(--color-primary-dark, #073b3a);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Cg fill='none' stroke='%2367C38A' stroke-width='1.7' stroke-linecap='round' stroke-linejoin='round' opacity='0.35'%3E%3Cpath d='M10 11l2.3 4.7 5.2.7-3.7 3.6.9 5.1-4.7-2.5-4.7 2.5.9-5.1L3 16.4l5.2-.7z'/%3E%3Cpath d='M43 9c2.1-2.1 5.6-2.1 7.7 0 2.1 2.1 2.1 5.6 0 7.7L50 18.4l-7-7c-1.9-1.9-1.9-5 0-6.9z'/%3E%3Cpath d='M36 44h-8M25 41v6M39 41v6M22 41h6M36 41h6'/%3E%3Cpath d='M9 46c0-4 3.2-7.2 7.2-7.2h6.6c4 0 7.2 3.2 7.2 7.2s-3.2 7.2-7.2 7.2H19l-4.6 3.5.9-3.5C11.1 53.2 9 49.9 9 46z'/%3E%3Cpath d='M48 31c-3 0-5.5-2.5-5.5-5.5V19h11v6.5C53.5 28.5 51 31 48 31zM43 19v-3h10v3M48 31v4M44 35h8'/%3E%3C/g%3E%3C/svg%3E");
   color: #fff;
 }
 

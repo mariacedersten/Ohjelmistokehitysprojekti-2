@@ -8,10 +8,9 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../../shared/contexts/AuthContext';
 import { SignInFormData, UserRole } from '../../../types';
-const ADMIN_LOGO_URL = `${process.env.PUBLIC_URL}/Logo Hobbly/logo_white@high-res.png`;
+const ADMIN_LOGO_URL = "https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Logo%20Hobbly/logo_white@high-res.png";
 
  
-
 /**
  * Eye Icon for password visibility
  */
@@ -79,8 +78,10 @@ const Login: React.FC = () => {
         userFullData: user 
       });
       // Only redirect if user has admin/organizer role
-      if (user.role === UserRole.ADMIN || user.role === UserRole.ORGANIZER) {
+      if (user.role === UserRole.ADMIN){
         navigate('/admin/dashboard');
+      } if (user.role === UserRole.ORGANIZER) {
+        navigate('/admin/activities');
       } else {
         // User with 'user' role trying to access admin panel
         setError(`Access denied. Admin panel requires organizer or administrator privileges. Your role: ${user.role}. Please use the mobile app instead.`);

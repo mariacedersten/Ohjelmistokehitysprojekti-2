@@ -34,8 +34,9 @@ const Cover: React.FC = () => {
    * Обработчик перехода к странице регистрации
    */
   const handleSignUp = () => {
-    navigate('/mobile/signup');
+    navigate('/mobile/signup'); 
   };
+
 
   return (
     <div className={styles.cover}>
@@ -43,7 +44,7 @@ const Cover: React.FC = () => {
         {/* Логотип Hobbly */}
         <div className={styles.logoContainer}>
           <img 
-            src="/assets/wireframes/Logo Hobbly/logo_white@low-res.png" 
+            src="https://jourvbtxuyavamxvddwc.supabase.co/storage/v1/object/public/activities/Logo%20Hobbly/logo_white@low-res.png" 
             alt="Hobbly" 
             className={styles.logo}
           />

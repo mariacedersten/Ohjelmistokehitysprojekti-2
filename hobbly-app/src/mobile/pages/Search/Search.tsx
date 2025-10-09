@@ -7,6 +7,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import styles from './Search.module.css';
+import MobileHeader from '../../components/MobileHeader';
 import {
   Activity,
   Category,
@@ -126,15 +127,7 @@ const Search: React.FC = () => {
 
   return (
     <div className={styles.search}>
-      <header className={styles.header}>
-        <div className={styles.logoContainer}>
-          <img
-            src="/assets/wireframes/Logo Hobbly/logo_white@low-res.png"
-            alt="Hobbly"
-            className={styles.logo}
-          />
-        </div>
-      </header>
+      <MobileHeader />
 
       {/* Панель поиска */}
       <div className={styles.searchBarContainer}>
@@ -193,22 +186,19 @@ const Search: React.FC = () => {
           <select
             className={styles.filterInput}
             value={filters.tags && filters.tags.length > 0 ? filters.tags[0] : 'all'}
-            onChange={e =>
-              updateFilters({
-                tags: e.target.value === 'all' ? [] : [e.target.value]
-              })
-            }
+            onChange={e => {
+              const val = e.target.value;
+              updateFilters({ tags: val === 'all' ? [] : [val] });
+            }}
             lang="en"
             translate="no"
           >
             <option value="all">All Tags</option>
-            {tags
-              .filter(t => /^[A-Za-z0-9\s-]+$/.test(t.name)) // фильтруем по имени
-              .map(t => (
-                <option key={t.id} value={t.id}>
-                  {t.name}
-                </option>
-              ))}
+            {tags.map(t => (
+              <option key={t.id} value={t.id}>
+                {t.name}
+              </option>
+            ))}
           </select>
 
           {/* Сортировка / Цена */}

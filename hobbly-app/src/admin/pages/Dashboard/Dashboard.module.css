@@ -4,9 +4,11 @@
  */
 
 .container {
-  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
   background: #f5f5f5;
-  padding: 40px;
+  padding: 0;
+  width: 100%;
 }
 
 .loading {
@@ -23,7 +25,8 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 40px;
+  padding: 32px 32px 24px 32px;
+  background: #f5f5f5;
 }
 
 .titleSection {
@@ -34,7 +37,7 @@
   font-family: var(--font-heading);
   font-weight: 700;
   font-size: 36px;
-  color: #2D2D2D;
+  color: #2d2d2d;
   margin: 0;
   letter-spacing: 2px;
 }
@@ -47,18 +50,18 @@
 
 .statItem {
   font-size: 16px;
-  color: #2D2D2D;
-  font-weight: 500;
+  color: #2d2d2d;
+  font-weight: 600;
 }
 
 /* Widgets Grid - 2x2 layout */
 .widgetsGrid {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 1fr 1fr;
+  grid-template-rows: auto auto;
   gap: 24px;
-  height: calc(100vh - 200px);
-  min-height: 600px;
+  padding: 0 32px 32px 32px;
+  flex: 1;
 }
 
 .widget {
@@ -69,13 +72,14 @@
   border: 1px solid #e0e0e0;
   display: flex;
   flex-direction: column;
+  min-height: 400px;
+  height: 100%;
 }
 
 .widgetTitle {
   font-family: var(--font-heading);
-  font-weight: 600;
   font-size: 16px;
-  color: #2D2D2D;
+  color: #2d2d2d;
   margin: 0 0 20px 0;
   letter-spacing: 1px;
   text-transform: uppercase;
@@ -132,7 +136,7 @@
 
 .legendLabel {
   font-size: 10px;
-  color: #2D2D2D;
+  color: #2d2d2d;
   font-weight: 500;
   text-transform: uppercase;
 }
@@ -171,18 +175,18 @@
 
 .tagName {
   font-size: 14px;
-  color: #2D2D2D;
+  color: #2d2d2d;
   font-weight: 600;
   letter-spacing: 0.5px;
 }
 
 /* Color assignments for tags */
 .tagBar:nth-child(1) {
-  background-color: #FFD93D;
+  background-color: #ffd93d;
 }
 
 .tagBar:nth-child(2) {
-  background-color: #2D5F5D;
+  background-color: #2d5f5d;
 }
 
 .tagBar:nth-child(2) .tagName {
@@ -190,11 +194,11 @@
 }
 
 .tagBar:nth-child(3) {
-  background-color: #6BCF7C;
+  background-color: #6bcf7c;
 }
 
 .tagBar:nth-child(4) {
-  background-color: #9E9E9E;
+  background-color: #9e9e9e;
 }
 
 .tagBar:nth-child(4) .tagName {
@@ -203,14 +207,11 @@
 
 /* Responsive design */
 @media (max-width: 1200px) {
-  .container {
-    padding: 20px;
-  }
-
   .header {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
+    padding: 24px 24px 20px 24px;
   }
 
   .topStats {
@@ -222,26 +223,30 @@
   }
 
   .widgetsGrid {
-    height: auto;
-    min-height: 800px;
+    padding: 0 24px 24px 24px;
+    grid-template-rows: auto auto;
+  }
+
+  .widget {
+    min-height: 350px;
   }
 }
 
 @media (max-width: 768px) {
-  .container {
-    padding: 16px;
+  .header {
+    padding: 20px 20px 16px 20px;
   }
 
   .widgetsGrid {
     grid-template-columns: 1fr;
-    grid-template-rows: repeat(4, 300px);
+    grid-template-rows: auto;
     gap: 16px;
-    height: auto;
-    min-height: auto;
+    padding: 0 20px 20px 20px;
   }
 
   .widget {
     padding: 16px;
+    min-height: 300px;
   }
 
   .mainTitle {

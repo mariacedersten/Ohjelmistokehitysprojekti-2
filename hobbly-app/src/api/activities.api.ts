@@ -23,6 +23,7 @@ import {
   UserRole
 } from '../types';
 import { AxiosResponse } from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Класс для работы с активностями
@@ -73,6 +74,9 @@ class ActivitiesAPI {
         isApproved: 'eq.true', // Показываем только подтвержденные активности
       };
 
+      // Дополнительные параметры, которые нельзя выразить одним ключом (повторяющиеся price, id=in.(...))
+      const extraParams: string[] = [];
+
       // Ограничиваем доступ для ORGANIZER - только свои активности
       if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
         queryParams.user_id = `eq.${currentUserId}`;
@@ -95,14 +99,32 @@ class ActivitiesAPI {
         queryParams.location = `ilike.*${filters.location}*`;
       }
 
+      // Фильтрация по цене (каждый оператор отдельным параметром)
       if (filters.freeOnly) {
-        queryParams.price = 'eq.0';
+        extraParams.push('price=eq.0');
       } else {
-        if (filters.minPrice !== undefined) {
-          queryParams.price = `gte.${filters.minPrice}`;
-        }
-        if (filters.maxPrice !== undefined) {
-          queryParams.price = `${queryParams.price ? queryParams.price + ',' : ''}lte.${filters.maxPrice}`;
+        if (filters.minPrice !== undefined) extraParams.push(`price=gte.${filters.minPrice}`);
+        if (filters.maxPrice !== undefined) extraParams.push(`price=lte.${filters.maxPrice}`);
+      }
+
+      // Фильтрация по тегам (tag_id из таблицы activity_tags)
+      if (filters.tags && filters.tags.length > 0) {
+        try {
+          const tagIds = filters.tags.join(',');
+          const tagFilterUrl = `/activity_tags?tag_id=in.(${tagIds})&select=activity_id`;
+          const tagResp: AxiosResponse<{ activity_id: string }[]> = await apiClient.get(tagFilterUrl);
+          const activityIds = Array.from(new Set((tagResp.data || []).map(r => r.activity_id))).filter(Boolean);
+          if (activityIds.length === 0) {
+            return {
+              data: [],
+              pagination: { page, limit, total: 0 },
+              total: 0
+            };
+          }
+          const inList = activityIds.join(',');
+          extraParams.push(`id=in.(${inList})`);
+        } catch (tagErr) {
+          console.warn('Failed to filter by tags, proceeding without tag filter:', tagErr);
         }
       }
 
@@ -113,8 +135,9 @@ class ActivitiesAPI {
 
       // Выполняем запрос к view `activities_full`
       // Use view `activities_full` which already exposes related fields
+      const extra = extraParams.length ? `&${extraParams.join('&')}` : '';
       const response: AxiosResponse<any[]> = await apiClient.get(
-        `${this.fullViewEndpoint}?${filterQuery}&order=${orderQuery}&select=*`,
+        `${this.fullViewEndpoint}?${filterQuery}${extra}&order=${orderQuery}&select=*`,
         paginationConfig
       );
 
@@ -241,6 +264,10 @@ class ActivitiesAPI {
         category_id: data.categoryId,
         location: data.location.trim(),
         address: data.address?.trim() || null,
+        // coordinates stored as JSONB {lat, lng}
+        coordinates: data.coordinates && typeof data.coordinates.lat === 'number' && typeof data.coordinates.lng === 'number'
+          ? { lat: data.coordinates.lat, lng: data.coordinates.lng }
+          : null,
         price: data.price || null,
         currency: data.currency || 'EUR',
         image_url: imageUrl,
@@ -382,6 +409,20 @@ class ActivitiesAPI {
       if (data.categoryId !== undefined) updateData.category_id = data.categoryId;
       if (data.location !== undefined) updateData.location = data.location;
       if (data.address !== undefined) updateData.address = data.address;
+      if (data.coordinates !== undefined) {
+        if (
+          data.coordinates &&
+          typeof (data.coordinates as any).lat === 'number' &&
+          typeof (data.coordinates as any).lng === 'number'
+        ) {
+          updateData.coordinates = {
+            lat: (data.coordinates as any).lat,
+            lng: (data.coordinates as any).lng
+          };
+        } else {
+          updateData.coordinates = null;
+        }
+      }
       if (data.price !== undefined) updateData.price = data.price;
       if (imageUrl !== undefined) updateData.image_url = imageUrl;
       if (data.startDate !== undefined) updateData.start_date = data.startDate;
@@ -394,7 +435,7 @@ class ActivitiesAPI {
       if (data.externalLink !== undefined) updateData.external_link = data.externalLink;
 
       // Обновляем активность
-      const response: AxiosResponse<Activity[]> = await apiClient.patch(
+      await apiClient.patch(
         `/activities?id=eq.${id}`,
         updateData
       );
@@ -630,8 +671,13 @@ class ActivitiesAPI {
       // Подготавливаем параметры запроса
       const queryParams: Record<string, any> = {
         is_deleted: 'is.false', // Исключаем только удаленные
-        // Не фильтруем по isApproved - показываем все
       };
+
+      // Требование: администраторы не видят pending (показываем только одобренные),
+      // организаторы видят свои активности, включая не одобренные
+      if (currentUserRole === UserRole.ADMIN) {
+        queryParams.isApproved = 'eq.true';
+      }
 
       // Ограничиваем доступ для ORGANIZER - только свои активности
       if (currentUserRole === UserRole.ORGANIZER && currentUserId) {
@@ -891,13 +937,14 @@ class ActivitiesAPI {
    */
   private async uploadImage(file: File): Promise<string> {
     try {
-      const fileName = `${Date.now()}-${file.name}`;
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const fileName = `${uuidv4()}.${ext}`;
       const filePath = `activities/${fileName}`;
 
       const formData = new FormData();
       formData.append('file', file);
 
-      const response = await storageClient.post(
+      await storageClient.post(
         `/object/${API_CONSTANTS.STORAGE_BUCKET}/${filePath}`,
         formData,
         {

@@ -14,6 +14,10 @@ figma: https://www.figma.com/design/39ZB8toax36wqw4mdC1FBq/Hobbly?t=LZ6GUfZ2rkYm
 
 supabase: https://supabase.com/dashboard/project/jourvbtxuyavamxvddwc/sql/66baaae4-1dd0-45d6-8f04-f59fa367e221
 
+formspree: (https://formspree.io/) https://formspree.io/forms/xanpnodz/integration
+
+app.netlify: https://hobbly.netlify.app/  linkki: https://app.netlify.com/projects/hobbly/overview
+
 ## Projektin kuvaus
 
 Tämä projekti toteutetaan osana ohjelmistoprojektikurssia.  
@@ -84,3 +88,25 @@ supabase: https://supabase.com/dashboard/project/jourvbtxuyavamxvddwc/sql/66baaa
 ## Lisenssi
 
 Tämä projekti on tarkoitettu opetuskäyttöön (ei tuotantokäyttöön).
+
+
+
+Download the project to your computer using the computer's terminal with the command:
+
+git clone https://github.com/mariacedersten/Ohjelmistokehitysprojekti-2.git
+
+Open the project in VS Code.
+In the folder *"hobbly-app", find the file **package.json*.
+Right-click on it and select *Open in Integrated Terminal*.
+
+In this terminal in VS Code, run the command:
+
+npm install
+
+npm install @formspree/react
+
+npm start
+
+A browser window will open with our application and desktop.
+You need to test everything.
+Create your own account!

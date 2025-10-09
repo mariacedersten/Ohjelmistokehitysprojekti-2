@@ -8,6 +8,7 @@
 import { authClient, apiClient, setAuthToken, removeAuthToken, storageClient } from './config';
 import { User, SignInFormData, SignUpFormData, UserRole } from '../types';
 import { AxiosResponse } from 'axios';
+import { v4 as uuidv4 } from 'uuid';
 
 /**
  * Интерфейс ответа при успешной аутентификации
@@ -69,7 +70,6 @@ const transformUserProfile = (profile: any): User => {
     organizationAddress: profile.organization_address, // если есть в БД
     organizationNumber: profile.organization_number, // если есть в БД
     photoUrl: profile.avatar_url, // в БД называется avatar_url
-    profilePhotoUrl: profile.avatar_url, // дублируем для совместимости
     isApproved: profile.isApproved || false,
     createdAt: new Date(profile.created_at),
     updatedAt: new Date(profile.updated_at)
@@ -155,9 +155,10 @@ class AuthAPI {
         });
       }
       
-      const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const fileName = `${uuidv4()}.${ext}`;
       const filePath = `${fileName}`;
-      
+
       console.log('📂 Alternative upload path:', `avatars/${filePath}`);
       
       const { data, error } = await supabase.storage
@@ -448,7 +449,6 @@ class AuthAPI {
           // Обновляем объект user с новым URL фото
           if (typeof user === 'object' && user !== null) {
             user.photoUrl = photoUrl; // В нашем интерфейсе User это поле называется photoUrl
-            user.profilePhotoUrl = photoUrl; // Дублируем для совместимости
           }
         } catch (uploadError: any) {
           console.error('❌ Photo upload failed:', uploadError);
@@ -504,7 +504,8 @@ class AuthAPI {
         // Продолжаем с оригинальным методом через REST API
       }
 
-      const fileName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9.-]/g, '_')}`;
+      const ext = file.name.split('.').pop()?.toLowerCase() || 'jpg';
+      const fileName = `${uuidv4()}.${ext}`;
       const bucket = 'avatars';
       const filePath = `${fileName}`;
 

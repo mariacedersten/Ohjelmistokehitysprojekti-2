@@ -78,7 +78,7 @@
   color: rgba(255, 255, 255, 0.8);
   text-decoration: none;
   font-size: 16px;
-  font-weight: var(--font-weight-regular);
+  font-weight: var(--font-weight-semibold, 800);
   transition: var(--transition-fast);
   border-left: 3px solid transparent;
 }
@@ -95,6 +95,7 @@
 }
 
 .menuIcon {
+  filter: brightness(0) invert(1);
   font-size: 20px;
   width: 24px;
   height: 24px;
@@ -105,6 +106,7 @@
 
 .menuLabel {
   font-family: var(--font-primary);
+  font-weight: var(--font-weight-semibold, 600);
 }
 
 /* Sign out section */

@@ -19,9 +19,9 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow-y: auto;
-  min-height: 100vh;
   margin-left: 280px;
+  height: 100vh;
+  overflow-y: auto;
 }
 
 .pageContent {
@@ -35,10 +35,9 @@
   .adminApp {
     max-width: 100%;
   }
-  
+
   .mainContent {
     margin-left: 280px; /* Место для sidebar */
-    padding: 32px;
   }
 }
 
@@ -46,7 +45,6 @@
 @media (max-width: 1023px) and (min-width: 768px) {
   .mainContent {
     margin-left: 240px; /* Уменьшенный sidebar */
-    padding: 24px;
   }
 }
 
@@ -55,9 +53,10 @@
   .adminApp {
     flex-direction: column;
   }
-  
+
   .mainContent {
     margin-left: 0;
-    padding: 20px;
+    height: auto;
+    min-height: 100vh;
   }
 }

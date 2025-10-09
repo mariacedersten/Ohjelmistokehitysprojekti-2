@@ -1,0 +1,66 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background-color: #8b8b8b;
+}
+
+.content {
+  padding: 30px 30px 80px;
+}
+
+.card {
+  background: white;
+  border-radius: 16px;
+  padding: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4); /* 💪 тень мощнее */
+}
+
+.row {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+}
+
+.row:last-child {
+  border-bottom: none;
+}
+
+.label {
+  color: #666;
+  font-weight: 500;
+}
+
+.value {
+  color: #1a1a1a;
+  font-weight: 600;
+  word-break: break-word;
+}
+
+.avatar {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 2px solid #e0e0e0;
+}
+
+.logoutButton {
+  display: block;
+  margin: 20px auto 0; /* центрирует кнопку */
+  width: 60%; /* например, 60% ширины контейнера */
+  max-width: 160px; /* чтобы не становилась слишком широкой на больших экранах */
+  background: #0d3b36;
+  color: #ffffff;
+  border: none;
+  border-radius: 10px;
+  font-size: 18px;
+  padding: 6px 0;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.logoutButton:hover {
+  background: #146b61; /* чуть светлее при наведении */
+}
